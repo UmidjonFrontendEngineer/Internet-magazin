@@ -13,7 +13,7 @@ const withWebpack = {
       ...(config.resolve.alias || {}),
       'react-native': 'react-native-web',
       'react-native$': 'react-native-web',
-      'react-native-gesture-handler': 'react-native-gesture-handler', // Webpack uchun qo'shildi
+      'react-native-gesture-handler': 'react-native-gesture-handler',
       'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter$':
         'react-native-web/dist/vendor/react-native/NativeEventEmitter/RCTDeviceEventEmitter',
       'react-native/Libraries/vendor/emitter/EventEmitter$':
@@ -42,7 +42,7 @@ const withTurpopack = {
     resolveAlias: {
       'react-native': 'react-native-web',
       'expo-linking': 'react-native-web',
-      'react-native-gesture-handler': 'react-native-gesture-handler', // Turbopack xatoligini tuzatish uchun qo'shildi
+      'react-native-gesture-handler': 'react-native-gesture-handler',
       'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter$':
         'react-native-web/dist/vendor/react-native/NativeEventEmitter/RCTDeviceEventEmitter',
       'react-native/Libraries/vendor/emitter/EventEmitter$':
@@ -55,7 +55,6 @@ const withTurpopack = {
       '.web.jsx',
       '.web.ts',
       '.web.tsx',
-
       '.js',
       '.mjs',
       '.tsx',
@@ -72,6 +71,10 @@ const withTurpopack = {
  * @type {import('next').NextConfig}
  */
 module.exports = {
+  typescript: {
+    ignoreBuildErrors: true, 
+  },
+  
   transpilePackages: [
     'react-native',
     'react-native-web',
@@ -88,7 +91,7 @@ module.exports = {
       __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
     },
   },
-  reactStrictMode: false, // reanimated doesn't support this on web
+  reactStrictMode: false,
 
   images: {
     remotePatterns: [

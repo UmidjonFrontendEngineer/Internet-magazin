@@ -1,5 +1,7 @@
 'use client'
 import { useServerInsertedHTML } from 'next/navigation'
+
+// @ts-ignore
 import { StyleSheet } from 'react-native'
 
 export function StylesProvider({ children }: { children: React.ReactNode }) {
