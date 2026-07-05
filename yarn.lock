@@ -2201,9 +2201,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@next/swc-linux-x64-gnu@npm:^16.2.10":
+  version: 16.2.10
+  resolution: "@next/swc-linux-x64-gnu@npm:16.2.10"
+  checksum: 10/ab38681abf99569ed66e805a1e983362ddb62868091997a0c4d88fa412be5ff4e41e7adca3aded819068c8bfec4eb5e6d9f20ebde5132f922bf695e99c9ade5a
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
 "@next/swc-linux-x64-musl@npm:16.2.9":
   version: 16.2.9
   resolution: "@next/swc-linux-x64-musl@npm:16.2.9"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@next/swc-linux-x64-musl@npm:^16.2.10":
+  version: 16.2.10
+  resolution: "@next/swc-linux-x64-musl@npm:16.2.10"
+  checksum: 10/71411c0fd8ce20605867b16df87c8a35fc4e2620dc2b3a27a82c67d90de0f63fe216079d5f8e6a76e96406163a7ab75346a6756ed3467c15a11cc8957387a822
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
@@ -9362,6 +9378,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "solito-blank@workspace:."
   dependencies:
+    "@next/swc-linux-x64-gnu": "npm:^16.2.10"
+    "@next/swc-linux-x64-musl": "npm:^16.2.10"
     "@types/react": "npm:^18.2.21"
     eslint: "npm:^8.21.0"
     expo-blur: "npm:^56.0.3"

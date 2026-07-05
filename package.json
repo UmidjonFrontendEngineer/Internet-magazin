@@ -6,6 +6,8 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@next/swc-linux-x64-gnu": "^16.2.10",
+    "@next/swc-linux-x64-musl": "^16.2.10",
     "@types/react": "^18.2.21",
     "eslint": "^8.21.0",
     "turbo": "^2.4.4",
