@@ -6,6 +6,7 @@ import { SolitoImage } from 'solito/image'
 import { TextLink } from 'solito/link'
 import { useInputStorage } from 'app/store/useInputStore'
 import { useRouter } from 'solito/navigation'
+import SearchPng from 'app/features/app/assets/search.png'
 
 interface Translation {
     uz: string; ru: string; en: string;
@@ -486,7 +487,7 @@ const KatalogTizimi = () => {
                 marginTop: isMobileView ? 40 : 140,
                 paddingHorizontal: 16,
             }}>
-                <View style={{backgroundColor: 'rgba(226, 245, 255, 1)', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', borderRadius: 100, padding: 1.5, gap: 1.5}}>
+                <View style={{backgroundColor: 'rgba(226, 245, 255, 0.4)', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', borderRadius: 100, padding: 1.5, gap: 1.5}}>
                     <TextInput
                         placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
                         onChangeText={text => setInput(text)}
@@ -496,17 +497,17 @@ const KatalogTizimi = () => {
                             paddingVertical: 16,
                             fontSize: 15,
                             ...Platform.select({ web: { outlineStyle: 'none' } }),
-                            borderColor: '#fff',
+                            borderColor: 'rgb(226, 245, 255)',
                             borderWidth: 1,
                             borderRadius: 100,
                         }}
-                        placeholderTextColor="#999"
+                        placeholderTextColor="rgba(0, 149, 255, 0.6)"
                         value={input}
                     />
 
-                    <TextLink href={`/search/${input.trim().replace(/\s+/g, '-').toLowerCase()}`} style={{ height: '100%', alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: 'rgba(255, 255, 255, 0.4)', borderRadius: 100 }}>
+                    <TextLink href={`/search/${input.trim().replace(/\s+/g, '-').toLowerCase()}`} style={{ height: '100%', alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: 'rgba(226, 245, 255, 0.3)', borderRadius: 100 }}>
                         <SolitoImage
-                            src="https://i.ibb.co/PZsbKfGr/search.png"
+                            src={SearchPng}
                             alt="search Icon"
                             width={30}
                             height={30}

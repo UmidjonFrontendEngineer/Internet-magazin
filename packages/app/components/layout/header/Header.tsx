@@ -17,11 +17,21 @@ import { useTabStore } from 'app/store/useTabStore'
 import { usePathname } from 'solito/navigation'
 import { uselocationStorage } from 'app/store/useLocationStore'
 import Location from 'app/components/UI/Location'
+import SearchPng from 'app/features/app/assets/search.png'
+import UserPng from 'app/features/app/assets/user.png'
+import CartPng from 'app/features/app/assets/cart.png'
+import HeartPng from 'app/features/app/assets/heart.png'
+import CatalogPng from 'app/features/app/assets/catalog.png'
+import HomePng from 'app/features/app/assets/home.png'
+import GrapePng from 'app/features/app/assets/grape.png'
+import UzPng from 'app/features/app/assets/uzbekistan.png'
+import EnPng from 'app/features/app/assets/united-kingdom.png'
+import RuPng from 'app/features/app/assets/russia.png'
 
 const SearchIcon = () => (
     <SolitoImage
-        src="https://i.ibb.co/PZsbKfGr/search.png"
-        alt="search Icon"
+        src={SearchPng}
+        alt="search"
         width={30}
         height={30}
         resizeMode="contain"
@@ -30,8 +40,8 @@ const SearchIcon = () => (
 
 const HomeIcon = () => (
     <SolitoImage
-        src={'https://i.ibb.co/BVvHPL4h/home.png'}
-        alt="home Icon"
+        src={HomePng}
+        alt="home"
         width={30}
         height={30}
         resizeMode="contain"
@@ -39,8 +49,8 @@ const HomeIcon = () => (
 )
 const UserIcon = () => (
     <SolitoImage
-        src="https://i.ibb.co/LXRL8SzC/profile.png"
-        alt="profile Icon"
+        src={UserPng}
+        alt="profile"
         width={30}
         height={30}
         resizeMode="contain"
@@ -49,8 +59,8 @@ const UserIcon = () => (
 
 const HeartIcon = () => (
     <SolitoImage
-        src="https://i.ibb.co/GfZzh6Y7/heart.png"
-        alt="heart Icon"
+        src={HeartPng}
+        alt="heart"
         width={30}
         height={30}
         resizeMode="contain"
@@ -59,8 +69,8 @@ const HeartIcon = () => (
 
 const CartIcon = () => (
     <SolitoImage
-        src="https://i.ibb.co/1fgyKm7K/cart.png"
-        alt="kart Icon"
+        src={CartPng}
+        alt="kart"
         width={30}
         height={30}
         resizeMode="contain"
@@ -69,8 +79,8 @@ const CartIcon = () => (
 
 const CatalogIcon = () => (
     <SolitoImage
-        src="https://i.ibb.co/kV1jK6W8/catalog.png"
-        alt="katalog Icon"
+        src={CatalogPng}
+        alt="katalog"
         width={30}
         height={30}
         resizeMode="contain"
@@ -279,7 +289,18 @@ const Header = () => {
                             <TextLink href='/savolJavob'><Text>{lan === 'uz' ? 'Savol-javob' : lan === 'en' ? 'FAQ (yoki Questions & Answers)' : lan === 'ru' ? 'Вопросы и ответы (или Частые вопросы)' : 'Savol-javob'}</Text></TextLink>
                             <Text>{lan === 'uz' ? 'Buyrutmalarim' : lan === 'en' ? 'My orders' : lan === 'ru' ? 'Мои заказы' : 'Buyrutmalarim'}</Text>
                             <View style={{ width: 80 }}>
-                                {openLan ? <Language setOpenLan={setOpenLan} /> : <Pressable style={{ paddingHorizontal: 30, borderRadius: 10, backgroundColor: 'rgba(226, 245, 255, 0.6)', width: '100%', alignItems: 'center', justifyItems: 'center' }} onPress={() => setOpenLan(prew => !prew)}><Text>{lan}</Text></Pressable>}
+                                {openLan ? <Language setOpenLan={setOpenLan} /> :
+                                    <Pressable style={{ paddingHorizontal: 12, borderRadius: 10, backgroundColor: 'rgba(226, 245, 255, 0.6)', width: '100%', alignItems: 'center', justifyItems: 'center', flexDirection: 'row', gap: 4 }} onPress={() => setOpenLan(prew => !prew)}>
+                                        <SolitoImage
+                                            src={lan === 'uz' ? UzPng : lan === 'ru' ? RuPng : lan === 'en' ? EnPng : ''}
+                                            alt={lan === 'uz' ? 'uz' : lan === 'ru' ? 'ru' : lan === 'en' ? 'en' : ''}
+                                            width={20}
+                                            height={15}
+                                            resizeMode="contain"
+                                        />
+                                        <Text style={{ textTransform: 'uppercase', fontSize: 15 }}>{lan}</Text>
+                                    </Pressable>
+                                }
                             </View>
                         </View>
                     </View>
@@ -352,14 +373,15 @@ const Header = () => {
                         />
 
                         <Pressable onPress={() => handlePage('/', 0)}>
-                            <View>
+                            <View style={{ gap: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                 <SolitoImage
-                                    src={'https://i.ibb.co/fGMWjxCB/Uzum-Market-Logo.png'}
+                                    src={GrapePng}
                                     alt="home Icon"
-                                    width={180}
+                                    width={30}
                                     height={30}
                                     resizeMode="contain"
                                 />
+                                <Text style={{ textTransform: 'capitalize', fontSize: 20, color: '#3B9EFE', fontWeight: 'bold' }}>internet magazine</Text>
                             </View>
                         </Pressable>
 
@@ -375,7 +397,7 @@ const Header = () => {
                                 onChangeText={text => setInput(text)}
                                 placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
                                 style={styles.searchInput}
-                                placeholderTextColor="#999"
+                                placeholderTextColor="rgba(0, 149, 255, 0.6)"
                                 value={input}
                             />
                             <TextLink href={`/search/${input.split(' ').join('-').toLocaleLowerCase().trim()}`} style={styles.searchIconWrapper}>
@@ -451,7 +473,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
-        backgroundColor: 'rgba(226, 245, 255, 0.6)',
+        backgroundColor: 'rgba(226, 245, 255, 0.2)',
         borderRadius: 100,
         paddingVertical: 2,
         zIndex: 99999999999999,
@@ -460,20 +482,20 @@ const styles = StyleSheet.create({
     logoText: {
         fontSize: 26,
         fontWeight: '800',
-        color: '#7000FF',
+        color: '#3B9EFE',
         letterSpacing: -0.5,
     },
     catalogButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#21aaffab',
+        backgroundColor: 'rgba(0, 149, 255, 0.3)',
         paddingHorizontal: 16,
         paddingVertical: 10,
         borderRadius: 80,
         marginLeft: 20,
     },
     catalogButtonText: {
-        color: '#7000FF',
+        color: '#3B9EFE',
         fontWeight: '600',
         fontSize: 15,
     },
@@ -482,10 +504,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#eaf0f0',
+        borderColor: 'rgb(226, 245, 255)',
         borderRadius: 80,
         marginHorizontal: 20,
-        backgroundColor: '#eaf0f0a3',
+        backgroundColor: 'rgba(226, 245, 255, 0.4)',
     },
     searchInput: {
         flex: 1,
@@ -496,7 +518,7 @@ const styles = StyleSheet.create({
     },
     searchIconWrapper: {
         padding: 10,
-        backgroundColor: '#eaf0f083',
+        backgroundColor: 'rgba(226, 245, 255, 0.3)',
         borderRadius: 80,
     },
     navLinks: {
@@ -512,7 +534,7 @@ const styles = StyleSheet.create({
     navText: {
         fontSize: 15,
         fontWeight: '500',
-        color: '#1f2020',
+        color: '#3B9EFE',
     },
     iconText: {
         fontSize: 18,

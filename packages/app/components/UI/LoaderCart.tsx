@@ -2,12 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from 'react-native'
 
-const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
-
 const LoaderCart = () => {
     const [isShining, setIsShining] = useState(false);
 
-    // Yonib-o'chish (Shimmer) effekti sikli
     useEffect(() => {
         const interval = setInterval(() => {
             setIsShining((prev) => !prev);
@@ -18,41 +15,33 @@ const LoaderCart = () => {
 
     const shimmerStyle = {
         opacity: isShining ? 0.5 : 1,
-        transition: 'opacity 1s linear', // Web platformasi uchun silliq o'tish
+        transition: 'opacity 1s linear',
     };
 
     return (
         <View style={[styles.card, shimmerStyle]}>
-            {/* Chap tomon: Rasm joyi */}
             <View style={styles.leftSection}>
                 <View style={styles.imageLoader} />
             </View>
 
-            {/* O'ng tomon: Ma'lumotlar loaderi */}
             <View style={styles.rightSection}>
                 <View style={styles.headerRow}>
-                    {/* Sarlavha o'rniga loader chiziqlar */}
                     <View style={styles.titleWrapper}>
                         <View style={[styles.lineLoader, { width: '90%' }]} />
                         <View style={[styles.lineLoader, { width: '60%', marginTop: 6 }]} />
                     </View>
                     
-                    {/* O'chirish tugmasi loaderi */}
                     <View style={styles.deleteLoader} />
                 </View>
 
-                {/* Qo'shimcha ma'lumotlar (Sotuvchi, Kategoriya) */}
                 <View style={styles.metaInfo}>
                     <View style={[styles.lineLoader, { width: '45%', height: 10 }]} />
                     <View style={[styles.lineLoader, { width: '35%', height: 10, marginTop: 4 }]} />
                 </View>
 
-                {/* Pastki qism: Counter va Narxlar */}
                 <View style={styles.footerRow}>
-                    {/* Hisoblagich (Counter) loaderi */}
                     <View style={styles.counterLoader} />
 
-                    {/* Narxlar loaderi */}
                     <View style={styles.priceContainer}>
                         <View style={styles.currentPriceLoader} />
                         <View style={styles.oldPriceLoader} />
@@ -81,7 +70,7 @@ const styles = StyleSheet.create({
     imageLoader: {
         width: 110,
         height: 110,
-        backgroundColor: '#e5e7eb', // Grey 200 rangli loader backgrounds
+        backgroundColor: '#e5e7eb',
         borderRadius: 12,
     },
     rightSection: {
