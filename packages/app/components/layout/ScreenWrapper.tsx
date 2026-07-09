@@ -19,7 +19,7 @@ export default function ScreenWrapper({ children, paddingTop = 120 }: ScreenWrap
             insets = hookInsets
         }
     } catch (error) {
-        // Safe area context provayderdan tashqarida bo'lsa xato bermasligi uchun
+
     }
 
     const { width: windowWidth } = useWindowDimensions()
@@ -33,13 +33,11 @@ export default function ScreenWrapper({ children, paddingTop = 120 }: ScreenWrap
     const isMobileView = currentWidth < 1000
 
     return (
-        // Tashqi View: Webda elementni markazda saqlash va foni oq bo'lishi uchun
         <View style={styles.outerContainer}>
             <ScrollView
                 style={[
                     styles.scroll, 
                     { 
-                        // Webda huddi margin: 'auto' kabi ishlashi uchun kenglikni tekshiramiz
                         maxWidth: 1400, 
                         width: '100%' 
                     }
@@ -63,14 +61,13 @@ const styles = StyleSheet.create({
     outerContainer: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center', // Ichidagi ScrollView'ni gorizontal markazga olib keladi (Web uchun margin: auto o'rniga)
+        alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
     },
     scroll: {
         flex: 1,
         backgroundColor: '#fff',
-        // Platform.select yordamida faqat Web uchun padding beramiz yoki har ikkisiga moslaymiz
         paddingHorizontal: Platform.OS === 'web' ? 20 : 10,
     },
     scrollContent: {

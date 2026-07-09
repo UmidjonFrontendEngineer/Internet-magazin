@@ -5,6 +5,8 @@ import ScreenWrapper from 'app/components/layout/ScreenWrapper';
 import { SolitoImage } from 'solito/image';
 import ProductCard from 'app/components/UI/ProductCart';
 import LoaderProductCard from 'app/components/UI/LoaderProductCart';
+import Slider from 'app/components/UI/Slider';
+import SliderLoader from 'app/components/UI/SliderLoader';
 
 interface ProductProps {
     id: number;
@@ -40,24 +42,22 @@ const HomeScreen = () => {
     if (loading) {
         return (
             <ScreenWrapper>
-                <View style={{ flex: 1, flexWrap: 'wrap' }}>
-                    <View style={{flexDirection: 'row', gap: 40}}>
-                        <LoaderProductCard />
-                        <LoaderProductCard />
+                <ScrollView contentContainerStyle={{ padding: 12, gap: 30 }}>
+
+                    <SliderLoader />
+
+                    <View style={{ gap: 20 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <LoaderProductCard />
+                            <LoaderProductCard />
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <LoaderProductCard />
+                            <LoaderProductCard />
+                        </View>
                     </View>
-                    <View style={{flexDirection: 'row', gap: 40}}>
-                        <LoaderProductCard />
-                        <LoaderProductCard />
-                    </View>
-                    <View style={{flexDirection: 'row', gap: 40}}>
-                        <LoaderProductCard />
-                        <LoaderProductCard />
-                    </View>
-                    <View style={{flexDirection: 'row', gap: 40}}>
-                        <LoaderProductCard />
-                        <LoaderProductCard />
-                    </View>
-                </View>
+
+                </ScrollView>
             </ScreenWrapper>
         );
     }
@@ -65,7 +65,7 @@ const HomeScreen = () => {
     return (
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.headerTitle}>Qidiruv natijalari</Text>
+                <Slider products={products} />
 
                 <View style={styles.grid}>
                     {products.map((item) => (
@@ -78,8 +78,7 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { padding: 16 },
-    headerTitle: { fontSize: 22, fontWeight: '900', color: '#111827', marginBottom: 16 },
+    container: { padding: 12, gap: 30 },
     grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
     card: {
         width: isWeb ? '48%' : '100%',

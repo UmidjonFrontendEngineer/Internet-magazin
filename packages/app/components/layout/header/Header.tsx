@@ -381,7 +381,7 @@ const Header = () => {
                                     height={30}
                                     resizeMode="contain"
                                 />
-                                <Text style={{ textTransform: 'capitalize', fontSize: 20, color: '#3B9EFE', fontWeight: 'bold' }}>internet magazine</Text>
+                                <Text style={{ textTransform: 'capitalize', fontSize: 20, color: '#3B9EFE', fontWeight: 'bold' }}>online market</Text>
                             </View>
                         </Pressable>
 
@@ -493,6 +493,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 80,
         marginLeft: 20,
+        gap: 10,
     },
     catalogButtonText: {
         color: '#3B9EFE',

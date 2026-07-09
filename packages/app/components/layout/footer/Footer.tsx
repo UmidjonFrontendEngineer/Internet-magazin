@@ -179,7 +179,7 @@ export default function UzumFooter() {
                             <ExternalLink href='https://legal.uzum.uz/privacy-policy-uz.html'><Text style={styles.legalLink}>{lan === 'uz' ? 'Maxfiylik kelishuvi' : lan === 'en' ? 'Privacy policy' : lan === 'ru' ? 'Соглашение о конфиденциальности' : 'Maxfiylik kelishuvi'}</Text></ExternalLink>
                             <ExternalLink href='https://legal.uzum.uz/user-agreement-uz.html'><Text style={styles.legalLink}>{lan === 'uz' ? 'Foydalanuvchi kelishuvi' : lan === 'en' ? 'User agreement' : lan === 'ru' ? 'Пользовательское соглашение' : 'Foydalanuvchi kelishuvi'}</Text></ExternalLink>
                         </View>
-                        <Text style={styles.copy}>© {new Date().getFullYear()} UZUM MARKET. {lan === 'uz' ? 'Barcha huquqlar himoyalangan.' : lan === 'en' ? 'All rights reserved.' : lan === 'ru' ? 'Все права защищены.' : 'Barcha huquqlar himoyalangan.'}</Text>
+                        <Text style={styles.copy}>© {new Date().getFullYear()} <Text style={{textTransform: 'uppercase'}}>online market</Text>. {lan === 'uz' ? 'Barcha huquqlar himoyalangan.' : lan === 'en' ? 'All rights reserved.' : lan === 'ru' ? 'Все права защищены.' : 'Barcha huquqlar himoyalangan.'}</Text>
                     </View>
                 </View>
             </View>
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     emailLabel: { fontSize: 13, color: 'gray', marginBottom: 5 },
     emailAddress: { color: '#00a6ff', fontWeight: 'bold', fontSize: 15 },
 
-    container: { backgroundColor: '#fff', padding: 24, width: '100%', alignItems: 'center', justifyContent: 'center', paddingVertical: 40, marginBottom: 80 },
+    container: { padding: 24, width: '100%', alignItems: 'center', justifyContent: 'center', paddingVertical: 40, marginBottom: 80 },
     containerC: { width: '100%' },
     mainSection: { justifyContent: 'space-between' },
     socialMedias: { flexDirection: 'row', paddingVertical: 10, gap: 12, justifyContent: 'flex-start', alignItems: 'center' },

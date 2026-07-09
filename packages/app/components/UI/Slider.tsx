@@ -1,0 +1,192 @@
+'use client'
+import React, { useState, useEffect, useRef } from 'react'
+import { View, Text, Pressable, Animated, PanResponder, LayoutChangeEvent, useWindowDimensions } from 'react-native'
+import { SolitoImage } from 'solito/image'
+import NextPng from 'app/features/app/assets/next.png'
+import { TextLink } from 'solito/link'
+
+interface ProductProps {
+    id: number;
+    title: string;
+    price: number;
+    description: string;
+    category: string;
+    image: string;
+    rating: { rate: number; count: number };
+}
+
+const Slider = ({ products }: { products: ProductProps[] }) => {
+    const { width: screenWidth } = useWindowDimensions();
+    const [count, setCount] = useState(0)
+    const [width, setWidth] = useState(0)
+
+    const animX = useRef(new Animated.Value(0)).current
+    const currentTranslateX = useRef(0)
+    const totalSlides = products.length
+
+    const slideTo = (index: number) => {
+        let targetIndex = index
+        if (index < 0) targetIndex = totalSlides - 1
+        if (index >= totalSlides) targetIndex = 0
+
+        setCount(targetIndex)
+
+        const targetValue = -targetIndex * width
+        currentTranslateX.current = targetValue
+
+        Animated.timing(animX, {
+            toValue: targetValue,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    useEffect(() => {
+        if (width > 0) {
+            slideTo(count)
+        }
+    }, [count, width])
+
+    const onLayout = (e: LayoutChangeEvent) => {
+        const containerWidth = e.nativeEvent.layout.width
+        setWidth(containerWidth)
+        const initialValue = -count * containerWidth
+        currentTranslateX.current = initialValue
+        animX.setValue(initialValue)
+    }
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onMoveShouldSetPanResponder: (_, gestureState) => {
+                return Math.abs(gestureState.dx) > 5
+            },
+            onPanResponderGrant: () => {
+                animX.stopAnimation()
+            },
+            onPanResponderMove: (_, gestureState) => {
+                animX.setValue(currentTranslateX.current + gestureState.dx)
+            },
+            onPanResponderRelease: (_, gestureState) => {
+                const dragDistance = gestureState.dx
+                const swipeThreshold = width * 0.2
+
+                if (dragDistance < -swipeThreshold) {
+                    setCount(prev => (prev < totalSlides - 1 ? prev + 1 : 0))
+                } else if (dragDistance > swipeThreshold) {
+                    setCount(prev => (prev > 0 ? prev - 1 : totalSlides - 1))
+                } else {
+                    slideTo(count)
+                }
+            },
+        })
+    ).current
+
+    useEffect(() => {
+        setInterval(() => {
+            setCount(prev => (prev < totalSlides - 1 ? prev + 1 : 0))
+        }, 3000);
+    }, [])
+
+    return (
+        <View
+            onLayout={onLayout}
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: 'skyblue', borderRadius: 40, position: 'relative' }}
+        >
+            <View style={{ width: '100%', height: '100%', backgroundColor: 'white', borderRadius: screenWidth > 800 ? 24 : 15, overflow: 'hidden' }}>
+                <Animated.View
+                    {...panResponder.panHandlers}
+                    style={{
+                        borderRadius: 10,
+                        flexDirection: 'row',
+                        width: `${totalSlides * 100}%`,
+                        height: '100%',
+                        transform: [
+                            { translateX: animX },
+                        ],
+                    }}
+                >
+                    {
+                        products.map(item => (
+                            <View key={item.id} style={{ width: width || '100%', height: '100%', alignItems: 'center', padding: 0, justifyContent: 'center', backgroundColor: 'rgba(0, 149, 255, 0.1)' }}>
+                                <TextLink href={`/${item.id}`}>
+                                    <SolitoImage
+                                        src={item.image}
+                                        alt={`${item.id}`}
+                                        width={screenWidth < 800 ? 150 : 370}
+                                        height={screenWidth < 800 ? 150 : 370}
+                                        resizeMode={'contain'}
+                                    />
+                                </TextLink>
+                            </View>
+                        ))
+                    }
+                </Animated.View>
+            </View>
+
+            {
+                screenWidth > 800 ? (
+                    <>
+                        <Pressable
+                            style={({ pressed }) => [
+                                {
+                                    padding: 10,
+                                    borderRadius: 100,
+                                    marginHorizontal: 10,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: 10,
+                                    zIndex: 20,
+                                    transform: [{ translateY: -20 }, { rotate: '180deg' }],
+                                    transition: 'all 0.3s ease'
+                                },
+                                pressed && {
+                                    transform: [{ translateY: -20 }, { rotate: '180deg' }, { scale: 0.5 }]
+                                }
+                            ]}
+                            onPress={() => setCount(prev => (prev > 0 ? prev - 1 : totalSlides - 1))}
+                        >
+                            <SolitoImage
+                                src={NextPng}
+                                alt='next'
+                                width={30}
+                                height={30}
+                                resizeMode={'contain'}
+                            />
+                        </Pressable>
+                        <Pressable
+                            style={({ pressed }) => [
+                                {
+                                    padding: 10,
+                                    borderRadius: 100,
+                                    marginHorizontal: 10,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    position: 'absolute',
+                                    top: '50%',
+                                    right: 10,
+                                    zIndex: 20,
+                                    transform: [{ translateY: -20 }],
+                                    transition: 'all 0.3s ease'
+                                },
+                                pressed && {
+                                    transform: [{ translateY: -20 }, { scale: 0.5 }]
+                                }
+                            ]}
+                            onPress={() => setCount(prev => (prev < totalSlides - 1 ? prev + 1 : 0))}
+                        >
+                            <SolitoImage
+                                src={NextPng}
+                                alt='next'
+                                width={30}
+                                height={30}
+                                resizeMode={'contain'}
+                            />
+                        </Pressable>
+                    </>
+                ) : null
+            }
+        </View>
+    )
+}
+
+export default Slider
