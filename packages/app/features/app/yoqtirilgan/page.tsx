@@ -86,7 +86,7 @@ const Yoqtirilgan = () => {
 
                 <View style={styles.grid}>
                     {yoqtirilganProducts.map((item) => (
-                        <ProductCard key={item.id} product={item} />
+                        <ProductCard key={item.id} product={item} products={products} />
                     ))}
                 </View>
             </ScrollView>

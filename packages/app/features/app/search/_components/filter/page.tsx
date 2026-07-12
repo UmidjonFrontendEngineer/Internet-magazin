@@ -27,7 +27,6 @@ const FilterSearch = () => {
     const [loading, setLoading] = useState(true);
 
     const searchQuery = inputValue
-    // params?.id ? String(params.id).trim().toLowerCase() : '';
 
     useEffect(() => {
         const fetchSearchProducts = async () => {

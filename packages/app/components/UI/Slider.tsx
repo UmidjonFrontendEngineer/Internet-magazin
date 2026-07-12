@@ -31,13 +31,17 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
 
         setCount(targetIndex)
 
-        const targetValue = -targetIndex * width
+        const containerWidth = screenWidth > 900 ? width : width / 0.88
+        const offset = screenWidth > 900 ? 0 : (containerWidth - width) / 2
+
+        const step = screenWidth > 900 ? width : width + 10
+        const targetValue = -targetIndex * step + offset
         currentTranslateX.current = targetValue
 
         Animated.timing(animX, {
             toValue: targetValue,
             duration: 300,
-            useNativeDriver: false,
+            useNativeDriver: true,
         }).start()
     }
 
@@ -49,8 +53,12 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
 
     const onLayout = (e: LayoutChangeEvent) => {
         const containerWidth = e.nativeEvent.layout.width
-        setWidth(containerWidth)
-        const initialValue = -count * containerWidth
+        const slideWidth = screenWidth > 900 ? containerWidth : containerWidth * 0.88
+        setWidth(slideWidth)
+
+        const offset = screenWidth > 900 ? 0 : (containerWidth - slideWidth) / 2
+
+        const initialValue = -count * slideWidth + offset
         currentTranslateX.current = initialValue
         animX.setValue(initialValue)
     }
@@ -82,23 +90,24 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
     ).current
 
     useEffect(() => {
-        setInterval(() => {
+        const timer = setInterval(() => {
             setCount(prev => (prev < totalSlides - 1 ? prev + 1 : 0))
         }, 3000);
-    }, [])
+        return () => clearInterval(timer);
+    }, [totalSlides])
 
     return (
         <View
             onLayout={onLayout}
             style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: 'skyblue', borderRadius: 40, position: 'relative' }}
         >
-            <View style={{ width: '100%', height: '100%', backgroundColor: 'white', borderRadius: screenWidth > 800 ? 24 : 15, overflow: 'hidden' }}>
+            <View style={{ width: '100%', height: '100%', backgroundColor: 'white', borderRadius: screenWidth > 900 ? 24 : 0, overflow: 'hidden' }}>
                 <Animated.View
                     {...panResponder.panHandlers}
                     style={{
                         borderRadius: 10,
                         flexDirection: 'row',
-                        width: `${totalSlides * 100}%`,
+                        width: screenWidth > 900 ? width * totalSlides : (width + 10) * totalSlides,
                         height: '100%',
                         transform: [
                             { translateX: animX },
@@ -107,13 +116,13 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
                 >
                     {
                         products.map(item => (
-                            <View key={item.id} style={{ width: width || '100%', height: '100%', alignItems: 'center', padding: 0, justifyContent: 'center', backgroundColor: 'rgba(0, 149, 255, 0.1)' }}>
+                            <View key={item.id} style={{ width: width || '100%', marginHorizontal: screenWidth > 900 ? 0 : 5, height: '100%', borderRadius: screenWidth > 900 ? 0 : 15, alignItems: 'center', padding: 0, justifyContent: 'center', backgroundColor: 'rgba(0, 149, 255, 0.1)' }}>
                                 <TextLink href={`/${item.id}`}>
                                     <SolitoImage
                                         src={item.image}
                                         alt={`${item.id}`}
-                                        width={screenWidth < 800 ? 150 : 370}
-                                        height={screenWidth < 800 ? 150 : 370}
+                                        width={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
+                                        height={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
                                         resizeMode={'contain'}
                                     />
                                 </TextLink>
@@ -124,7 +133,7 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
             </View>
 
             {
-                screenWidth > 800 ? (
+                screenWidth > 900 ? (
                     <>
                         <Pressable
                             style={({ pressed }) => [

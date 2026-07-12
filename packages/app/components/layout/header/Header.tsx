@@ -117,6 +117,11 @@ const Header = () => {
         }).start()
     }, [tab])
 
+    const handlePage = (path: string, num: number) => {
+        router.push(path)
+        setTab(num)
+    }
+
     useEffect(() => {
         if (!pathname) return
 
@@ -139,13 +144,45 @@ const Header = () => {
     const input = useInputStorage(state => state.input)
     const setInput = useInputStorage(state => state.setInput)
 
-    const handlePage = (route: string, tabIndex: number) => {
-        setTab(tabIndex)
-        router.push(route)
-    }
     if (isMobileView) {
         return (
             <>
+                {(tab !== 1 && tab !== 2 && tab !== 4) ? (
+                    <View style={{
+                        ...Platform.select({
+                            web: {
+                                position: 'fixed',
+                            },
+                            default: {
+                                position: 'absolute',
+                            }
+                        }),
+                        top: Platform.OS !== 'web' ? 24 : 10,
+                        left: '50%',
+                        right: '50%',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        zIndex: 999999999,
+                        width: '80%',
+                        height: 40
+                    }}>
+                        <View style={[styles.searchContainer, { transform: [{ translateX: '-50%' }], height: '100%' }]}>
+                            <TextInput
+                                onChangeText={text => setInput(text)}
+                                placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
+                                style={[styles.searchInput, { height: '100%' }]}
+                                placeholderTextColor="rgba(0, 149, 255, 0.6)"
+                                value={input}
+                            />
+                            <TextLink href={`/search/${input.split(' ').join('-').toLocaleLowerCase().trim()}`} style={styles.searchIconWrapper}>
+                                <SearchIcon />
+                            </TextLink>
+                        </View>
+
+                    </View>
+                ) : null}
+
                 <View style={[styles.mobileTabBarC]}>
                     <View style={[styles.mobileTabBar]}>
 
@@ -176,41 +213,85 @@ const Header = () => {
                         }}>
                         </Animated.View>
 
-                        <Pressable href='/' style={styles.mobileTabItem} onPress={() => handlePage('/', 0)}>
-                            <View style={styles.mobileTabItem}>
-                                <HomeIcon />
-                            </View>
-                        </Pressable>
+                        {Platform.OS !== 'web' ? (
+                            <>
+                                <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/', 0)}>
+                                    <View style={styles.mobileTabItem}>
+                                        <HomeIcon />
+                                    </View>
+                                </Pressable>
 
-                        <Pressable href='/katalog' style={styles.mobileTabItem} onPress={() => handlePage('/katalog', 1)}>
-                            <View style={styles.mobileTabItem}>
-                                <SearchIcon />
-                            </View>
-                        </Pressable>
+                                <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/katalog', 1)}>
+                                    <View style={styles.mobileTabItem}>
+                                        <SearchIcon />
+                                    </View>
+                                </Pressable>
 
-                        <Pressable href='/savat' style={styles.mobileTabItem} onPress={() => handlePage('/savat', 2)}>
-                            <View style={styles.mobileTabItem}>
-                                <View style={styles.badgeContainer}>
-                                    <CartIcon />
-                                    {cartIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{cartIds.length}</Text></View> : null}
-                                </View>
-                            </View>
-                        </Pressable>
+                                <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/savat', 2)}>
+                                    <View style={styles.mobileTabItem}>
+                                        <View style={styles.badgeContainer}>
+                                            <CartIcon />
+                                            {cartIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{cartIds.length}</Text></View> : null}
+                                        </View>
+                                    </View>
+                                </Pressable>
 
-                        <Pressable href='/yoqtirilgan' style={styles.mobileTabItem} onPress={() => handlePage('/yoqtirilgan', 3)}>
-                            <View style={styles.badgeContainer}>
-                                <HeartIcon />
-                                {yoqtirilganIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
-                            </View>
-                        </Pressable>
+                                <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/yoqtirilgan', 3)}>
+                                    <View style={styles.mobileTabItem}>
+                                        <View style={styles.badgeContainer}>
+                                            <HeartIcon />
+                                            {yoqtirilganIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
+                                        </View>
+                                    </View>
+                                </Pressable>
 
-                        <Pressable href='/profile' style={styles.mobileTabItem} onPress={() => handlePage('/profile', 4)}>
-                            <View style={styles.mobileTabItem}>
-                                <UserIcon />
-                            </View>
-                        </Pressable>
+                                <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/profile', 4)}>
+                                    <View style={styles.mobileTabItem}>
+                                        <UserIcon />
+                                    </View>
+                                </Pressable>
 
-                    </View>
+                            </>
+                        ) : (
+                            <>
+                                <TextLink href='/' style={styles.mobileTabItem}>
+                                    <View style={styles.mobileTabItem}>
+                                        <HomeIcon />
+                                    </View>
+                                </TextLink>
+
+                                <TextLink href='/katalog' style={styles.mobileTabItem}>
+                                    <View style={styles.mobileTabItem}>
+                                        <SearchIcon />
+                                    </View>
+                                </TextLink>
+
+                                <TextLink href='/savat' style={styles.mobileTabItem}>
+                                    <View style={styles.mobileTabItem}>
+                                        <View style={styles.badgeContainer}>
+                                            <CartIcon />
+                                            {cartIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{cartIds.length}</Text></View> : null}
+                                        </View>
+                                    </View>
+                                </TextLink>
+
+                                <TextLink href='/yoqtirilgan' style={styles.mobileTabItem}>
+                                    <View style={styles.mobileTabItem}>
+                                        <View style={styles.badgeContainer}>
+                                            <HeartIcon />
+                                            {yoqtirilganIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
+                                        </View>
+                                    </View>
+                                </TextLink>
+
+                                <TextLink href='/profile' style={styles.mobileTabItem}>
+                                    <View style={styles.mobileTabItem}>
+                                        <UserIcon />
+                                    </View>
+                                </TextLink>
+                            </>
+                        )}
+                    </View >
 
                     <LinearGradient
                         colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
@@ -236,7 +317,7 @@ const Header = () => {
 
                     </LinearGradient>
 
-                </View>
+                </View >
 
                 <LinearGradient
                     colors={['rgb(255, 255, 255)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)']}
@@ -269,10 +350,9 @@ const Header = () => {
             </>
         )
     }
-
+    // border: '1px solid white'
     return (
         <>
-
             <View style={styles.webHeaderWrapper}>
                 <View style={styles.topBar}>
                     <View style={[styles.containerRow, { backgroundColor: '#f4f5f5', height: 28 }]}>
@@ -319,7 +399,7 @@ const Header = () => {
                             height: 100,
                             left: 0,
                             top: 30,
-                            widht: '100%',
+                            width: '100%',
                             ...Platform.select({
                                 web: {
                                     position: 'fixed',
@@ -332,7 +412,6 @@ const Header = () => {
                         }}>
 
                     </LinearGradient>
-
 
                     <LinearGradient
                         colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
@@ -363,7 +442,6 @@ const Header = () => {
 
                     </LinearGradient>
 
-
                     <View style={[styles.containerRow, { zIndex: 999999999999 }]}>
 
                         <BlurView
@@ -372,7 +450,7 @@ const Header = () => {
                             style={[StyleSheet.absoluteFill, { borderRadius: 100 }]}
                         />
 
-                        <Pressable onPress={() => handlePage('/', 0)}>
+                        <TextLink href='/'>
                             <View style={{ gap: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                 <SolitoImage
                                     src={GrapePng}
@@ -383,14 +461,14 @@ const Header = () => {
                                 />
                                 <Text style={{ textTransform: 'capitalize', fontSize: 20, color: '#3B9EFE', fontWeight: 'bold' }}>online market</Text>
                             </View>
-                        </Pressable>
+                        </TextLink>
 
-                        <Pressable onPress={() => handlePage('/katalog', 1)}>
+                        <TextLink href='/katalog'>
                             <View style={styles.catalogButton}>
                                 <CatalogIcon />
                                 <Text style={styles.catalogButtonText}>{lan === 'uz' ? 'Katalog' : lan === 'en' ? 'Catalog' : lan === 'ru' ? 'Каталог' : 'Katalog'}</Text>
                             </View>
-                        </Pressable>
+                        </TextLink>
 
                         <View style={styles.searchContainer}>
                             <TextInput
@@ -406,13 +484,13 @@ const Header = () => {
                         </View>
 
                         <View style={styles.navLinks}>
-                            <Pressable onPress={() => handlePage('/profile', 4)}>
+                            <TextLink href='/profile'>
                                 <View style={styles.navItem}>
                                     <UserIcon />
                                     <Text style={styles.navText}>{lan === 'uz' ? 'Kirish' : lan === 'en' ? 'Sign in' : lan === 'ru' ? 'Войти' : 'Kirish'}</Text>
                                 </View>
-                            </Pressable>
-                            <Pressable onPress={() => handlePage('/yoqtirilgan', 3)}>
+                            </TextLink>
+                            <TextLink href='/yoqtirilgan'>
                                 <View style={styles.navItem}>
                                     <View style={styles.badgeContainer}>
                                         {yoqtirilganIds.length > 0 ? <View style={styles.webBadge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
@@ -420,8 +498,8 @@ const Header = () => {
                                     </View>
                                     <Text style={styles.navText}>{lan === 'uz' ? 'Saralangan' : lan === 'en' ? 'Favorites' : lan === 'ru' ? 'Избранное' : 'Saralangan'}</Text>
                                 </View>
-                            </Pressable>
-                            <Pressable onPress={() => handlePage('/savat', 2)}>
+                            </TextLink>
+                            <TextLink href='/savat'>
                                 <View style={styles.navItem}>
                                     <View style={styles.badgeContainer}>
                                         <CartIcon />
@@ -429,7 +507,7 @@ const Header = () => {
                                     </View>
                                     <Text style={styles.navText}>{lan === 'uz' ? 'Savat' : lan === 'en' ? 'Cart' : lan === 'ru' ? 'Корзина' : 'Savat'}</Text>
                                 </View>
-                            </Pressable>
+                            </TextLink>
 
                         </View>
 
@@ -619,7 +697,7 @@ const styles = StyleSheet.create({
         width: '90%',
         borderWidth: 1,
         borderColor: 'white',
-        border: '1px solid white',
+        borderStyle: 'solid',
         position: 'relative'
     },
     mobileTabItem: {

@@ -36,7 +36,7 @@ const Search = async () => {
                 
                 <View style={styles.grid}>
                     {products.map((product) => (
-                        <ProductCard key={product.id} product={product} />
+                        <ProductCard key={product.id} product={product} products={products} />
                     ))}
                 </View>
             </ScrollView>
@@ -58,6 +58,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
+        alignItems: 'center',
+        widht: '100%'
     },
     card: {
         width: isWeb ? '48%' : '100%', 

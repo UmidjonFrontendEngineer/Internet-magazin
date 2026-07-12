@@ -4,6 +4,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import { SolitoImage } from "solito/image";
+import { TextLink } from "solito/link";
 
 interface ProductProps {
     id: number;
@@ -16,12 +17,12 @@ interface ProductProps {
 }
 
 const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
-const ProductCard = ({ product }: { product: ProductProps }) => {
+const ProductCard = ({ product, products }: { product: ProductProps, products: ProductProps[] }) => {
     const cartIds = useCartStore(state => state.cartIds);
     const toggleCart = useCartStore(state => state.toggleCart);
 
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds)
-    const toggleYoqtirilgan = useYoqtirilganStore(stete => stete.toggleYoqtirilgan)
+    const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan)
 
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => {
@@ -30,50 +31,60 @@ const ProductCard = ({ product }: { product: ProductProps }) => {
 
     const isInCart = isMounted && cartIds.includes(product.id);
 
+    const handleTargetIDs = (currentId: number) => {
+        const currentIndex = products.findIndex(p => p.id === currentId);
+        if (currentIndex === -1) return `${currentId}`;
+
+        const nextProducts = products.slice(currentIndex, currentIndex + 10);
+        return nextProducts.map(p => p.id).join(',');
+    }
+
     return (
         <View style={styles.card}>
-            <View style={{ position: 'relative' }}>
-                <Pressable onPress={() => toggleYoqtirilgan(product.id)} style={({ pressed }) => [{ position: 'absolute', zIndex: 99, top: 5, right: 5, borderRadius: 100, transition: 'all 0.3s ease' }, pressed && { transform: [{ scale: 0.4 }] }]}>
+            <TextLink href={`/product/${handleTargetIDs(product.id)}`}>
+                <View style={{ position: 'relative' }}>
+                    <Pressable onPress={() => toggleYoqtirilgan(product.id)} style={({ pressed }) => [{ position: 'absolute', zIndex: 99, top: 5, right: 5, borderRadius: 100, transition: 'all 0.3s ease' }, pressed && { transform: [{ scale: 0.4 }] }]}>
 
-                    <SolitoImage
-                        src={`${yoqtirilganIds.includes(product.id) ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}`}
-                        alt="heart Icon"
-                        width={30}
-                        height={30}
-                        resizeMode="contain"
-                    />
-                </Pressable>
-
-                <View style={styles.imageWrapper}>
-                    <SolitoImage
-                        src={product.image}
-                        alt={product.title}
-                        width={140}
-                        height={140}
-                        resizeMode="contain"
-                    />
-                </View>
-
-                <Text numberOfLines={2} style={styles.productTitle}>
-                    {product.title}
-                </Text>
-            </View>
-
-            <View style={styles.bottomSection}>
-                <View style={styles.priceRow}>
-                    <Text style={styles.priceText}>
-                        {(product.price * 12500).toLocaleString()} so'm
-                    </Text>
-
-                    <Pressable onPress={() => toggleCart(product.id)}>
-                        <View style={[styles.button, isInCart && styles.buttonInCart]}>
-                            <Text style={[styles.buttonText, isInCart && styles.buttonTextInCart]}>
-                                {isInCart ? 'Savatda ✓' : 'savatga qo\'shish'}
-                            </Text>
-                        </View>
+                        <SolitoImage
+                            src={`${yoqtirilganIds.includes(product.id) ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}`}
+                            alt="heart Icon"
+                            width={30}
+                            height={30}
+                            resizeMode="contain"
+                        />
                     </Pressable>
+
+                    <View style={styles.imageWrapper}>
+                        <SolitoImage
+                            src={product.image}
+                            alt={product.title}
+                            width={140}
+                            height={140}
+                            resizeMode="contain"
+                        />
+                    </View>
+
+                    <Text numberOfLines={2} style={styles.productTitle}>
+                        {product.title}
+                    </Text>
                 </View>
-            </View>
+
+                <View style={styles.bottomSection}>
+                    <View style={styles.priceRow}>
+                        <Text style={styles.priceText}>
+                            {(product.price * 12500).toLocaleString()} so'm
+                        </Text>
+
+                        <Pressable onPress={() => toggleCart(product.id)}>
+                            <View style={[styles.button, isInCart && styles.buttonInCart]}>
+                                <Text style={[styles.buttonText, isInCart && styles.buttonTextInCart]}>
+                                    {isInCart ? 'Savatda ✓' : 'savatga qo\'shish'}
+                                </Text>
+                            </View>
+                        </Pressable>
+                    </View>
+                </View>
+            </TextLink>
         </View>
     );
 };

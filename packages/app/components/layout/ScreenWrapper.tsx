@@ -4,14 +4,11 @@ import React, { useState, useEffect } from 'react'
 import { ScrollView, StyleSheet, View, useWindowDimensions, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Footer from 'app/components/layout/footer/Footer'
+import { useTabStore } from 'app/store/useTabStore'
 
-interface ScreenWrapperProps {
-    children: React.ReactNode
-    paddingTop?: number
-}
-
-export default function ScreenWrapper({ children, paddingTop = 120 }: ScreenWrapperProps) {
+export default function ScreenWrapper({ children }: {children: React.ReactNode}) {
     let insets = { bottom: 0, top: 0 }
+    const tab = useTabStore(state => state.tab)
 
     try {
         const hookInsets = useSafeAreaInsets()
@@ -30,7 +27,7 @@ export default function ScreenWrapper({ children, paddingTop = 120 }: ScreenWrap
     }, [])
 
     const currentWidth = isHydrated ? windowWidth : 1200
-    const isMobileView = currentWidth < 1000
+    const isMobileView = currentWidth < 900
 
     return (
         <View style={styles.outerContainer}>
@@ -48,7 +45,7 @@ export default function ScreenWrapper({ children, paddingTop = 120 }: ScreenWrap
                 ]}
                 showsVerticalScrollIndicator={false}
             >
-                <View style={[styles.mainBody, { paddingTop }]}>
+                <View style={[styles.mainBody, { paddingTop: (isMobileView && tab !== 4) ? 80 : 100 }]}>
                     {children}
                 </View>
                 <Footer />
@@ -68,7 +65,6 @@ const styles = StyleSheet.create({
     scroll: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingHorizontal: Platform.OS === 'web' ? 20 : 10,
     },
     scrollContent: {
         flexGrow: 1,

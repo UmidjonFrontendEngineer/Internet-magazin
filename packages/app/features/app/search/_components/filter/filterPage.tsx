@@ -27,7 +27,6 @@ const FilterSearch = () => {
     const [loading, setLoading] = useState(true);
 
     const searchQuery = inputValue
-    // params?.id ? String(params.id).trim().toLowerCase() : '';
 
     useEffect(() => {
         const fetchSearchProducts = async () => {
@@ -88,7 +87,7 @@ const FilterSearch = () => {
 
                 <View style={styles.grid}>
                     {searchProducts.map((item) => (
-                        <ProductCard key={item.id} product={item} />
+                        <ProductCard key={item.id} product={item} products={products} />
                     ))}
                 </View>
             </ScrollView>

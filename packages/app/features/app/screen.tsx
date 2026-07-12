@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, useWindowDimensions } from 'react-native';
 import ScreenWrapper from 'app/components/layout/ScreenWrapper';
 import { SolitoImage } from 'solito/image';
 import ProductCard from 'app/components/UI/ProductCart';
@@ -23,7 +23,7 @@ const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
 const HomeScreen = () => {
     const [products, setProducts] = useState<ProductProps[]>([]);
     const [loading, setLoading] = useState(true);
-
+    const { width: screenWidth } = useWindowDimensions();
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -65,11 +65,13 @@ const HomeScreen = () => {
     return (
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
-                <Slider products={products} />
+                <View style={{ padding: screenWidth > 900 ? 12 : 0 }}>
+                    <Slider products={products} />
+                </View>
 
                 <View style={styles.grid}>
                     {products.map((item) => (
-                        <ProductCard key={item.id} product={item} />
+                        <ProductCard key={item.id} product={item} products={products} />
                     ))}
                 </View>
             </ScrollView>
@@ -78,8 +80,8 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { padding: 12, gap: 30 },
-    grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+    container: { gap: 30 },
+    grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12 },
     card: {
         width: isWeb ? '48%' : '100%',
         backgroundColor: '#ffffff',
