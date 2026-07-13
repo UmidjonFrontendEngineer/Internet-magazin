@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "solito-blank",
-    "slug": "solito-blank",
+    "name": "Online Market",
+    "slug": "online-market",
     "version": "1.0.0",
-    "scheme": "solito-blank",
+    "scheme": "online-market",
     "platforms": [
       "ios",
       "android"
     ],
     "ios": {
-      "bundleIdentifier": "com.solito.blank"
+      "bundleIdentifier": "com.market.online"
     },
     "newArchEnabled": true,
     "experiments": {
@@ -18,6 +18,13 @@
     "extra": {
       "eas": {
         "projectId": "4cc687c0-0518-4abe-aa9f-5f2b258af593"
+      }
+    },
+    "android": {
+      "package": "com.market.online",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/grape.png",
+        "backgroundColor": "#000000"
       }
     }
   }

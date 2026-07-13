@@ -14,9 +14,9 @@ import AboutWrapper from 'app/components/UI/AboutWrapper';
 const VacanciesScreen = () => {
 
     return (
-        <ScreenWrapper paddingTop={0}>
-            <AboutWrapper>
-                <ScrollView contentContainerStyle={styles.container}>
+        <ScreenWrapper>
+            <View style={{ padding: 12, width: '100%' }}>
+                <AboutWrapper>
                     <View style={styles.card}>
                         <Text style={styles.title}>VAKANSIYALAR</Text>
                         <Text style={styles.description}>
@@ -95,16 +95,13 @@ const VacanciesScreen = () => {
                             </Text>
                         </View>
                     </View>
-                </ScrollView>
-            </AboutWrapper>
+                </AboutWrapper>
+            </View>
         </ScreenWrapper>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 16,
-    },
     card: {
         backgroundColor: '#ffffff',
         borderRadius: 40,
@@ -116,6 +113,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 2,
+        width: '100%',
+        marginTop: 30
     },
     title: {
         fontSize: 26,
@@ -127,7 +126,6 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 14,
         color: '#555555',
-        lineHeight: 22,
         marginBottom: 20,
     },
     buttonContainer: {

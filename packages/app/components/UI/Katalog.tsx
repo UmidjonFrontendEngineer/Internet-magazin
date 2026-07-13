@@ -1,6 +1,6 @@
 'use client'
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { View, Text, useWindowDimensions, Pressable, ScrollView, Animated, TextInput, Platform, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { View, Text, useWindowDimensions, Pressable, ScrollView, Animated, TextInput, Platform } from 'react-native'
 import { useLanStorage } from 'app/store/useLanStore'
 import { SolitoImage } from 'solito/image'
 import { TextLink } from 'solito/link'
@@ -19,21 +19,16 @@ interface CatalogItem {
 }
 
 const AnimatedSubCategory = ({ subItem, lan, isMobileView }: { subItem: SubCategory, lan: keyof Translation, isMobileView: boolean }) => {
-    const input = useInputStorage(state => state.input)
     const setInput = useInputStorage(state => state.setInput)
-
     const router = useRouter()
 
     const handleItemPress = (item: string) => {
         const slug = item.trim().replace(/\s+/g, '-').toLowerCase()
-
         setInput(slug)
-
         router.push(`/search/${slug}`)
     }
 
     const [isOpen, setIsOpen] = useState(false)
-
     const animationProgress = useRef(new Animated.Value(0)).current
 
     const toggleOpen = () => {
@@ -64,11 +59,11 @@ const AnimatedSubCategory = ({ subItem, lan, isMobileView }: { subItem: SubCateg
     return (
         <View style={{
             width: isMobileView ? '100%' : '31%',
-            minWidth: 260,
+            minWidth: isMobileView ? undefined : 260,
             backgroundColor: 'rgba(226, 245, 255, 0.6)',
             padding: 16,
             borderRadius: 20,
-            justifyContent: 'space-between',
+            justify: 'space-between',
             marginBottom: 10,
         }}>
             <View>
@@ -140,7 +135,6 @@ const AnimatedSubCategory = ({ subItem, lan, isMobileView }: { subItem: SubCateg
 
 const KatalogTizimi = () => {
     const [hoverState, setHoverState] = useState(false)
-
     const { width: windowWidth } = useWindowDimensions()
     const [isHydrated, setIsHydrated] = useState(false)
     const [activeNav, setActiveNav] = useState<number>(0)
@@ -159,18 +153,10 @@ const KatalogTizimi = () => {
 
     const katalogData = [
         {
-            title: {
-                uz: 'Maishiy texnika',
-                ru: 'Бытовая техника',
-                en: 'Home Appliances'
-            },
+            title: { uz: 'Maishiy texnika', ru: 'Бытовая техника', en: 'Home Appliances' },
             body: [
                 {
-                    name: {
-                        uz: "Go'zallik uchun texnika",
-                        ru: 'Техника для красоты',
-                        en: 'Beauty Appliances'
-                    },
+                    name: { uz: "Go'zallik uchun texnika", ru: 'Техника для красоты', en: 'Beauty Appliances' },
                     descr: [
                         { uz: 'Soch turmaklash', ru: 'Укладка волос', en: 'Hair Styling' },
                         { uz: 'Soch kesish mashinkalari', ru: 'Машинки для стрижки', en: 'Hair Clippers' },
@@ -181,18 +167,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Kiyim',
-                ru: 'Одежда',
-                en: 'Clothing'
-            },
+            title: { uz: 'Kiyim', ru: 'Одежда', en: 'Clothing' },
             body: [
                 {
-                    name: {
-                        uz: 'Erkaklar kiyimi',
-                        ru: 'Мужская одежда',
-                        en: "Men's Clothing"
-                    },
+                    name: { uz: 'Erkaklar kiyimi', ru: 'Мужская одежда', en: "Men's Clothing" },
                     descr: [
                         { uz: 'Futbolkalar va pololar', ru: 'Футболки и поло', en: 'T-shirts & Polos' },
                         { uz: 'Shortilar va shimlar', ru: 'Шорты и брюки', en: 'Shorts & Trousers' },
@@ -202,18 +180,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Elektronika',
-                ru: 'Электроника',
-                en: 'Electronics'
-            },
+            title: { uz: 'Elektronika', ru: 'Электроника', en: 'Electronics' },
             body: [
                 {
-                    name: {
-                        uz: 'Smartfonlar va telefonlar',
-                        ru: 'Смартфоны и телефоны',
-                        en: 'Smartphones & Phones'
-                    },
+                    name: { uz: 'Smartfonlar va telefonlar', ru: 'Смартфоны и телефоны', en: 'Smartphones & Phones' },
                     descr: [
                         { uz: 'Smartfonlar', ru: 'Смартфоны', en: 'Smartphones' },
                         { uz: 'Tugmali telefonlar', ru: 'Кнопочные телефоны', en: 'Button Phones' },
@@ -223,18 +193,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Poyabzallar',
-                ru: 'Обувь',
-                en: 'Shoes'
-            },
+            title: { uz: 'Poyabzallar', ru: 'Обувь', en: 'Shoes' },
             body: [
                 {
-                    name: {
-                        uz: 'Ayollar poyabzali',
-                        ru: 'Женская обувь',
-                        en: "Women's Shoes"
-                    },
+                    name: { uz: 'Ayollar poyabzali', ru: 'Женская обувь', en: "Women's Shoes" },
                     descr: [
                         { uz: 'Krossovkalar va kedalar', ru: 'Кроссовки и кеды', en: 'Sneakers & Canvas Shoes' },
                         { uz: 'Tufli va baletkalar', ru: 'Туфли и балетки', en: 'Heels & Flats' },
@@ -244,18 +206,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Aksessuarlar',
-                ru: 'Аксессуары',
-                en: 'Accessories'
-            },
+            title: { uz: 'Aksessuarlar', ru: 'Аксессуары', en: 'Accessories' },
             body: [
                 {
-                    name: {
-                        uz: 'Sumkalar va ryukzaklar',
-                        ru: 'Сумки и рюкзаки',
-                        en: 'Bags & Backpacks'
-                    },
+                    name: { uz: 'Sumkalar va ryukzaklar', ru: 'Сумки и рюкзаки', en: 'Bags & Backpacks' },
                     descr: [
                         { uz: 'Ayollar sumkalari', ru: 'Женские сумки', en: 'Women Bags' },
                         { uz: 'Erkaklar sumkalari', ru: 'Мужские сумки', en: 'Men Bags' },
@@ -265,18 +219,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: "Go'zallik va parvarish",
-                ru: 'Красота и уход',
-                en: 'Beauty & Personal Care'
-            },
+            title: { uz: "Go'zallik va parvarish", ru: 'Красота и уход', en: 'Beauty & Personal Care' },
             body: [
                 {
-                    name: {
-                        uz: 'Makiyaj',
-                        ru: 'Макияж',
-                        en: 'Makeup'
-                    },
+                    name: { uz: 'Makiyaj', ru: 'Макияж', en: 'Makeup' },
                     descr: [
                         { uz: 'Kozlar uchun', ru: 'Для глаз', en: 'For Eyes' },
                         { uz: 'Lablar uchun', ru: 'Для губ', en: 'For Lips' },
@@ -286,18 +232,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Salomatlik',
-                ru: 'Здоровье',
-                en: 'Health'
-            },
+            title: { uz: 'Salomatlik', ru: 'Здоровье', en: 'Health' },
             body: [
                 {
-                    name: {
-                        uz: 'Vitaminlar va BFQ (БАД)',
-                        ru: 'Витамины и БАДы',
-                        en: 'Vitamins & Supplements'
-                    },
+                    name: { uz: 'Vitaminlar va BFQ (БАД)', ru: 'Витамины и БАДы', en: 'Vitamins & Supplements' },
                     descr: [
                         { uz: 'Multivitaminlar', ru: 'Мультивитамины', en: 'Multivitamins' },
                         { uz: 'Imunitet uchun', ru: 'Для иммунитета', en: 'For Immunity' },
@@ -307,18 +245,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: "Uy-ro'zg'or buyumlari",
-                ru: 'Товары для дома',
-                en: 'Home Goods'
-            },
+            title: { uz: "Uy-ro'zg'or buyumlari", ru: 'Товары для дома', en: 'Home Goods' },
             body: [
                 {
-                    name: {
-                        uz: 'Oshxona jihozlari',
-                        ru: 'Кухонная утварь',
-                        en: 'Kitchenware'
-                    },
+                    name: { uz: 'Oshxona jihozlari', ru: 'Кухонная утварь', en: 'Kitchenware' },
                     descr: [
                         { uz: 'Idish-tovoqlar', ru: 'Посуда для готовки', en: 'Cookware' },
                         { uz: 'Oshxona pichoqlari', ru: 'Кухонные ножи', en: 'Kitchen Knives' },
@@ -328,18 +258,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: "Qurilish va ta'mirlash",
-                ru: 'Строительство и ремонт',
-                en: 'Construction & Repair'
-            },
+            title: { uz: "Qurilish va ta'mirlash", ru: 'Строительство и ремонт', en: 'Construction & Repair' },
             body: [
                 {
-                    name: {
-                        uz: 'Elektr asboblari',
-                        ru: 'Электроинструменты',
-                        en: 'Power Tools'
-                    },
+                    name: { uz: 'Elektr asboblari', ru: 'Электроинструменты', en: 'Power Tools' },
                     descr: [
                         { uz: 'Shurupburagichlar (Drel)', ru: 'Шуруповерты и дрели', en: 'Drills & Screwdrivers' },
                         { uz: 'Silliqlash mashinalari (Bolgarka)', ru: 'Шлифмашины (Болгарки)', en: 'Angle Grinders' },
@@ -349,18 +271,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Avtotovarlar',
-                ru: 'Автотовары',
-                en: 'Automotive'
-            },
+            title: { uz: 'Avtotovarlar', ru: 'Автотовары', en: 'Automotive' },
             body: [
                 {
-                    name: {
-                        uz: 'Avtoelektronika',
-                        ru: 'Автоэлектроника',
-                        en: 'Car Electronics'
-                    },
+                    name: { uz: 'Avtoelektronika', ru: 'Автоэлектроника', en: 'Car Electronics' },
                     descr: [
                         { uz: 'Videoregistratorlar', ru: 'Видеорегистраторы', en: 'Dashcams' },
                         { uz: 'Radar-detektorlar', ru: 'Радар-детекторы', en: 'Radar Detectors' },
@@ -370,18 +284,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Bolalar tovarlari',
-                ru: 'Детские товары',
-                en: 'Children Goods'
-            },
+            title: { uz: 'Bolalar tovarlari', ru: 'Детские товары', en: 'Children Goods' },
             body: [
                 {
-                    name: {
-                        uz: "O'yinchoqlar",
-                        ru: 'Игрушки',
-                        en: 'Toys'
-                    },
+                    name: { uz: "O'yinchoqlar", ru: 'Игрушки', en: 'Toys' },
                     descr: [
                         { uz: 'Yumshoq o‘yinchoqlar', ru: 'Мягкие игрушки', en: 'Plush Toys' },
                         { uz: 'Konstruktorlar', ru: 'Конструкторы', en: 'Building Blocks' },
@@ -391,18 +297,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Xobbi va ijod',
-                ru: 'Хобби и творчество',
-                en: 'Hobby & Creativity'
-            },
+            title: { uz: 'Xobbi va ijod', ru: 'Хобби и творчество', en: 'Hobby & Creativity' },
             body: [
                 {
-                    name: {
-                        uz: 'Chizish va rassomchilik',
-                        ru: 'Рисование и живопись',
-                        en: 'Drawing & Painting'
-                    },
+                    name: { uz: 'Chizish va rassomchilik', ru: 'Рисование и живопись', en: 'Drawing & Painting' },
                     descr: [
                         { uz: 'Raqamlar bo‘yicha rasmlar', ru: 'Картины по номерам', en: 'Paint by Numbers' },
                         { uz: 'Flomasterlar va qalamlar', ru: 'Фломастеры и карандаши', en: 'Markers & Pencils' },
@@ -412,18 +310,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Sport va hordiq',
-                ru: 'Спорт и отдых',
-                en: 'Sport & Recreation'
-            },
+            title: { uz: 'Sport va hordiq', ru: 'Спорт и отдых', en: 'Sport & Recreation' },
             body: [
                 {
-                    name: {
-                        uz: 'Fitnes va trenajyorlar',
-                        ru: 'Фитнес и тренажеры',
-                        en: 'Fitness & Gym'
-                    },
+                    name: { uz: 'Fitnes va trenajyorlar', ru: 'Фитнес и тренажеры', en: 'Fitness & Gym' },
                     descr: [
                         { uz: 'Gantellar va shtangalar', ru: 'Гантели и штанги', en: 'Dumbbells & Barbells' },
                         { uz: 'Yoga va fitnes uchun gilamchalar', ru: 'Коврики для йоги', en: 'Yoga Mats' },
@@ -433,18 +323,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Oziq-ovqat mahsulotlari',
-                ru: 'Продукты питания',
-                en: 'Food & Groceries'
-            },
+            title: { uz: 'Oziq-ovqat mahsulotlari', ru: 'Продукты питания', en: 'Food & Groceries' },
             body: [
                 {
-                    name: {
-                        uz: 'Choy va kofe',
-                        ru: 'Чай и кофе',
-                        en: 'Tea & Coffee'
-                    },
+                    name: { uz: 'Choy va kofe', ru: 'Чай и кофе', en: 'Tea & Coffee' },
                     descr: [
                         { uz: 'Kofe donalari va eruvchan kofe', ru: 'Кофе в зернах и растворимый', en: 'Coffee Beans & Instant' },
                         { uz: 'Ko‘k va qora choylar', ru: 'Зеленый и черный чай', en: 'Green & Black Tea' },
@@ -454,18 +336,10 @@ const KatalogTizimi = () => {
             ]
         },
         {
-            title: {
-                uz: 'Kitoblar',
-                ru: 'Книги',
-                en: 'Books'
-            },
+            title: { uz: 'Kitoblar', ru: 'Книги', en: 'Books' },
             body: [
                 {
-                    name: {
-                        uz: 'Badiiy adabiyot',
-                        ru: 'Художественная литература',
-                        en: 'Fiction'
-                    },
+                    name: { uz: 'Badiiy adabiyot', ru: 'Художественная литература', en: 'Fiction' },
                     descr: [
                         { uz: 'Jahon adabiyoti', ru: 'Мировая литература', en: 'World Literature' },
                         { uz: 'Detektivlar va trillerlar', ru: 'Детективы и триллеры', en: 'Detectives & Thrillers' },
@@ -479,116 +353,118 @@ const KatalogTizimi = () => {
     const activeCatalog = katalogData[activeNav] || katalogData[0];
 
     return (
-        <>
-            <View style={{
-                width: '100%',
-                maxWidth: 1340,
-                marginHorizontal: 'auto',
-                marginTop: isMobileView ? 40 : 140,
-                paddingHorizontal: 16,
-            }}>
-                <View style={{backgroundColor: 'rgba(226, 245, 255, 0.4)', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', borderRadius: 100, padding: 1.5, gap: 1.5}}>
-                    <TextInput
-                        placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
-                        onChangeText={text => setInput(text)}
-                        style={{
-                            flex: 1,
-                            paddingHorizontal: 20,
-                            paddingVertical: 16,
-                            fontSize: 15,
-                            ...Platform.select({ web: { outlineStyle: 'none' } }),
-                            borderColor: 'rgb(226, 245, 255)',
-                            borderWidth: 1,
-                            borderRadius: 100,
-                        }}
-                        placeholderTextColor="rgba(0, 149, 255, 0.6)"
-                        value={input}
+        <View style={{
+            width: '100%',
+            maxWidth: 1340,
+            marginHorizontal: 'auto',
+            marginTop: isMobileView ? 40 : 140,
+            paddingHorizontal: 16,
+        }}>
+            <View style={{backgroundColor: 'rgba(226, 245, 255, 0.4)', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', borderRadius: 100, padding: 1.5, gap: 1.5}}>
+                <TextInput
+                    placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
+                    onChangeText={text => setInput(text)}
+                    style={{
+                        flex: 1,
+                        paddingHorizontal: 20,
+                        paddingVertical: 16,
+                        fontSize: 15,
+                        ...Platform.select({ web: { outlineStyle: 'none' } }),
+                        borderColor: 'rgb(226, 245, 255)',
+                        borderWidth: 1,
+                        borderRadius: 100,
+                    }}
+                    placeholderTextColor="rgba(0, 149, 255, 0.6)"
+                    value={input}
+                />
+
+                <TextLink href={`/search/${input.trim().replace(/\s+/g, '-').toLowerCase()}`} style={{ height: '100%', alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: 'rgba(226, 245, 255, 0.3)', borderRadius: 100 }}>
+                    <SolitoImage
+                        src={SearchPng}
+                        alt="search Icon"
+                        width={30}
+                        height={30}
+                        resizeMode="contain"
                     />
-
-                    <TextLink href={`/search/${input.trim().replace(/\s+/g, '-').toLowerCase()}`} style={{ height: '100%', alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: 'rgba(226, 245, 255, 0.3)', borderRadius: 100 }}>
-                        <SolitoImage
-                            src={SearchPng}
-                            alt="search Icon"
-                            width={30}
-                            height={30}
-                            resizeMode="contain"
-                        />
-                    </TextLink>
-                </View>
-
-                <View style={{
-                    flexDirection: isMobileView ? 'column' : 'row',
-                    gap: 20,
-                    paddingHorizontal: 16,
-                    marginTop: 10
-                }}>
-                    <ScrollView
-                        style={{ width: isMobileView ? '100%' : '25%', maxHeight: isMobileView ? 200 : 620 }}
-                        showsVerticalScrollIndicator={false}
-                    >
-                        {katalogData.map((item, index) => {
-                            const isActive = index === activeNav;
-                            const isHovered = index === hoveredIndex;
-
-                            return (
-                                <Pressable
-                                    key={index}
-                                    onPress={() => setActiveNav(index)}
-                                    onMouseEnter={() => { hoverState ? setActiveNav(index) : console.clear(), setTimeout(() => setHoverState(true), 2000) }}
-                                    onMouseLeave={() => setHoverState(false)}
-                                    onHoverIn={() => setHoveredIndex(index)}
-                                    onHoverOut={() => setHoveredIndex(null)}
-                                    style={{
-                                        marginTop: 4,
-                                        padding: 12,
-                                        backgroundColor: isActive
-                                            ? 'rgba(200, 235, 255, 1)'
-                                            : isHovered
-                                                ? 'rgba(226, 245, 255, 0.6)'
-                                                : 'transparent',
-                                        borderRadius: 10,
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        transition: 'all 0.8s ease'
-                                    }}
-                                >
-                                    <Text style={{
-                                        fontSize: 15,
-                                        fontWeight: isActive ? 'bold' : '500',
-                                        color: isActive ? '#007BF5' : '#333',
-                                        fontFamily: 'sans-serif'
-                                    }}>
-                                        {item.title[lan]}
-                                    </Text>
-                                    <Text style={{ color: isActive ? '#007BF5' : 'gray' }}>{'>'}</Text>
-                                </Pressable>
-                            )
-                        })}
-                    </ScrollView>
-
-                    <ScrollView
-                        style={{ flex: 1, maxHeight: 620 }}
-                        contentContainerStyle={{
-                            flexDirection: 'row',
-                            flexWrap: 'wrap',
-                            gap: 16,
-                            paddingBottom: 20
-                        }}
-                        showsVerticalScrollIndicator={false}
-                    >
-                        {activeCatalog.body.map((subItem, subIndex) => (
-                            <AnimatedSubCategory
-                                key={subIndex}
-                                subItem={subItem}
-                                lan={lan}
-                                isMobileView={isMobileView}
-                            />
-                        ))}
-                    </ScrollView>
-                </View>
+                </TextLink>
             </View>
-        </>
+
+            <View style={{
+                flexDirection: isMobileView ? 'column' : 'row',
+                gap: 20,
+                paddingHorizontal: 16,
+                marginTop: 10
+            }}>
+                <ScrollView
+                    style={{ width: isMobileView ? '100%' : '25%', maxHeight: isMobileView ? 300 : 620 }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {katalogData.map((item, index) => {
+                        const isActive = index === activeNav;
+                        const isHovered = index === hoveredIndex;
+
+                        return (
+                            <Pressable
+                                key={index}
+                                onPress={() => setActiveNav(index)}
+                                onMouseEnter={() => { hoverState ? setActiveNav(index) : console.clear(), setTimeout(() => setHoverState(true), 2000) }}
+                                onMouseLeave={() => setHoverState(false)}
+                                onHoverIn={() => setHoveredIndex(index)}
+                                onHoverOut={() => setHoveredIndex(null)}
+                                style={{
+                                    marginTop: 4,
+                                    padding: 12,
+                                    backgroundColor: isActive
+                                        ? 'rgba(200, 235, 255, 1)'
+                                        : isHovered
+                                            ? 'rgba(226, 245, 255, 0.6)'
+                                            : 'transparent',
+                                    borderRadius: 10,
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Text style={{
+                                    fontSize: 15,
+                                    fontWeight: isActive ? 'bold' : '500',
+                                    color: isActive ? '#007BF5' : '#333',
+                                    fontFamily: 'sans-serif'
+                                }}>
+                                    {item.title[lan]}
+                                </Text>
+                                <Text style={{ color: isActive ? '#007BF5' : 'gray' }}>{'>'}</Text>
+                            </Pressable>
+                        )
+                    })}
+                </ScrollView>
+
+                <ScrollView
+                    style={{ 
+                        width: isMobileView ? '100%' : undefined, 
+                        flex: isMobileView ? undefined : 1, 
+                        maxHeight: isMobileView ? undefined : 620 
+                    }}
+                    contentContainerStyle={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        gap: 16,
+                        paddingBottom: 20
+                    }}
+                    showsVerticalScrollIndicator={false}
+                    scrollEnabled={!isMobileView}
+                >
+                    {activeCatalog.body.map((subItem, subIndex) => (
+                        <AnimatedSubCategory
+                            key={subIndex}
+                            subItem={subItem}
+                            lan={lan}
+                            isMobileView={isMobileView}
+                        />
+                    ))}
+                </ScrollView>
+            </View>
+        </View>
     )
 }
 

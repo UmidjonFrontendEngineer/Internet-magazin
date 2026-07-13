@@ -5,12 +5,7 @@ import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import AboutItem from 'app/components/UI/AboutItem'
 
-interface ScreenWrapperProps {
-    children: React.ReactNode
-    paddingTop?: number
-}
-
-export default function ScreenWrapper({ children, paddingTop = 120 }: ScreenWrapperProps) {
+const AboutWrapper = ({ children }: { children: React.ReactNode }) => {
     let insets = { bottom: 0, top: 0 }
 
     try {
@@ -35,28 +30,25 @@ export default function ScreenWrapper({ children, paddingTop = 120 }: ScreenWrap
     }
 
     return (
-        <ScrollView
+        <View
             style={styles.scroll}
             contentContainerStyle={[
                 styles.scrollContent,
-                { paddingBottom: insets.bottom || 20 }
             ]}
         >
-            <View style={[styles.mainBody, { paddingTop }]}>
+            <AboutItem />
+            <View style={[styles.mainBody]}>
                 {children}
             </View>
-            <AboutItem />
-        </ScrollView>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
     scroll: {
-        flex: 1,
         backgroundColor: '#fff',
         widht: '100%',
         aligntItems: 'center',
-        flexDirection: 'row',
     },
     scrollContent: {
         flexGrow: 1,
@@ -66,3 +58,5 @@ const styles = StyleSheet.create({
         flex: 1,
     },
 })
+
+export default AboutWrapper

@@ -148,38 +148,53 @@ const Header = () => {
         return (
             <>
                 {(tab !== 1 && tab !== 2 && tab !== 4) ? (
-                    <View style={{
-                        ...Platform.select({
-                            web: {
-                                position: 'fixed',
-                            },
-                            default: {
-                                position: 'absolute',
+                    <View
+                        style={{
+                            ...Platform.select({
+                                web: { position: 'fixed' },
+                                default: { position: 'absolute' }
+                            }),
+                            top: Platform.OS !== 'web' ? 36 : 10,
+                            left: '10%',
+                            width: '80%',
+                            height: 40,
+                            zIndex: 999999,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                            borderRadius: 100,
+                            borderWidth: 1,
+                            borderColor: 'rgba(0, 149, 255, 0.3)',
+                            paddingHorizontal: 10,
+                        }}
+                    >
+                        <TextInput
+                            value={input}
+                            onChangeText={setInput}
+                            style={{
+                                flex: 1,
+                                height: '100%',
+                                fontSize: 14,
+                                color: '#333',
+                            }}
+                            placeholder={
+                                lan === 'en' ? 'Search products and categories' :
+                                    lan === 'ru' ? 'Искать товары и категории' :
+                                        'Mahsulotlar va turkumlar izlash'
                             }
-                        }),
-                        top: Platform.OS !== 'web' ? 24 : 10,
-                        left: '50%',
-                        right: '50%',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        zIndex: 999999999,
-                        width: '80%',
-                        height: 40
-                    }}>
-                        <View style={[styles.searchContainer, { transform: [{ translateX: '-50%' }], height: '100%' }]}>
-                            <TextInput
-                                onChangeText={text => setInput(text)}
-                                placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
-                                style={[styles.searchInput, { height: '100%' }]}
-                                placeholderTextColor="rgba(0, 149, 255, 0.6)"
-                                value={input}
-                            />
-                            <TextLink href={`/search/${input.split(' ').join('-').toLocaleLowerCase().trim()}`} style={styles.searchIconWrapper}>
-                                <SearchIcon />
-                            </TextLink>
-                        </View>
+                            placeholderTextColor="rgba(0, 149, 255, 0.6)"
+                        />
 
+                        <TextLink
+                            href={`/search/${input.trim().toLowerCase().replace(/\s+/g, '-')}`}
+                            style={{
+                                padding: 5,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <SearchIcon />
+                        </TextLink>
                     </View>
                 ) : null}
 
@@ -350,7 +365,7 @@ const Header = () => {
             </>
         )
     }
-    // border: '1px solid white'
+
     return (
         <>
             <View style={styles.webHeaderWrapper}>

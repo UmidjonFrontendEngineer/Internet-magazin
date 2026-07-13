@@ -1,5 +1,6 @@
-import React from 'react'
-import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native'
+'use client'
+import React, { useState, useEffect } from 'react'
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native'
 import ScreenWrapper from 'app/components/layout/ScreenWrapper'
 import ProductCard from 'app/components/UI/ProductCart'
 import { useInputStorage } from 'app/store/useInputStore'
@@ -14,120 +15,67 @@ interface Product {
     rating: { rate: number; count: number };
 }
 
-const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
-
-const Search = async () => {
-    let products: Product[] = [];
+const Search = () => {
+    const searchInput = useInputStorage((state) => state.input);
     
-    try {
-        const response = await fetch("https://fakestoreapi.com/products", {
-            next: { revalidate: 60 }
-        });
-        products = await response.json();
-        products = products.filter(arr => arr.title === useInputStorage(state => state.input))
-    } catch (error) {
-        console.error("Ma'lumot yuklashda xatolik:", error);
-    }
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [hasError, setHasError] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                setLoading(true);
+                setHasError(false);
+                
+                const response = await fetch("https://fakestoreapi.com/products");
+                const data: Product[] = await response.json();
+                
+                const filtered = data.filter(item => 
+                    item.title.toLowerCase().includes(searchInput.toLowerCase())
+                );
+                
+                setProducts(filtered);
+            } catch (error) {
+                console.error("Ma'lumot yuklashda xatolik:", error);
+                setHasError(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [searchInput]);
 
     return (
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.headerTitle}>Qidiruv natijalari</Text>
                 
-                <View style={styles.grid}>
-                    {products.map((product) => (
-                        <ProductCard key={product.id} product={product} products={products} />
-                    ))}
-                </View>
+                {loading ? (
+                    <ActivityIndicator size="large" color="#2563eb" />
+                ) : hasError ? (
+                    <Text style={styles.errorText}>Internet ulanishini tekshiring yoki keyinroq urunib ko'ring.</Text>
+                ) : products.length === 0 ? (
+                    <Text style={styles.noResult}>Mahsulot topilmadi</Text>
+                ) : (
+                    <View style={styles.grid}>
+                        {products.map((product) => (
+                            <ProductCard key={product.id} product={product} products={products} />
+                        ))}
+                    </View>
+                )}
             </ScrollView>
         </ScreenWrapper>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 16,
-    },
-    headerTitle: {
-        fontSize: 22,
-        fontWeight: '900',
-        color: '#111827',
-        marginBottom: 16,
-    },
-    grid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        widht: '100%'
-    },
-    card: {
-        width: isWeb ? '48%' : '100%', 
-        backgroundColor: '#ffffff',
-        borderRadius: 24,
-        padding: 16,
-        marginBottom: 16,
-        borderWidth: 1,
-        borderColor: '#f3f4f6',
-        justifyContent: 'space-between',
-        // Soya effektlari
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2, 
-    },
-    imageWrapper: {
-        width: '100%',
-        height: 180,
-        backgroundColor: '#f9fafb',
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 8,
-        marginBottom: 12,
-    },
-    productTitle: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1f2937',
-        lineHeight: 20,
-    },
-    bottomSection: {
-        marginTop: 12,
-    },
-    ratingRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    ratingText: {
-        fontSize: 12,
-        color: '#6b7280',
-        marginLeft: 4,
-        fontWeight: '500',
-    },
-    priceRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    priceText: {
-        fontSize: 16,
-        fontWeight: '900',
-        color: '#2563eb',
-    },
-    button: {
-        backgroundColor: '#eff6ff',
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 12,
-    },
-    buttonText: {
-        color: '#2563eb',
-        fontWeight: '700',
-        fontSize: 12,
-    },
+    container: { padding: 16 },
+    headerTitle: { fontSize: 22, fontWeight: '900', color: '#111827', marginBottom: 16 },
+    noResult: { fontSize: 16, color: '#6b7280', textAlign: 'center', marginTop: 24 },
+    errorText: { fontSize: 16, color: '#dc2626', textAlign: 'center', marginTop: 24, fontWeight: '500' },
+    grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', width: '100%' }
 });
 
-export default Search
+export default Search;

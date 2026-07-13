@@ -1,8 +1,8 @@
 'use client'
-import FilterPage from 'app/features/app/search/_components/filter/filterPage'
+import Page from 'app/features/app/search/_components/filter/page'
 
-const nextPage = () => {
-    return <FilterPage />
+const FilterID = () => {
+    return <Page />
 }
 
-export default nextPage
+export default FilterID

@@ -47,23 +47,11 @@ const Yoqtirilgan = () => {
     if (loading) {
         return (
             <ScreenWrapper>
-                <View style={{ flexWrap: 'wrap', flex: 1 }}>
-                    <View style={{ flexDirection: 'row', gap: 40 }}>
-                        <LoaderProductCard />
-                        <LoaderProductCard />
-                    </View>
-                    <View style={{ flexDirection: 'row', gap: 40 }}>
-                        <LoaderProductCard />
-                        <LoaderProductCard />
-                    </View>
-                    <View style={{ flexDirection: 'row', gap: 40 }}>
-                        <LoaderProductCard />
-                        <LoaderProductCard />
-                    </View>
-                    <View style={{ flexDirection: 'row', gap: 40 }}>
-                        <LoaderProductCard />
-                        <LoaderProductCard />
-                    </View>
+                <View style={styles.grid}>
+                    <LoaderProductCard />
+                    <LoaderProductCard />
+                    <LoaderProductCard />
+                    <LoaderProductCard />
                 </View>
             </ScreenWrapper>
         );
@@ -98,7 +86,7 @@ const styles = StyleSheet.create({
     container: { padding: 16 },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     headerTitle: { fontSize: 22, fontWeight: '900', color: '#111827', marginBottom: 16 },
-    grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+    grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12 },
     emptyText: { fontSize: 18, fontWeight: '600', color: '#6b7280' }
 });
 

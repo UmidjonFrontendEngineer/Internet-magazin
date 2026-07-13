@@ -30,7 +30,7 @@ const ProductID = () => {
     console.log(pathname?.split('/')[2])
     console.log(pathname?.split('/')[2]?.split(',')?.slice(1))
     const productsIDs = pathname?.split('/')[2]?.split(',')?.slice(1).map(Number) || []
-    const [nextProducts, setNextProducts] = useState<ProductProps[]>()
+    const [nextProducts, setNextProducts] = useState<ProductProps[]>([])
     const [products, setProducts] = useState<ProductProps[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -80,11 +80,9 @@ const ProductID = () => {
             <ScrollView>
                 <View style={styles.mainWrapper}>
 
-                    {/* ================= CHAP USTUN (Kengligi: 65%) ================= */}
                     <View style={styles.leftColumn}>
                         <View style={{ flexDirection: 'row' }}>
                             <View style={{width: '50%'}}>
-                                {/* 1. Rasmlar bo'limi (Slider + Katta rasm) */}
                                 <View style={[styles.card, styles.row]}>
                                     <View style={styles.sliderThumbnails}>
                                         {[1, 2, 3, 4, 5].map((i) => (
@@ -96,7 +94,6 @@ const ProductID = () => {
                             </View>
 
                             <View style={{widht: '50%'}}>
-                                {/* 2. Mahsulot Nomi va Sharh statistikasi */}
                                 <View style={styles.card}>
                                     <Text style={styles.productTitle}>{product.title}</Text>
                                     <View style={styles.metaRow}>
@@ -107,7 +104,6 @@ const ProductID = () => {
                                 </View>
 
 
-                                {/* 3. Xotira tanlash (Chips) */}
                                 <View style={styles.card}>
                                     <Text style={styles.sectionLabel}>Xotira: <Text style={styles.boldText}>825 GB Digital Slim Edition</Text></Text>
                                     <View style={styles.chipsRow}>
@@ -122,21 +118,18 @@ const ProductID = () => {
                             </View>
                         </View>
 
-                        {/* 4. Mijozlar yuklagan rasmlar va Sharhlar kontenti */}
                         <View style={styles.card}>
                             <View style={styles.spaceBetweenRow}>
                                 <Text style={styles.sectionLabel}>Xaridorlar sharhlari</Text>
                                 <Text style={styles.blueLink}>Barchasi (6)</Text>
                             </View>
 
-                            {/* Sharh rasmlari galereyasi */}
                             <View style={styles.reviewImagesGrid}>
                                 {[1, 2, 3, 4, 5, 6].map((i) => (
                                     <View key={i} style={styles.reviewPhotoPlaceholder} />
                                 ))}
                             </View>
 
-                            {/* Fikrlar ro'yxati (2 ta ustunli flex container) */}
                             <View style={styles.reviewCardsContainer}>
                                 <View style={styles.userReviewCard}>
                                     <View style={styles.userInfo}>
@@ -166,19 +159,15 @@ const ProductID = () => {
 
                     </View>
 
-                    {/* ================= O'NG USTUN (Kengligi: 33%, Yopishib turuvchi/Sticky effekt) ================= */}
                     <View style={styles.rightColumn}>
 
-                        {/* Asosiy Xarid qilish va Narx Konteyneri */}
                         <View style={[styles.card, styles.stickyCard]}>
 
-                            {/* Chilla aksiyasi */}
                             <View style={styles.chillaHeader}>
                                 <Text style={styles.chillaText}>Chilla ➔</Text>
                                 <View style={styles.badge}><Text style={styles.badgeText}>3 kun qoldi</Text></View>
                             </View>
 
-                            {/* Narxlar */}
                             <View style={styles.priceContainer}>
                                 <Text style={styles.oldPriceText}>9 000 000 so'm</Text>
                                 <Text style={styles.currentPriceText}>6 830 010 so'm</Text>
@@ -186,7 +175,6 @@ const ProductID = () => {
 
                             <View style={styles.divider} />
 
-                            {/* Bo'lib to'lash oylari (Grid formatda chiroyli select) */}
                             <Text style={styles.smallLabel}>Muddatli to'lov variantlari:</Text>
                             <View style={styles.monthSelectorGrid}>
                                 <View style={styles.monthTab}><Text style={styles.monthTabText}>3 oy</Text></View>
@@ -201,7 +189,6 @@ const ProductID = () => {
                                 <Text style={styles.monthlyPriceText}><Text style={styles.boldText}>483 792 so'm</Text> / oyiga x 24 oy</Text>
                             </View>
 
-                            {/* Tugmalar */}
                             <Pressable style={styles.oneClickBtn}>
                                 <Text style={styles.oneClickBtnText}>1 klikda xarid qilish</Text>
                             </Pressable>
@@ -210,14 +197,12 @@ const ProductID = () => {
                                 <Text style={styles.addToCartBtnText}>Savatga qo'shish</Text>
                             </Pressable>
 
-                            {/* Qo'shimcha triggers */}
                             <View style={styles.statusInfo}>
                                 <Text style={styles.greenText}>✔️ 5 dona xarid qilish mumkin</Text>
                                 <Text style={styles.infoText}>🔥 Bu haftada 3 kishi sotib oldi</Text>
                             </View>
                         </View>
 
-                        {/* Yetkazib berish va kafolat kartochkalari */}
                         <View style={styles.card}>
                             <Text style={styles.cardInfoTitle}>Ertaga yetkazib beramiz</Text>
                             <Text style={styles.cardInfoDesc}>Topshirish punktiga yoki kuryer orqali manzilingizga</Text>
@@ -234,10 +219,10 @@ const ProductID = () => {
                     </View>
 
                 </View>
-                <View style={{ width: '100%', flexWrap: 'wrap' }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12 }}>
                     {
                         nextProducts.map(item => (
-                            <ProductCart key={item.id} product={item} products={products} />
+                            <ProductCart key={item.id} product={item} products={nextProducts} />
                         ))
                     }
                 </View>
@@ -273,7 +258,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
 
-    // USTUNLAR LAYOUTI
     leftColumn: {
         width: '65%',
         gap: 15,
@@ -283,14 +267,12 @@ const styles = StyleSheet.create({
         gap: 15,
     },
 
-    // UKLAD KONTEYNERLARI (CARDS)
     card: {
         backgroundColor: '#ffffff',
         borderRadius: 12,
         padding: 20,
         borderWidth: 1,
         borderColor: '#e9ecef',
-        // Soyalar chiroyli chiqishi uchun
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
@@ -312,7 +294,6 @@ const styles = StyleSheet.create({
         marginVertical: 15,
     },
 
-    // CHAP USTUN ELEMENTLARI
     sliderThumbnails: {
         width: 70,
         gap: 10,
@@ -393,7 +374,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
 
-    // SHARHLAR
     reviewImagesGrid: {
         flexDirection: 'row',
         gap: 8,
@@ -447,9 +427,8 @@ const styles = StyleSheet.create({
         lineHeight: 18,
     },
 
-    // O'NG USTUN (STICKY PRICE BLOCK)
     stickyCard: {
-        borderColor: '#723eeb', // Uzum uslubidagi asosiy urg'u rang
+        borderColor: '#723eeb',
         borderWidth: 1.5,
     },
     chillaHeader: {

@@ -42,19 +42,17 @@ const HomeScreen = () => {
     if (loading) {
         return (
             <ScreenWrapper>
-                <ScrollView contentContainerStyle={{ padding: 12, gap: 30 }}>
+                <ScrollView contentContainerStyle={styles.container}>
 
-                    <SliderLoader />
+                    <View style={{ padding: screenWidth > 900 ? 12 : 0 }}>
+                        <SliderLoader />
+                    </View>
 
-                    <View style={{ gap: 20 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <LoaderProductCard />
-                            <LoaderProductCard />
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <LoaderProductCard />
-                            <LoaderProductCard />
-                        </View>
+                    <View style={styles.grid}>
+                        <LoaderProductCard />
+                        <LoaderProductCard />
+                        <LoaderProductCard />
+                        <LoaderProductCard />
                     </View>
 
                 </ScrollView>

@@ -1,7 +1,7 @@
 'use client'
 import { Text, View, StyleSheet, Pressable } from 'react-native'
 import { SolitoImage } from 'solito/image'
-import SettingsLanguage from 'app/components/UI/SettingsLanguage'
+import Language from 'app/components/UI/Language'
 import React, { useState, useEffect } from 'react'
 
 const Sozlamalar = () => {
@@ -34,7 +34,7 @@ const Sozlamalar = () => {
                 </View>
             </Pressable>
 
-            {openLan ? <SettingsLanguage setOpenLan={setOpenLan} /> : null}
+            {openLan ? <Language setOpenLan={setOpenLan} /> : null}
 
         </View>
     )

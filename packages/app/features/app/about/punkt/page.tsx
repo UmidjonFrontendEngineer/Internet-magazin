@@ -76,81 +76,83 @@ export default function PunktPage() {
     }
 
     return (
-        <ScreenWrapper paddingTop={0}>
-            <AboutWrapper>
-                <View style={styles.container}>
-                    <View style={styles.header}>
-                        <Text style={styles.headerTitle}>Topshirish punkti</Text>
-                        <Text style={styles.headerSub}>O'zbekiston bo'yicha topshirish punktlariga bepul yetkazib berish</Text>
-                    </View>
-
-                    <View style={[styles.content, { flexDirection: isLargeScreen ? 'row' : 'column' }]}>
-
-                        <ScrollView
-                            style={[
-                                styles.listContainer,
-                                {
-                                    width: isLargeScreen ? 400 : '100%',
-                                    maxHeight: isLargeScreen ? '100%' : windowHeight * 0.35
-                                }
-                            ]}
-                            showsVerticalScrollIndicator={Platform.OS === 'web'}
-                        >
-                            {select.map((item) => (
-                                <View key={item.id} style={styles.card}>
-                                    <Text style={styles.cardTitle}>{item.title}</Text>
-                                    <View style={styles.hoursContainer}>
-                                        <Text style={styles.hoursText}>Har kuni: {item.hours}</Text>
-                                    </View>
-                                </View>
-                            ))}
-                        </ScrollView>
-
-                        <View style={styles.mapWrapper}>
-                            <Animated.View
-                                {...panResponder.panHandlers}
-                                style={[
-                                    styles.mapContainer,
-                                    {
-                                        transform: [
-                                            { translateX: pan.x },
-                                            { translateY: pan.y }
-                                        ]
-                                    }
-                                ]}
-                            >
-                                <View style={styles.mapCanvas}>
-                                    <View style={styles.river} />
-
-                                    <View style={[styles.road, { top: '25%', left: 0, right: 0, height: 12 }]} />
-                                    <View style={[styles.road, { top: '65%', left: 0, right: 0, height: 16 }]} />
-                                    <View style={[styles.road, { left: '35%', top: 0, bottom: 0, width: 14 }]} />
-                                    <View style={[styles.road, { left: '70%', top: 0, bottom: 0, width: 12, transform: [{ rotate: '15deg' }] }]} />
-
-                                    <View style={styles.ringRoad} />
-
-                                    <Pressable onPress={() => setSelect([deliveryPoints[0]])} style={[styles.cluster, { top: '22%', left: '42%' }]}>
-                                        <Text style={styles.clusterText}>193</Text>
-                                    </Pressable>
-                                    <Pressable onPress={() => setSelect([deliveryPoints[1]])} style={[styles.cluster, { top: '28%', left: '68%' }]}>
-                                        <Text style={styles.clusterText}>11</Text>
-                                    </Pressable>
-                                    <Pressable onPress={() => setSelect([deliveryPoints[2]])} style={[styles.cluster, { top: '32%', left: '22%' }]}>
-                                        <Text style={styles.clusterText}>51</Text>
-                                    </Pressable>
-                                    <Pressable onPress={() => setSelect([deliveryPoints[3]])} style={[styles.cluster, { top: '58%', left: '25%' }]}>
-                                        <Text style={styles.clusterText}>61</Text>
-                                    </Pressable>
-                                    <Pressable onPress={() => setSelect([deliveryPoints[0]])} style={[styles.cluster, { top: '60%', left: '50%' }]}>
-                                        <Text style={styles.clusterText}>108</Text>
-                                    </Pressable>
-                                </View>
-                            </Animated.View>
+        <ScreenWrapper>
+            <View style={{ padding: 12, width: '100%', flex: 1 }}>
+                <AboutWrapper>
+                    <View style={styles.container}>
+                        <View style={styles.header}>
+                            <Text style={styles.headerTitle}>Topshirish punkti</Text>
+                            <Text style={styles.headerSub}>O'zbekiston bo'yicha topshirish punktlariga bepul yetkazib berish</Text>
                         </View>
 
+                        <View style={[styles.content, { flexDirection: isLargeScreen ? 'row' : 'column', gap: 8 }]}>
+                            <ScrollView
+                                style={{
+                                    width: isLargeScreen ? 400 : '100%',
+                                    maxHeight: isLargeScreen ? '100%' : windowHeight * 0.35,
+                                }}
+                                contentContainerStyle={{
+                                    padding: 20,
+                                    paddingBottom: 40
+                                }}
+                                nestedScrollEnabled={true}
+                                showsVerticalScrollIndicator={Platform.OS === 'web'}
+                            >
+                                {select.map((item) => (
+                                    <View key={item.id} style={styles.card}>
+                                        <Text style={styles.cardTitle}>{item.title}</Text>
+                                        <View style={styles.hoursContainer}>
+                                            <Text style={styles.hoursText}>Har kuni: {item.hours}</Text>
+                                        </View>
+                                    </View>
+                                ))}
+                            </ScrollView>
+
+                            <View style={styles.mapWrapper}>
+                                <Animated.View
+                                    {...panResponder.panHandlers}
+                                    style={[
+                                        styles.mapContainer,
+                                        {
+                                            transform: [
+                                                { translateX: pan.x },
+                                                { translateY: pan.y }
+                                            ]
+                                        }
+                                    ]}
+                                >
+                                    <View style={styles.mapCanvas}>
+                                        <View style={styles.river} />
+
+                                        <View style={[styles.road, { top: '25%', left: 0, right: 0, height: 12 }]} />
+                                        <View style={[styles.road, { top: '65%', left: 0, right: 0, height: 16 }]} />
+                                        <View style={[styles.road, { left: '35%', top: 0, bottom: 0, width: 14 }]} />
+                                        <View style={[styles.road, { left: '70%', top: 0, bottom: 0, width: 12, transform: [{ rotate: '15deg' }] }]} />
+
+                                        <View style={styles.ringRoad} />
+
+                                        <Pressable onPress={() => setSelect([deliveryPoints[0]])} style={[styles.cluster, { top: '22%', left: '42%' }]}>
+                                            <Text style={styles.clusterText}>193</Text>
+                                        </Pressable>
+                                        <Pressable onPress={() => setSelect([deliveryPoints[1]])} style={[styles.cluster, { top: '28%', left: '68%' }]}>
+                                            <Text style={styles.clusterText}>11</Text>
+                                        </Pressable>
+                                        <Pressable onPress={() => setSelect([deliveryPoints[2]])} style={[styles.cluster, { top: '32%', left: '22%' }]}>
+                                            <Text style={styles.clusterText}>51</Text>
+                                        </Pressable>
+                                        <Pressable onPress={() => setSelect([deliveryPoints[3]])} style={[styles.cluster, { top: '58%', left: '25%' }]}>
+                                            <Text style={styles.clusterText}>61</Text>
+                                        </Pressable>
+                                        <Pressable onPress={() => setSelect([deliveryPoints[0]])} style={[styles.cluster, { top: '60%', left: '50%' }]}>
+                                            <Text style={styles.clusterText}>108</Text>
+                                        </Pressable>
+                                    </View>
+                                </Animated.View>
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </AboutWrapper>
+                </AboutWrapper>
+            </View>
         </ScreenWrapper>
     );
 }

@@ -1,94 +1,128 @@
-'use client'
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from 'react-native'
+'use client';
 
-const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
+import React, { useEffect, useRef } from "react";
+import { View, StyleSheet, useWindowDimensions, Platform, Animated } from 'react-native';
 
-const LoaderProductCard = () => {
-    const [isShining, setIsShining] = useState(false);
+const ProductCardLoader = () => {
+    const { width: windowWidth } = useWindowDimensions();
+    const isWebDesktop = Platform.OS === 'web' && windowWidth > 768;
+    const fadeAnim = useRef(new Animated.Value(1)).current;
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setIsShining((prev) => !prev);
-        }, 1000);
+        const createAnimation = () => {
+            return Animated.sequence([
+                Animated.timing(fadeAnim, {
+                    toValue: 0.4,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                })
+            ]);
+        };
 
-        return () => clearInterval(interval);
-    }, []);
-
-    const shimmerStyle = {
-        opacity: isShining ? 0.5 : 1,
-        transition: 'opacity 1s linear',
-    };
+        Animated.loop(createAnimation()).start();
+    }, [fadeAnim]);
 
     return (
-        <View style={[styles.card, shimmerStyle]}>
-            <View>
-                <View style={styles.imageLoader} />
-                
-                <View style={[styles.titleLoader, { width: '80%' }]} />
-                <View style={[styles.titleLoader, { width: '50%', marginTop: 6 }]} />
+        <Animated.View 
+            style={[
+                styles.card, 
+                { width: isWebDesktop ? '23%' : windowWidth > 500 ? '48%' : '100%' },
+                { opacity: fadeAnim }
+            ]}
+        >
+            <View style={styles.topSection}>
+                <View style={styles.favoriteLoader} />
+                <View style={styles.imageWrapper} />
+                <View style={styles.titleLoader} />
+                <View style={[styles.titleLoader, { width: '60%', marginTop: 6 }]} />
             </View>
 
             <View style={styles.bottomSection}>
-                <View style={styles.row}>
-                    <View style={styles.priceLoader} />
-                    
-                    <View style={styles.buttonLoader} />
-                </View>
+                <View style={styles.priceLoader} />
+                <View style={styles.buttonLoader} />
             </View>
-        </View>
+        </Animated.View>
     );
 };
 
 const styles = StyleSheet.create({
     card: {
-        width: isWeb ? '24%' : '48%',
         backgroundColor: '#ffffff',
-        borderRadius: 24,
-        padding: 16,
+        borderRadius: 20,
+        padding: 12,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#f3f4f6',
+        borderColor: '#f0f0f0',
         justifyContent: 'space-between',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
-        height: 320,
+        display: 'flex', 
+        flexDirection: 'column',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.04,
+                shadowRadius: 6,
+            },
+            android: {
+                elevation: 1,
+            },
+            web: {
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.03)',
+                flexShrink: 0,
+                flexGrow: 0,
+            }
+        })
     },
-    imageLoader: {
+    topSection: {
+        position: 'relative',
         width: '100%',
-        height: 180,
+    },
+    favoriteLoader: {
+        position: 'absolute',
+        zIndex: 10,
+        top: 4,
+        right: 4,
+        width: 36,
+        height: 36,
         backgroundColor: '#e5e7eb',
-        borderRadius: 16,
-        marginBottom: 12,
+        borderRadius: 100,
+    },
+    imageWrapper: {
+        width: '100%',
+        height: 150,
+        backgroundColor: '#e5e7eb',
+        borderRadius: 14,
+        marginBottom: 10,
     },
     titleLoader: {
         height: 14,
         backgroundColor: '#e5e7eb',
         borderRadius: 4,
+        width: '90%',
     },
-    bottomSection: { 
-        marginTop: 12 
-    },
-    row: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        alignItems: 'center' 
+    bottomSection: {
+        marginTop: 10,
+        gap: 8,
     },
     priceLoader: {
-        width: '40%',
-        height: 20,
+        width: '60%',
+        height: 18,
         backgroundColor: '#e5e7eb',
-        borderRadius: 6,
+        borderRadius: 4,
+        marginTop: 4,
     },
     buttonLoader: {
-        width: 100,
-        height: 32,
+        width: '100%',
+        height: 38,
         backgroundColor: '#e5e7eb',
-        borderRadius: 12,
+        borderRadius: 10,
+        marginTop: 4,
     },
 });
 
-export default LoaderProductCard;
+export default ProductCardLoader;

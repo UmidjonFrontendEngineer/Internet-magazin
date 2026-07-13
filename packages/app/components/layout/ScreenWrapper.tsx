@@ -45,7 +45,7 @@ export default function ScreenWrapper({ children }: {children: React.ReactNode})
                 ]}
                 showsVerticalScrollIndicator={false}
             >
-                <View style={[styles.mainBody, { paddingTop: (isMobileView && tab !== 4) ? 80 : 100 }]}>
+                <View style={[styles.mainBody, { paddingTop: (isMobileView && tab !== 4) ? 90 : 120 }]}>
                     {children}
                 </View>
                 <Footer />

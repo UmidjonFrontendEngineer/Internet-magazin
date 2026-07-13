@@ -3,12 +3,6 @@ import { View, Text, StyleSheet } from 'react-native'
 import { TextLink } from 'solito/link'
 
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 10,
-        padding: 40
-    },
     item: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -29,11 +23,9 @@ const styles = StyleSheet.create({
 
 const AboutItem = () => {
     return (
-        <View style={styles.container}>
-            <View style={styles.item}>
-                <TextLink href='punkt'><View style={styles.btn}><Text style={styles.text}>topshirish punktlari</Text></View></TextLink>
-                <TextLink href='careres'><View style={styles.btn}><Text style={styles.text}>vakansiyalar</Text></View></TextLink>
-            </View>
+        <View style={styles.item}>
+            <TextLink href='/about/punkt'><View style={styles.btn}><Text style={styles.text}>topshirish punktlari</Text></View></TextLink>
+            <TextLink href='/about/careres'><View style={styles.btn}><Text style={styles.text}>vakansiyalar</Text></View></TextLink>
         </View>
     )
 }

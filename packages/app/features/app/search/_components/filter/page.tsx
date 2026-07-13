@@ -87,7 +87,7 @@ const FilterSearch = () => {
 
                 <View style={styles.grid}>
                     {searchProducts.map((item) => (
-                        <ProductCard key={item.id} product={item} />
+                        <ProductCard key={item.id} product={item} products={products} />
                     ))}
                 </View>
             </ScrollView>

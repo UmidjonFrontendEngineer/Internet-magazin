@@ -23,9 +23,10 @@ export function NavigationProvider({
               profile: 'profile',
               savolJavob: 'savolJavob',
               search: 'search',
-              careres: 'careres',
-              punkt: 'punkt',
-              'filter': 'search/:id'
+              careres: 'about/careres',
+              punkt: 'about/punkt',
+              'filter': 'search/:id',
+              'products': 'product/:id'
             },
           },
         }),

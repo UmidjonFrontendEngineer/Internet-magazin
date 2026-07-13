@@ -1,10 +1,11 @@
-'use client'
+'use client';
+
 import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet, useWindowDimensions, Platform } from 'react-native';
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import { SolitoImage } from "solito/image";
-import { TextLink } from "solito/link";
+import { useRouter } from "solito/navigation";
 
 interface ProductProps {
     id: number;
@@ -16,13 +17,21 @@ interface ProductProps {
     rating: { rate: number; count: number };
 }
 
-const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
-const ProductCard = ({ product, products }: { product: ProductProps, products: ProductProps[] }) => {
+interface ProductCardProps {
+    product: ProductProps;
+    products: ProductProps[];
+}
+
+const ProductCard = ({ product, products }: ProductCardProps) => {
+    const router = useRouter();
+    const { width: windowWidth } = useWindowDimensions();
+    const isWebDesktop = Platform.OS === 'web' && windowWidth > 768;
+
     const cartIds = useCartStore(state => state.cartIds);
     const toggleCart = useCartStore(state => state.toggleCart);
 
-    const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds)
-    const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan)
+    const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
+    const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan);
 
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => {
@@ -30,104 +39,177 @@ const ProductCard = ({ product, products }: { product: ProductProps, products: P
     }, []);
 
     const isInCart = isMounted && cartIds.includes(product.id);
+    const isFavorite = isMounted && yoqtirilganIds.includes(product.id);
 
     const handleTargetIDs = (currentId: number) => {
         const currentIndex = products.findIndex(p => p.id === currentId);
         if (currentIndex === -1) return `${currentId}`;
-
         const nextProducts = products.slice(currentIndex, currentIndex + 10);
         return nextProducts.map(p => p.id).join(',');
-    }
+    };
+
+    const handleCardPress = () => {
+        router.push(`/product/${handleTargetIDs(product.id)}`);
+    };
 
     return (
-        <View style={styles.card}>
-            <TextLink href={`/product/${handleTargetIDs(product.id)}`}>
-                <View style={{ position: 'relative' }}>
-                    <Pressable onPress={() => toggleYoqtirilgan(product.id)} style={({ pressed }) => [{ position: 'absolute', zIndex: 99, top: 5, right: 5, borderRadius: 100, transition: 'all 0.3s ease' }, pressed && { transform: [{ scale: 0.4 }] }]}>
+        <Pressable 
+            onPress={handleCardPress}
+            style={[
+                styles.card, 
+                { width: isWebDesktop ? '23%' : windowWidth > 500 ? '48%' : '100%' }
+            ]}
+        >
+            <View style={styles.topSection}>
+                <Pressable 
+                    onPress={(e) => {
+                        e.stopPropagation();
+                        toggleYoqtirilgan(product.id);
+                    }} 
+                    style={({ pressed }) => [
+                        styles.favoriteButton, 
+                        pressed && { transform: [{ scale: 0.9 }] }
+                    ]}
+                >
+                    <SolitoImage
+                        src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
+                        alt="Favorite Icon"
+                        width={24}
+                        height={24}
+                        resizeMode="contain"
+                    />
+                </Pressable>
 
-                        <SolitoImage
-                            src={`${yoqtirilganIds.includes(product.id) ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}`}
-                            alt="heart Icon"
-                            width={30}
-                            height={30}
-                            resizeMode="contain"
-                        />
-                    </Pressable>
-
-                    <View style={styles.imageWrapper}>
-                        <SolitoImage
-                            src={product.image}
-                            alt={product.title}
-                            width={140}
-                            height={140}
-                            resizeMode="contain"
-                        />
-                    </View>
-
-                    <Text numberOfLines={2} style={styles.productTitle}>
-                        {product.title}
-                    </Text>
+                <View style={styles.imageWrapper}>
+                    <SolitoImage
+                        src={product.image}
+                        alt={product.title}
+                        width={130}
+                        height={130}
+                        resizeMode="contain"
+                    />
                 </View>
 
-                <View style={styles.bottomSection}>
-                    <View style={styles.priceRow}>
-                        <Text style={styles.priceText}>
-                            {(product.price * 12500).toLocaleString()} so'm
+                <Text numberOfLines={2} style={styles.productTitle}>
+                    {product.title}
+                </Text>
+            </View>
+
+            <View style={styles.bottomSection}>
+                <Text numberOfLines={1} style={styles.priceText}>
+                    {(product.price * 12500).toLocaleString()} so'm
+                </Text>
+
+                <Pressable 
+                    onPress={(e) => {
+                        e.stopPropagation();
+                        toggleCart(product.id);
+                    }}
+                    style={styles.cartButtonWrapper}
+                >
+                    <View style={[styles.button, isInCart && styles.buttonInCart]}>
+                        <Text numberOfLines={1} style={[styles.buttonText, isInCart && styles.buttonTextInCart]}>
+                            {isInCart ? 'Savatda ✓' : 'Savatga'}
                         </Text>
-
-                        <Pressable onPress={() => toggleCart(product.id)}>
-                            <View style={[styles.button, isInCart && styles.buttonInCart]}>
-                                <Text style={[styles.buttonText, isInCart && styles.buttonTextInCart]}>
-                                    {isInCart ? 'Savatda ✓' : 'savatga qo\'shish'}
-                                </Text>
-                            </View>
-                        </Pressable>
                     </View>
-                </View>
-            </TextLink>
-        </View>
+                </Pressable>
+            </View>
+        </Pressable>
     );
-};
+}
 
 const styles = StyleSheet.create({
-    container: { padding: 16 },
-    headerTitle: { fontSize: 22, fontWeight: '900', color: '#111827', marginBottom: 16 },
-    grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
     card: {
-        width: isWeb ? '48%' : '100%',
         backgroundColor: '#ffffff',
-        borderRadius: 24,
-        padding: 16,
+        borderRadius: 20,
+        padding: 12,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#f3f4f6',
+        borderColor: '#f0f0f0',
         justifyContent: 'space-between',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
+        display: 'flex', 
+        flexDirection: 'column',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.04,
+                shadowRadius: 6,
+            },
+            android: {
+                elevation: 1,
+            },
+            web: {
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.03)',
+                cursor: 'pointer',
+                flexShrink: 0,
+                flexGrow: 0,
+            }
+        })
+    },
+    topSection: {
+        position: 'relative',
+        width: '100%',
+    },
+    favoriteButton: {
+        position: 'absolute',
+        zIndex: 10,
+        top: 4,
+        right: 4,
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        padding: 6,
+        borderRadius: 100,
     },
     imageWrapper: {
         width: '100%',
-        height: 180,
-        backgroundColor: '#f9fafb',
-        borderRadius: 16,
+        height: 150,
+        backgroundColor: '#fcfcfc',
+        borderRadius: 14,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 8,
-        marginBottom: 12,
+        padding: 6,
+        marginBottom: 10,
     },
-    productTitle: { fontSize: 14, fontWeight: '600', color: '#1f2937', lineHeight: 20 },
-    bottomSection: { marginTop: 12 },
-    ratingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-    ratingText: { fontSize: 12, color: '#6b7280', marginLeft: 4, fontWeight: '500' },
-    priceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    priceText: { fontSize: 16, fontWeight: '900', color: '#2563eb' },
-    button: { backgroundColor: '#eff6ff', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12 },
-    buttonInCart: { backgroundColor: '#e0f2fe' },
-    buttonText: { color: '#2563eb', fontWeight: '700', fontSize: 12 },
-    buttonTextInCart: { color: '#0369a1' },
+    productTitle: {
+        fontSize: 13,
+        fontWeight: '500',
+        color: '#2d3748',
+        lineHeight: 18,
+        minHeight: 36,
+    },
+    bottomSection: {
+        marginTop: 10,
+        gap: 8,
+    },
+    priceText: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#1a0dab',
+    },
+    cartButtonWrapper: {
+        width: '100%',
+    },
+    button: {
+        backgroundColor: 'rgb(0, 166, 255)',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonInCart: {
+        backgroundColor: 'rgba(0, 166, 255, 0.2)',
+        borderWidth: 1,
+        borderColor: 'rgb(0, 166, 255)',
+    },
+    buttonText: {
+        color: '#ffffff',
+        fontWeight: '600',
+        fontSize: 13,
+    },
+    buttonTextInCart: {
+        color: 'rgb(0, 166, 255)',
+    },
 });
 
 export default ProductCard

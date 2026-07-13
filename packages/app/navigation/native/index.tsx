@@ -15,6 +15,7 @@ import Search from 'app/features/app/search/page'
 import CareresScreen from 'app/features/app/about/careres/page'
 import PunktScreen from 'app/features/app/about/punkt/page'
 import Filter from 'app/features/app/search/_components/filter/page'
+import ProductsID from 'app/features/app/product/[id]/page'
 
 const Stack = createNativeStackNavigator<{
   home: undefined
@@ -30,9 +31,11 @@ const Stack = createNativeStackNavigator<{
   'filter': {
     id: 'string'
   }
+  'products': {
+    id: 'string'
+  }
 }>()
 export function NativeNavigation() {
-  const [load, setLoad] = useState(false)
   return (
     <View style={styles.container}>
       <Header />
@@ -51,6 +54,9 @@ export function NativeNavigation() {
           <Stack.Screen name="punkt" component={PunktScreen} />
           <Stack.Screen name="filter" component={Filter} options={{
             title: 'filter'
+          }} />
+          <Stack.Screen name='products' component={ProductsID} options={{
+            title: 'products'
           }} />
         </Stack.Navigator>
       </View>
