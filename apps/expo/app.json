@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Online Market",
-    "slug": "online-market",
+    "slug": "solito-blank",
     "version": "1.0.0",
     "scheme": "online-market",
     "platforms": [
@@ -26,6 +26,7 @@
         "foregroundImage": "./assets/grape.png",
         "backgroundColor": "#000000"
       }
-    }
+    },
+    "owner": "umidjonfrontenddeveloper"
   }
 }

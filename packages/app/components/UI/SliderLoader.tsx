@@ -5,7 +5,7 @@ const SliderLoader = () => {
 
     const { width: screenWidth } = useWindowDimensions();
     return (
-        <View style={{ width: '100%', height: screenWidth < 800 ? 370 : 150, backgroundColor: '#e5e7eb', borderRadius: 20 }}>
+        <View style={{ width: '100%', height: screenWidth < 800 ? 150 : 370, backgroundColor: '#e5e7eb', borderRadius: 20 }}>
 
         </View>
     )

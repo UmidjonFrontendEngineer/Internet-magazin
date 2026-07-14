@@ -27,6 +27,7 @@ import GrapePng from 'app/features/app/assets/grape.png'
 import UzPng from 'app/features/app/assets/uzbekistan.png'
 import EnPng from 'app/features/app/assets/united-kingdom.png'
 import RuPng from 'app/features/app/assets/russia.png'
+import GpsPng from 'app/features/app/assets/gps.png'
 
 const SearchIcon = () => (
     <SolitoImage
@@ -134,9 +135,10 @@ const Header = () => {
     }, [pathname])
 
     const marginLeft = animValue.interpolate({
-        inputRange: [0, 4],
-        outputRange: ['0%', '80%']
-    })
+        inputRange: [0, 1, 2, 3, 4],
+        outputRange: ['0%', '25%', '50%', '75%', '150%'],
+        extrapolate: 'clamp'
+    });
 
     const [openLan, setOpenLan] = useState(false)
     const lan = useLanStorage(state => state.lan)
@@ -147,62 +149,193 @@ const Header = () => {
     if (isMobileView) {
         return (
             <>
-                {(tab !== 1 && tab !== 2 && tab !== 4) ? (
-                    <View
-                        style={{
+                {(tab !== 2 && tab !== 4) ? (
+                    <>
+                        <View style={{
                             ...Platform.select({
                                 web: { position: 'fixed' },
                                 default: { position: 'absolute' }
                             }),
                             top: Platform.OS !== 'web' ? 36 : 10,
-                            left: '10%',
-                            width: '80%',
+                            left: 0,
+                            width: '100%',
                             height: 40,
                             zIndex: 999999,
                             flexDirection: 'row',
                             alignItems: 'center',
-                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                            borderRadius: 100,
-                            borderWidth: 1,
-                            borderColor: 'rgba(0, 149, 255, 0.3)',
-                            paddingHorizontal: 10,
-                        }}
-                    >
-                        <TextInput
-                            value={input}
-                            onChangeText={setInput}
-                            style={{
-                                flex: 1,
-                                height: '100%',
-                                fontSize: 14,
-                                color: '#333',
-                            }}
-                            placeholder={
-                                lan === 'en' ? 'Search products and categories' :
-                                    lan === 'ru' ? 'Искать товары и категории' :
-                                        'Mahsulotlar va turkumlar izlash'
-                            }
-                            placeholderTextColor="rgba(0, 149, 255, 0.6)"
-                        />
+                            justifyContent: 'center',
+                            gap: 10
+                        }}>
+                            <Pressable
+                                onPress={() => router.push('https://internet-magazin-panel.vercel.app')}
+                                style={({ pressed }) => [
+                                    {
+                                        width: 50,
+                                        height: 50,
+                                        borderRadius: 28,
+                                        overflow: 'hidden',
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255, 255, 255, 0.25)',
+                                        opacity: pressed ? 0.7 : 1,
+                                        shadowColor: '#000',
+                                        shadowOffset: { width: 0, height: 4 },
+                                        shadowOpacity: 0.1,
+                                        shadowRadius: 10,
+                                        elevation: 3,
+                                    }
+                                ]}
+                            >
+                                <BlurView
+                                    tint="light"
+                                    intensity={60}
+                                    style={{
+                                        flex: 1,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    }}
+                                >
+                                    <View style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                        <View
+                                            style={{
+                                                position: 'absolute',
+                                                width: 18,
+                                                height: 2.5,
+                                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                                borderRadius: 2
+                                            }}
+                                        />
+                                        <View
+                                            style={{
+                                                position: 'absolute',
+                                                width: 2.5,
+                                                height: 18,
+                                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                                borderRadius: 2
+                                            }}
+                                        />
+                                    </View>
+                                </BlurView>
+                            </Pressable>
 
-                        <TextLink
-                            href={`/search/${input.trim().toLowerCase().replace(/\s+/g, '-')}`}
-                            style={{
-                                padding: 5,
-                                justifyContent: 'center',
+                            <BlurView
+                                tint="light"
+                                intensity={60}
+                                style={{
+                                    width: '50%',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    borderRadius: 100,
+                                    paddingHorizontal: 10,
+                                    shadowColor: '#000',
+                                    shadowOffset: { width: 0, height: 4 },
+                                    shadowOpacity: 0.1,
+                                    shadowRadius: 10,
+                                    elevation: 3,
+                                    borderWidth: 1,
+                                    borderColor: 'rgba(255, 255, 255, 0.25)',
+                                }}
+                            >
+
+                                <TextInput
+                                    value={input}
+                                    onChangeText={setInput}
+                                    style={{
+                                        flex: 1,
+                                        height: '100%',
+                                        fontSize: 14,
+                                        color: '#333',
+                                        outline: 'none'
+                                    }}
+                                    placeholder={
+                                        lan === 'en' ? 'Search products and categories' :
+                                            lan === 'ru' ? 'Искать товары и категории' :
+                                                'Mahsulotlar va turkumlar izlash'
+                                    }
+                                    placeholderTextColor="rgba(0, 149, 255, 0.6)"
+                                />
+
+                                <TextLink
+                                    href={`/search/${input.trim().toLowerCase().replace(/\s+/g, '-')}`}
+                                    style={{
+                                        padding: 5,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <SearchIcon />
+                                </TextLink>
+                            </BlurView>
+
+                            <Pressable
+                                onPress={() => setLocationOpen(prev => !prev)}
+                                style={({ pressed }) => [
+                                    {
+                                        width: 50,
+                                        height: 50,
+                                        borderRadius: 28,
+                                        overflow: 'hidden',
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255, 255, 255, 0.25)',
+                                        opacity: pressed ? 0.7 : 1,
+                                        shadowColor: '#000',
+                                        shadowOffset: { width: 0, height: 4 },
+                                        shadowOpacity: 0.1,
+                                        shadowRadius: 10,
+                                        elevation: 3,
+                                    }
+                                ]}
+                            >
+                                <BlurView
+                                    tint="light"
+                                    intensity={60}
+                                    style={{
+                                        flex: 1,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    }}
+                                >
+                                    <View style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                        <SolitoImage
+                                            src={GpsPng}
+                                            alt='gps'
+                                            width={30}
+                                            height={30}
+                                            resizeMode='contain'
+                                        />
+                                    </View>
+                                </BlurView>
+                            </Pressable>
+                        </View>
+                        {locationOpen ? (
+                            <View style={{
+                                ...Platform.select({
+                                    web: { position: 'fixed' },
+                                    default: { position: 'absolute' }
+                                }),
+                                top: Platform.OS !== 'web' ? 36 : 10,
+                                left: 0,
+                                width: '100%',
+                                height: 40,
+                                zIndex: 999999,
+                                flexDirection: 'row',
                                 alignItems: 'center',
-                            }}
-                        >
-                            <SearchIcon />
-                        </TextLink>
-                    </View>
+                                justifyContent: 'center',
+                                gap: 10
+                            }}>
+                                <Location setLocationOpen={setLocationOpen} />
+                            </View>
+                        ) : null}
+                    </>
                 ) : null}
 
                 <View style={[styles.mobileTabBarC]}>
                     <View style={[styles.mobileTabBar]}>
 
                         <BlurView
-                            intensity={30}
+                            intensity={50}
                             tint="light"
                             style={[StyleSheet.absoluteFill, { borderRadius: 100 }]}
                         />
@@ -210,14 +343,14 @@ const Header = () => {
                         <Animated.View style={{
                             top: 0,
                             left: marginLeft,
-                            width: '20%',
+                            width: '25%',
                             height: '100%',
-                            backgroundColor: 'rgba(0, 149, 255, 0.3)',
+                            backgroundColor: 'rgba(0, 149, 255, 0.2)',
                             pointerEvents: 'none',
                             borderRadius: 100,
                             ...Platform.select({
                                 web: {
-                                    background: 'rgba(0, 149, 255, 0.3)',
+                                    background: 'rgba(0, 149, 255, 0.2)',
                                     position: 'absolute',
                                 },
                                 default: {
@@ -233,12 +366,14 @@ const Header = () => {
                                 <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/', 0)}>
                                     <View style={styles.mobileTabItem}>
                                         <HomeIcon />
+                                        {tab === 0 ? <Text style={styles.mobileText}>home</Text> : null}
                                     </View>
                                 </Pressable>
 
                                 <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/katalog', 1)}>
                                     <View style={styles.mobileTabItem}>
                                         <SearchIcon />
+                                        {tab === 1 ? <Text style={styles.mobileText}>search</Text> : null}
                                     </View>
                                 </Pressable>
 
@@ -248,6 +383,7 @@ const Header = () => {
                                             <CartIcon />
                                             {cartIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{cartIds.length}</Text></View> : null}
                                         </View>
+                                        {tab === 2 ? <Text style={styles.mobileText}>cart</Text> : null}
                                     </View>
                                 </Pressable>
 
@@ -257,12 +393,7 @@ const Header = () => {
                                             <HeartIcon />
                                             {yoqtirilganIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
                                         </View>
-                                    </View>
-                                </Pressable>
-
-                                <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/profile', 4)}>
-                                    <View style={styles.mobileTabItem}>
-                                        <UserIcon />
+                                        {tab === 2 ? <Text style={styles.mobileText}>cart</Text> : null}
                                     </View>
                                 </Pressable>
 
@@ -272,12 +403,14 @@ const Header = () => {
                                 <TextLink href='/' style={styles.mobileTabItem}>
                                     <View style={styles.mobileTabItem}>
                                         <HomeIcon />
+                                        {tab === 0 ? <Text style={styles.mobileText}>home</Text> : null}
                                     </View>
                                 </TextLink>
 
                                 <TextLink href='/katalog' style={styles.mobileTabItem}>
                                     <View style={styles.mobileTabItem}>
                                         <SearchIcon />
+                                        {tab === 1 ? <Text style={styles.mobileText}>search</Text> : null}
                                     </View>
                                 </TextLink>
 
@@ -287,6 +420,7 @@ const Header = () => {
                                             <CartIcon />
                                             {cartIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{cartIds.length}</Text></View> : null}
                                         </View>
+                                        {tab === 2 ? <Text style={styles.mobileText}>cart</Text> : null}
                                     </View>
                                 </TextLink>
 
@@ -296,18 +430,64 @@ const Header = () => {
                                             <HeartIcon />
                                             {yoqtirilganIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
                                         </View>
-                                    </View>
-                                </TextLink>
-
-                                <TextLink href='/profile' style={styles.mobileTabItem}>
-                                    <View style={styles.mobileTabItem}>
-                                        <UserIcon />
+                                        {tab === 3 ? <Text style={styles.mobileText}>heart</Text> : null}
                                     </View>
                                 </TextLink>
                             </>
                         )}
                     </View >
 
+                    {Platform.OS !== 'web' ? (
+                        <BlurView
+                            tint="light"
+                            intensity={60}
+                            style={[styles.mobileTabItem, {
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                borderRadius: 100,
+                                paddingHorizontal: 10,
+                                shadowColor: '#000',
+                                shadowOffset: { width: 0, height: 4 },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 10,
+                                elevation: 3,
+                                borderWidth: 1,
+                                borderColor: 'rgba(255, 255, 255, 0.25)',
+                            }]}
+                        >
+                            <Pressable onPress={() => handlePage('/profile', 4)}>
+                                <View style={styles.mobileTabItem}>
+                                    <UserIcon />
+                                </View>
+                            </Pressable>
+                        </BlurView>
+
+                    ) : (
+                        <BlurView
+                            tint="light"
+                            intensity={60}
+                            style={[styles.mobileTabItem, {
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                borderRadius: 100,
+                                paddingHorizontal: 10,
+                                shadowColor: '#000',
+                                shadowOffset: { width: 0, height: 4 },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 10,
+                                elevation: 3,
+                                borderWidth: 1,
+                                borderColor: 'rgba(255, 255, 255, 0.25)',
+                            }]}
+                        >
+                            <TextLink href='/profile'>
+
+                                <View style={styles.mobileTabItem}>
+                                    <UserIcon />
+                                </View>
+                            </TextLink>
+                        </BlurView>
+                    )}
                     <LinearGradient
                         colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
                         start={{ x: 0, y: 0 }}
@@ -460,7 +640,7 @@ const Header = () => {
                     <View style={[styles.containerRow, { zIndex: 999999999999 }]}>
 
                         <BlurView
-                            intensity={15}
+                            intensity={50}
                             tint="light"
                             style={[StyleSheet.absoluteFill, { borderRadius: 100 }]}
                         />
@@ -474,14 +654,14 @@ const Header = () => {
                                     height={30}
                                     resizeMode="contain"
                                 />
-                                <Text style={{ textTransform: 'capitalize', fontSize: 20, color: '#3B9EFE', fontWeight: 'bold' }}>online market</Text>
+                                <Text style={{ textTransform: 'capitalize', fontSize: 20, color: '#1A73E8', fontWeight: 'bold' }}>online market</Text>
                             </View>
                         </TextLink>
 
                         <TextLink href='/katalog'>
-                            <View style={styles.catalogButton}>
+                            <View style={styles.navItem}>
                                 <CatalogIcon />
-                                <Text style={styles.catalogButtonText}>{lan === 'uz' ? 'Katalog' : lan === 'en' ? 'Catalog' : lan === 'ru' ? 'Каталог' : 'Katalog'}</Text>
+                                <Text style={styles.navText}>{lan === 'uz' ? 'Katalog' : lan === 'en' ? 'Catalog' : lan === 'ru' ? 'Каталог' : 'Katalog'}</Text>
                             </View>
                         </TextLink>
 
@@ -490,7 +670,7 @@ const Header = () => {
                                 onChangeText={text => setInput(text)}
                                 placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
                                 style={styles.searchInput}
-                                placeholderTextColor="rgba(0, 149, 255, 0.6)"
+                                placeholderTextColor="#1A73E8"
                                 value={input}
                             />
                             <TextLink href={`/search/${input.split(' ').join('-').toLocaleLowerCase().trim()}`} style={styles.searchIconWrapper}>
@@ -565,33 +745,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        backgroundColor: 'rgba(226, 245, 255, 0.2)',
+        paddingHorizontal: 30,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
         borderRadius: 100,
         paddingVertical: 2,
         zIndex: 99999999999999,
-        boxShadow: '0 0 5px rgb(226, 245, 255)'
+        boxShadow: '0 0 5px rgb(226, 245, 255)',
+        gap: 24
     },
     logoText: {
         fontSize: 26,
         fontWeight: '800',
         color: '#3B9EFE',
         letterSpacing: -0.5,
-    },
-    catalogButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 149, 255, 0.3)',
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderRadius: 80,
-        marginLeft: 20,
-        gap: 10,
-    },
-    catalogButtonText: {
-        color: '#3B9EFE',
-        fontWeight: '600',
-        fontSize: 15,
     },
     searchContainer: {
         flex: 1,
@@ -600,8 +766,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgb(226, 245, 255)',
         borderRadius: 80,
-        marginHorizontal: 20,
-        backgroundColor: 'rgba(226, 245, 255, 0.4)',
+        backgroundColor: 'rgba(226, 245, 255, 0.1)',
+        height: '100%'
     },
     searchInput: {
         flex: 1,
@@ -612,7 +778,6 @@ const styles = StyleSheet.create({
     },
     searchIconWrapper: {
         padding: 10,
-        backgroundColor: 'rgba(226, 245, 255, 0.3)',
         borderRadius: 80,
     },
     navLinks: {
@@ -623,12 +788,12 @@ const styles = StyleSheet.create({
     navItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
     },
     navText: {
         fontSize: 15,
         fontWeight: '500',
-        color: '#3B9EFE',
+        color: '#1A73E8',
     },
     iconText: {
         fontSize: 18,
@@ -696,9 +861,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 99999,
-        gap: 0,
+        gap: 12,
         width: '100%',
-        paddingBottom: 30
+        paddingBottom: 30,
     },
     mobileTabBar: {
         height: '100%',
@@ -709,11 +874,16 @@ const styles = StyleSheet.create({
         gap: 0,
         backgroundColor: 'rgba(226, 245, 255, 0.6)',
         borderRadius: 100,
-        width: '90%',
+        width: '86%',
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
-        position: 'relative'
+        position: 'relative',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 3,
     },
     mobileTabItem: {
         ...Platform.select({
@@ -728,11 +898,17 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: 'transparent',
         borderRadius: 100,
+        flexDirection: 'row',
+        gap: 8,
+        zIndex: 9999999999999999999
     },
     mobileText: {
-        fontSize: 10,
+        fontSize: 16,
         textAlign: 'center',
         marginTop: 2,
+        textTransform: 'capitalize',
+        color: '#1A73E8',
+        fontWeight: 'bold'
     },
 })
 

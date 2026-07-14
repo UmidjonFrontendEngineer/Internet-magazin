@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, useWindowDimensions, Platform, Animated } from 'react-native';
 
-const ProductCardLoader = () => {
+const LoaderProductCart = () => {
     const { width: windowWidth } = useWindowDimensions();
     const isWebDesktop = Platform.OS === 'web' && windowWidth > 768;
     const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -125,4 +125,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ProductCardLoader;
+export default LoaderProductCart;

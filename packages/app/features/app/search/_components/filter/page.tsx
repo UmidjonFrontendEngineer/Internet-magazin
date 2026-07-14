@@ -6,7 +6,10 @@ import ProductCard from 'app/components/UI/ProductCart';
 import { useLanStorage } from 'app/store/useLanStore';
 import { useSearchParams } from 'solito/navigation';
 import { useInputStorage } from 'app/store/useInputStore';
-import { usePathname } from 'solito/navigation';
+import NotLoad from 'app/components/UI/NotLoad'
+import Empty from 'app/components/UI/Empty';
+import LoaderProductCart from 'app/components/UI/LoaderProductCart';
+import { useRouter } from 'solito/navigation';
 
 interface ProductProps {
     id: number;
@@ -22,71 +25,59 @@ const FilterSearch = () => {
     const params = useSearchParams();
     const lan = useLanStorage(state => state.lan);
     const inputValue = useInputStorage(state => state.input)
+    const router = useRouter()
 
     const [products, setProducts] = useState<ProductProps[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState('loading');
 
-    const searchQuery = inputValue
+    const fetchSearchProducts = async () => {
+        try {
+            setLoading('loading')
+            const response = await fetch("https://fakestoreapi.com/products");
+            const data = await response.json();
+
+            const searchProducts = data.filter(product =>
+                product.title.toLowerCase().includes(inputValue)
+            );
+            setProducts(searchProducts);
+            setLoading('loaded')
+        } catch (error) {
+            console.error("Ma'lumot yuklashda xatolik:", error);
+            setLoading('notLoad')
+        }
+    };
 
     useEffect(() => {
-        const fetchSearchProducts = async () => {
-            try {
-                const response = await fetch("https://fakestoreapi.com/products");
-                const data = await response.json();
-                setProducts(data);
-            } catch (error) {
-                console.error("Ma'lumot yuklashda xatolik:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchSearchProducts();
-    }, []);
+        router.push(`/search/${inputValue}`)
+    }, [inputValue]);
 
-    const searchProducts = products.filter(product =>
-        product.title.toLowerCase().includes(searchQuery)
-    );
-
-
-    if (loading) {
+    if (loading === 'loading') {
         return (
             <ScreenWrapper>
-                <View style={styles.center}>
-                    <ActivityIndicator size="large" color="#111827" />
-                    <Text style={styles.infoText}>
-                        {lan === 'uz' ? 'Yuklanmoqda...' : lan === 'ru' ? 'Загрузка...' : 'Loading...'}
-                    </Text>
+                <View style={styles.grid}>
+                    <LoaderProductCart />
+                    <LoaderProductCart />
+                    <LoaderProductCart />
+                    <LoaderProductCart />
                 </View>
             </ScreenWrapper>
         );
     }
 
-    if (!searchQuery || searchProducts.length === 0) {
+    else if (loading === 'notLoad') {
         return (
-            <ScreenWrapper>
-                <View style={styles.center}>
-                    <Text style={styles.emptyText}>
-                        {lan === 'uz' ? `"${searchQuery}" bo'yicha hech narsa topilmadi` :
-                            lan === 'ru' ? `По запросу "${searchQuery}" ничего не найдено` :
-                                `No results found for "${searchQuery}"`}
-                    </Text>
-                </View>
-            </ScreenWrapper>
-        );
+            <NotLoad fetchProducts={fetchSearchProducts} />
+        )
     }
+
+    if (products.length === 0) return <Empty />
 
     return (
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-                <Text style={styles.headerTitle}>
-                    {lan === 'uz' ? 'Topilgan mahsulotlar' :
-                        lan === 'ru' ? 'Найденные товары' :
-                            'Found products'}
-                </Text>
-
                 <View style={styles.grid}>
-                    {searchProducts.map((item) => (
+                    {products.map((item) => (
                         <ProductCard key={item.id} product={item} products={products} />
                     ))}
                 </View>

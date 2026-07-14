@@ -25,7 +25,6 @@ interface ProductCardProps {
 const ProductCard = ({ product, products }: ProductCardProps) => {
     const router = useRouter();
     const { width: windowWidth } = useWindowDimensions();
-    const isWebDesktop = Platform.OS === 'web' && windowWidth > 768;
 
     const cartIds = useCartStore(state => state.cartIds);
     const toggleCart = useCartStore(state => state.toggleCart);
@@ -57,7 +56,7 @@ const ProductCard = ({ product, products }: ProductCardProps) => {
             onPress={handleCardPress}
             style={[
                 styles.card, 
-                { width: isWebDesktop ? '23%' : windowWidth > 500 ? '48%' : '100%' }
+                { width: windowWidth > 1400 ? '19%' : windowWidth > 1000 ? '24%' : windowWidth > 650 ? '31%' : windowWidth > 350 ? '48%' : '100%' }
             ]}
         >
             <View style={styles.topSection}>

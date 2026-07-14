@@ -7,6 +7,8 @@ import ProductCard from 'app/components/UI/ProductCart';
 import LoaderProductCard from 'app/components/UI/LoaderProductCart';
 import Slider from 'app/components/UI/Slider';
 import SliderLoader from 'app/components/UI/SliderLoader';
+import NotLoad from 'app/components/UI/NotLoad';
+import Empty from 'app/components/UI/Empty';
 
 interface ProductProps {
     id: number;
@@ -22,29 +24,32 @@ const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
 
 const HomeScreen = () => {
     const [products, setProducts] = useState<ProductProps[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState('loading');
     const { width: screenWidth } = useWindowDimensions();
+
+    const fetchProducts = async () => {
+        try {
+            setLoading('loading')
+            const response = await fetch("https://fakestoreapi.com/products");
+            const data = await response.json();
+            setProducts(data);
+            setLoading('loaded')
+        } catch (error) {
+            console.error("Ma'lumot yuklashda xatolik:", error);
+            setLoading('notLoad')
+        }
+    };
+
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await fetch("https://fakestoreapi.com/products");
-                const data = await response.json();
-                setProducts(data);
-            } catch (error) {
-                console.error("Ma'lumot yuklashda xatolik:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchProducts();
     }, []);
 
-    if (loading) {
+    if (loading === 'loading') {
         return (
             <ScreenWrapper>
                 <ScrollView contentContainerStyle={styles.container}>
 
-                    <View style={{ padding: screenWidth > 900 ? 12 : 0 }}>
+                    <View style={{ padding: 24 }}>
                         <SliderLoader />
                     </View>
 
@@ -59,6 +64,14 @@ const HomeScreen = () => {
             </ScreenWrapper>
         );
     }
+
+    else if (loading === 'notLoad') {
+        return (
+            <NotLoad fetchProducts={fetchProducts} />
+        )
+    }
+
+    if (products.length === 0) return <Empty />
 
     return (
         <ScreenWrapper>

@@ -6,6 +6,8 @@ import { useCartStore } from 'app/store/useCartStore';
 import Card from 'app/components/UI/Cart';
 import { useLanStorage } from 'app/store/useLanStore';
 import LoaderCart from 'app/components/UI/LoaderCart';
+import NotLoad from 'app/components/UI/NotLoad';
+import Empty from 'app/components/UI/Empty';
 
 interface ProductProps {
     id: number;
@@ -19,41 +21,37 @@ interface ProductProps {
 
 const Savat = () => {
     const [products, setProducts] = useState<ProductProps[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState('loading');
 
     const cartIds = useCartStore((state) => state.cartIds);
     const lan = useLanStorage(state => state.lan)
 
-    useEffect(() => {
-        const fetchCartProducts = async () => {
-            try {
-                const response = await fetch("https://fakestoreapi.com/products");
-                const data = await response.json();
-                setProducts(data);
-            } catch (error) {
-                console.error("Savat ma'lumotlarini yuklashda xatolik:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchCartProducts = async () => {
+        try {
+            setLoading('loading')
+            const response = await fetch("https://fakestoreapi.com/products");
+            const data = await response.json();
+            setProducts(data);
+            setLoading('loaded')
+        } catch (error) {
+            console.error("Savat ma'lumotlarini yuklashda xatolik:", error);
+            setLoading('notLoad')
+        }
+    };
 
+    useEffect(() => {
         if (cartIds.length > 0) {
             fetchCartProducts();
-        } else {
-            setLoading(false);
         }
     }, [cartIds]);
 
     const cartProducts = products.filter(product => cartIds.includes(product.id));
+    if (cartIds.length === 0) return <Empty />
 
-    if (loading) {
+    if (loading === 'loading') {
         return (
             <ScreenWrapper>
                 <View style={styles.grid}>
-                    <LoaderCart />
-                    <LoaderCart />
-                    <LoaderCart />
-                    <LoaderCart />
                     <LoaderCart />
                     <LoaderCart />
                     <LoaderCart />
@@ -63,14 +61,8 @@ const Savat = () => {
         );
     }
 
-    if (cartIds.length === 0 || cartProducts.length === 0) {
-        return (
-            <ScreenWrapper>
-                <View style={styles.center}>
-                    <Text style={styles.emptyText}>{lan === 'uz' ? 'Savatingiz hozircha bo\'sh' : lan === 'en' ? 'Your cart is empty' : lan === 'ru' ? 'Ваша корзина пока пуста' : 'Savatingiz hozircha bo\'sh'} 🛒</Text>
-                </View>
-            </ScreenWrapper>
-        );
+    else if (loading === 'notLoad') {
+        return <NotLoad fetchProducts={fetchCartProducts} />
     }
 
     return (

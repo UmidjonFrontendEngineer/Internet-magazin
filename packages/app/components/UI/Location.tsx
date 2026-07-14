@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ScrollView, StyleSheet, Dimensions, Pressable } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Dimensions, Pressable, TouchableOpacity } from 'react-native'
 import { uselocationStorage } from 'app/store/useLocationStore';
 
 const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => void }) => {
@@ -628,14 +628,14 @@ const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => voi
     ];
     return (
         <View>
-            <ScrollView style={{ maxHeight: Dimensions.get('window').height * 0.5, backgroundColor: 'rgba(225, 244, 255, 0.662)', borderRadius: 20, padding: 10 }}>
-                {uzbekistanLocations.map((location, index) => (
-                    <Pressable key={location} onPress={() => { setLocation(location); setLocationOpen(false); }} style={({ pressed }) => [{ backgroundColor: pressed ? '#e0e0e06b' : 'transparent' }, { padding: 10, borderRadius: 16 }]}>
-                        <Text style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-                            {location}
-                        </Text>
-                    </Pressable>
-                ))}
+            <ScrollView style={{ gap: 4, width: '100%', backgroundColor: 'white', borderRadius: 16, padding: 4, zIndex: 99999999999999, maxHeight: 500, transform: [{translateY: 235}] }}>
+                {
+                    uzbekistanLocations.map(item => (
+                        <TouchableOpacity key={item} onPress={() => { setLocation(item), setLocationOpen(false) }} style={{ paddingVertical: 4, borderRadius: 10, backgroundColor: 'rgba(226, 245, 255, 0.6)', width: '100%', alignItems: 'center', justifyItems: 'center', flexDirection: 'row', flex: 1, marginBottom: 4 }}>
+                            <Text style={{ textTransform: 'uppercase', fontSize: 16, color: 'skyblue' }}>{item}</Text>
+                        </TouchableOpacity>
+                    ))
+                }
             </ScrollView>
         </View>
     )

@@ -5,6 +5,8 @@ import ScreenWrapper from 'app/components/layout/ScreenWrapper';
 import ProductCard from 'app/components/UI/ProductCart';
 import { useYoqtirilganStore } from 'app/store/useYoqtirilganStore';
 import LoaderProductCard from 'app/components/UI/LoaderProductCart';
+import NotLoad from 'app/components/UI/NotLoad';
+import Empty from 'app/components/UI/Empty';
 
 interface ProductProps {
     id: number;
@@ -18,33 +20,34 @@ interface ProductProps {
 
 const Yoqtirilgan = () => {
     const [products, setProducts] = useState<ProductProps[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState('loading');
 
     const yoqtirilganIds = useYoqtirilganStore((state) => state.yoqtirilganIds);
 
-    useEffect(() => {
-        const fetchYoqtirilganProducts = async () => {
-            try {
-                const response = await fetch("https://fakestoreapi.com/products");
-                const data = await response.json();
-                setProducts(data);
-            } catch (error) {
-                console.error("Saralangan ma'lumotlarini yuklashda xatolik:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchYoqtirilganProducts = async () => {
+        try {
+            setLoading('loading')
+            const response = await fetch("https://fakestoreapi.com/products");
+            const data = await response.json();
+            setProducts(data);
+            setLoading('loaded')
+        } catch (error) {
+            console.error("Saralangan ma'lumotlarini yuklashda xatolik:", error);
+            setLoading('notLoad')
+        }
+    };
 
+    useEffect(() => {
         if (yoqtirilganIds.length > 0) {
             fetchYoqtirilganProducts();
-        } else {
-            setLoading(false);
         }
     }, [yoqtirilganIds]);
 
     const yoqtirilganProducts = products.filter(product => yoqtirilganIds.includes(product.id));
 
-    if (loading) {
+    if (yoqtirilganIds.length === 0) return <Empty />
+    
+    if (loading === 'loading') {
         return (
             <ScreenWrapper>
                 <View style={styles.grid}>
@@ -57,14 +60,8 @@ const Yoqtirilgan = () => {
         );
     }
 
-    if (yoqtirilganIds.length === 0 || yoqtirilganProducts.length === 0) {
-        return (
-            <ScreenWrapper>
-                <View style={styles.center}>
-                    <Text style={styles.emptyText}>Saralanganingiz hozircha bo'sh 🛒</Text>
-                </View>
-            </ScreenWrapper>
-        );
+    else if (loading === 'notLoad') {
+        return <NotLoad fetchProducts={fetchYoqtirilganProducts} />
     }
 
     return (

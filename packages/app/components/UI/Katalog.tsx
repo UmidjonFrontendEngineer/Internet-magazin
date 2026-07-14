@@ -360,34 +360,6 @@ const KatalogTizimi = () => {
             marginTop: isMobileView ? 40 : 140,
             paddingHorizontal: 16,
         }}>
-            <View style={{backgroundColor: 'rgba(226, 245, 255, 0.4)', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', borderRadius: 100, padding: 1.5, gap: 1.5}}>
-                <TextInput
-                    placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
-                    onChangeText={text => setInput(text)}
-                    style={{
-                        flex: 1,
-                        paddingHorizontal: 20,
-                        paddingVertical: 16,
-                        fontSize: 15,
-                        ...Platform.select({ web: { outlineStyle: 'none' } }),
-                        borderColor: 'rgb(226, 245, 255)',
-                        borderWidth: 1,
-                        borderRadius: 100,
-                    }}
-                    placeholderTextColor="rgba(0, 149, 255, 0.6)"
-                    value={input}
-                />
-
-                <TextLink href={`/search/${input.trim().replace(/\s+/g, '-').toLowerCase()}`} style={{ height: '100%', alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: 'rgba(226, 245, 255, 0.3)', borderRadius: 100 }}>
-                    <SolitoImage
-                        src={SearchPng}
-                        alt="search Icon"
-                        width={30}
-                        height={30}
-                        resizeMode="contain"
-                    />
-                </TextLink>
-            </View>
 
             <View style={{
                 flexDirection: isMobileView ? 'column' : 'row',
@@ -440,10 +412,10 @@ const KatalogTizimi = () => {
                 </ScrollView>
 
                 <ScrollView
-                    style={{ 
-                        width: isMobileView ? '100%' : undefined, 
-                        flex: isMobileView ? undefined : 1, 
-                        maxHeight: isMobileView ? undefined : 620 
+                    style={{
+                        width: isMobileView ? '100%' : undefined,
+                        flex: isMobileView ? undefined : 1,
+                        maxHeight: isMobileView ? undefined : 620
                     }}
                     contentContainerStyle={{
                         flexDirection: 'row',

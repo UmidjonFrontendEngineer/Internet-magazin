@@ -1,9 +1,12 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, useWindowDimensions } from 'react-native'
 import ScreenWrapper from 'app/components/layout/ScreenWrapper'
 import ProductCard from 'app/components/UI/ProductCart'
 import { useInputStorage } from 'app/store/useInputStore'
+import NotLoad from 'app/components/UI/NotLoad'
+import Empty from 'app/components/UI/Empty';
+import LoaderProductCart from 'app/components/UI/LoaderProductCart'
 
 interface Product {
     id: number;
@@ -17,54 +20,62 @@ interface Product {
 
 const Search = () => {
     const searchInput = useInputStorage((state) => state.input);
-    
+    const { height: screenHeight, width: screenWidth } = useWindowDimensions()
+
     const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [hasError, setHasError] = useState<boolean>(false);
+    const [loading, setLoading] = useState('loading');
+
+    const fetchProducts = async () => {
+        try {
+            setLoading('loading');
+            const response = await fetch("https://fakestoreapi.com/products");
+            const data: Product[] = await response.json();
+
+            const filtered = data.filter(item =>
+                item.title.toLowerCase().includes(searchInput.toLowerCase())
+            );
+
+            setProducts(filtered);
+            setLoading('loaded')
+        } catch (error) {
+            console.error("Ma'lumot yuklashda xatolik:", error);
+            setLoading('notLoad')
+        }
+    };
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                setLoading(true);
-                setHasError(false);
-                
-                const response = await fetch("https://fakestoreapi.com/products");
-                const data: Product[] = await response.json();
-                
-                const filtered = data.filter(item => 
-                    item.title.toLowerCase().includes(searchInput.toLowerCase())
-                );
-                
-                setProducts(filtered);
-            } catch (error) {
-                console.error("Ma'lumot yuklashda xatolik:", error);
-                setHasError(true);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchProducts();
-    }, [searchInput]);
+    }, []);
+
+    if (loading === 'loading') {
+        return (
+            <ScreenWrapper>
+                <View style={styles.grid}>
+                    <LoaderProductCart />
+                    <LoaderProductCart />
+                    <LoaderProductCart />
+                    <LoaderProductCart />
+                </View>
+            </ScreenWrapper>
+        )
+    }
+
+    else if (loading === 'notLoad') {
+        return (
+            <NotLoad fetchProducts={fetchProducts} />
+        )
+    }
+
+    if (products.length === 0) return <Empty />
 
     return (
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.headerTitle}>Qidiruv natijalari</Text>
-                
-                {loading ? (
-                    <ActivityIndicator size="large" color="#2563eb" />
-                ) : hasError ? (
-                    <Text style={styles.errorText}>Internet ulanishini tekshiring yoki keyinroq urunib ko'ring.</Text>
-                ) : products.length === 0 ? (
-                    <Text style={styles.noResult}>Mahsulot topilmadi</Text>
-                ) : (
-                    <View style={styles.grid}>
-                        {products.map((product) => (
-                            <ProductCard key={product.id} product={product} products={products} />
-                        ))}
-                    </View>
-                )}
+                <View style={styles.grid}>
+                    {products.map((product) => (
+                        <ProductCard key={product.id} product={product} products={products} />
+                    ))}
+                </View>
             </ScrollView>
         </ScreenWrapper>
     )

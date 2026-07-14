@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "app": "*",
+    "expo-blur": "^57.0.0",
+    "expo-modules-core": "^57.0.3",
     "next": "^16.1.0",
     "raf": "^3.4.1",
     "react": "^19.1.0",
