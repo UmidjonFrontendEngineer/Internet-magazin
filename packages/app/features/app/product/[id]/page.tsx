@@ -1,12 +1,18 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable, Dimensions } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable, useWindowDimensions, Animated, Platform } from 'react-native';
 import ScreenWrapper from 'app/components/layout/ScreenWrapper';
 import ProductCart from 'app/components/UI/ProductCart';
 import { useLanStorage } from 'app/store/useLanStore';
 import { useSearchParams } from 'solito/navigation';
 import { useInputStorage } from 'app/store/useInputStore';
 import { usePathname } from 'solito/navigation';
+import { SolitoImage } from 'solito/image';
+import HeartPng from 'app/features/app/assets/heart.png'
+import { useCartStore } from "app/store/useCartStore";
+import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
+import CartPng from 'app/features/app/assets/cart.png'
+import { useRouter } from 'solito/navigation';
 
 interface ProductProps {
     id: number;
@@ -18,12 +24,13 @@ interface ProductProps {
     rating: { rate: number; count: number };
 }
 
-const { width } = Dimensions.get('window');
-
 const ProductID = () => {
     const lan = useLanStorage(state => state.lan);
     const inputValue = useInputStorage(state => state.input);
     const pathname = usePathname()
+    const { width: windowWidth } = useWindowDimensions()
+    const router = useRouter()
+    const isMobileView = windowWidth < 1000
 
     const { id } = useSearchParams();
     const productIdToFind = id ? parseInt(id as string, 10) : Number(pathname?.split('/')[2]?.split(',')[0]);
@@ -33,6 +40,32 @@ const ProductID = () => {
     const [nextProducts, setNextProducts] = useState<ProductProps[]>([])
     const [products, setProducts] = useState<ProductProps[]>([]);
     const [loading, setLoading] = useState(true);
+    const [moon, setMoon] = useState(3)
+    const { cart, toggleCart } = useCartStore();
+    const product = products.find(p => p.id === productIdToFind);
+    const isInCart = cart.some(item => item.id === product?.id);
+    const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan);
+    const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
+
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handleFavoritePress = (e: MouseEvent) => {
+        e.stopPropagation();
+        toggleYoqtirilgan(product.id);
+
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+                toValue: 1.4,
+                duration: 120,
+                useNativeDriver: Platform.OS !== 'web',
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 150,
+                useNativeDriver: Platform.OS !== 'web',
+            }),
+        ]).start();
+    };
 
     useEffect(() => {
         const saralanganMaxsulotlar = products.filter(maxsulot => {
@@ -65,8 +98,6 @@ const ProductID = () => {
         );
     }
 
-    const product = products.find(p => p.id === productIdToFind);
-
     if (!product) {
         return (
             <View style={styles.center}>
@@ -78,146 +109,110 @@ const ProductID = () => {
     return (
         <ScreenWrapper>
             <ScrollView>
-                <View style={styles.mainWrapper}>
-
-                    <View style={styles.leftColumn}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <View style={{width: '50%'}}>
-                                <View style={[styles.card, styles.row]}>
-                                    <View style={styles.sliderThumbnails}>
-                                        {[1, 2, 3, 4, 5].map((i) => (
-                                            <View key={i} style={styles.thumbnailPlaceholder} />
-                                        ))}
-                                    </View>
-                                    <View style={styles.mainImagePlaceholder} />
+                <View style={{ width: '100%', flexDirection: isMobileView ? 'column' : 'row', backgroundColor: '#eee', borderRadius: 10, padding: 8, gap: 8 }}>
+                    <View style={{ flex: 65, height: '100%', backgroundColor: 'skyblue', borderRadius: 8, padding: 7, gap: 7, flexDirection: 'row' }}>
+                        <View style={{ flex: 1, height: '100%', backgroundColor: '#9c9c9c', borderRadius: 7, padding: 7, gap: 7, flexDirection: 'row' }}>
+                            {isMobileView ? null : (<View style={{ flex: 15, height: '100%', backgroundColor: '#4c4c4c', borderRadius: 5, gap: 5, padding: 5 }}>
+                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
+                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
+                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
+                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
+                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
+                            </View>)}
+                            <View style={{ flex: 85, height: '100%', backgroundColor: '#4c4c4c', borderRadius: 5, gap: 5, padding: 5 }}>
+                                <View style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                                    <SolitoImage
+                                        src={product.image}
+                                        alt={product.title}
+                                        width={300}
+                                        height={300}
+                                        resizeMode='contain'
+                                    />
                                 </View>
                             </View>
-
-                            <View style={{widht: '50%'}}>
-                                <View style={styles.card}>
-                                    <Text style={styles.productTitle}>{product.title}</Text>
-                                    <View style={styles.metaRow}>
-                                        <Text style={styles.stars}>⭐⭐⭐⭐⭐ <Text style={styles.ratingValue}>5.0</Text></Text>
-                                        <Text style={styles.blueLink}>(6 sharh)</Text>
-                                        <Text style={styles.mutedText}>• 16 fotosurat • 20+ buyurtma</Text>
-                                    </View>
-                                </View>
-
-
-                                <View style={styles.card}>
-                                    <Text style={styles.sectionLabel}>Xotira: <Text style={styles.boldText}>825 GB Digital Slim Edition</Text></Text>
-                                    <View style={styles.chipsRow}>
-                                        <Pressable style={[styles.chip, styles.chipActive]}>
-                                            <Text style={styles.chipTextActive}>825 GB Digital Slim Edition</Text>
+                        </View>
+                        {!isMobileView ? (
+                            <View style={{ flex: 1, height: '100%', backgroundColor: '#9c9c9c', borderRadius: 7, padding: 10, gap: 8 }}>
+                                <Text style={{ fontSize: 18, fontWeight: 600, color: 'snow', textTransform: 'capitalize' }}>{product.title}</Text>
+                                <Text>***** {product.rating.count} sharh | {product.id}+ buyrutma</Text>
+                            </View>
+                        ) : null}
+                    </View>
+                    <View style={{ flex: 35, height: '100%', backgroundColor: 'skyblue', borderRadius: 8, padding: 8, gap: 8 }}>
+                        <View style={{ width: '100%', flex: 7, paddingTop: 50, gap: 5, borderRadius: 28, backgroundColor: 'rgba(0, 166, 255, 0.6)' }}>
+                            <View style={{ width: '100%', height: '100%', backgroundColor: 'rgba(255, 255, 255, 0.8)', borderTopLeftRadius: 28, borderTopRightRadius: 26, padding: 20, gap: 16 }}>
+                                {isMobileView ? <Text style={{ fontWeight: '700', fontSize: 20 }}>{product.title}</Text> : null}
+                                <Text style={{ fontWeight: '700', fontSize: 30 }}>{product.price} so'm</Text>
+                                <Text style={{ fontWeight: '400', fontSize: 14, textDecorationLine: 'line-through', color: 'gray' }}>{product.price / 100 * 120}</Text>
+                                <View style={{ width: '100%', padding: 10, gap: 6, backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: 14 }}>
+                                    <View style={{ width: '100%', padding: 4, gap: 4, borderRadius: 6, backgroundColor: '#9c9c9c', flexDirection: 'row' }}>
+                                        <Pressable onPress={() => setMoon(24)} style={{ height: '100%', padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={{ fontWeight: '700' }}>24 oy</Text>
                                         </Pressable>
-                                        <Pressable style={styles.chip}><Text style={styles.chipText}>1 TB Digital Slim Edition</Text></Pressable>
-                                        <Pressable style={styles.chip}><Text style={styles.chipText}>2TB PRO Digital</Text></Pressable>
-                                        <Pressable style={styles.chip}><Text style={styles.chipText}>2 TB Digital Slim O'yinlar bilan</Text></Pressable>
+                                        <Pressable onPress={() => setMoon(12)} style={{ height: '100%', padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={{ fontWeight: '700' }}>12 oy</Text>
+                                        </Pressable>
+                                        <Pressable onPress={() => setMoon(6)} style={{ height: '100%', padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={{ fontWeight: '700' }}>6 oy</Text>
+                                        </Pressable>
+                                        <Pressable onPress={() => setMoon(3)} style={{ height: '100%', padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                            <Text style={{ fontWeight: '700' }}>3 oy</Text>
+                                        </Pressable>
                                     </View>
+                                    <Pressable style={{ height: '100%', width: '100%', padding: 8, borderRadius: 14, flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text><Text style={{ padding: 6, backgroundColor: 'yellow', borderRadius: 10, fontWeight: 'bold', fontSize: 16 }}>{product.price / moon} so'm</Text> × 3 oy</Text>
+                                        <Text>{'>'}</Text>
+                                    </Pressable>
                                 </View>
+                                <View style={{ width: '100%', flexDirection: 'row', gap: 16 }}>
+                                    <Pressable style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', padding: 12, borderRadius: 14, flex: 9, justifyContent: 'center', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 16, fontWeight: '700', textTransform: 'capitalize' }}>1 klikda xarid qilish</Text>
+                                    </Pressable>
+                                    <Pressable onPress={handleFavoritePress} style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', padding: 12, borderRadius: 14, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+
+                                        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                                            <SolitoImage
+                                                src={yoqtirilganIds.includes(product.id) ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
+                                                alt="Favorite Icon"
+                                                width={24}
+                                                height={24}
+                                                resizeMode="contain"
+                                            />
+                                        </Animated.View>
+
+                                    </Pressable>
+                                </View>
+                                <View style={{ flexDirection: 'row', width: '100%', gap: 16 }}>
+                                    <Pressable
+                                        onPress={(e: any) => {
+                                            e.stopPropagation();
+                                            toggleCart(product.id);
+                                        }}
+                                        style={[styles.button, isInCart ? styles.buttonInCart : styles.button, { flex: 8 }]}>
+                                        <Text style={[styles.buttonText, isInCart && styles.buttonTextInCart]}>{isInCart ? 'savatda ✓' : 'savatga qo\'shish'}</Text>
+                                    </Pressable>
+                                    {
+                                        isInCart ? <Pressable onPress={() => router.push('/savat')} style={{
+                                            flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 166, 255, 0.2)', borderRadius: 10, borderWidth: 1,
+                                            borderColor: 'rgb(0, 166, 255)',
+                                        }}>
+                                            <SolitoImage
+                                                src={CartPng}
+                                                alt={product.title}
+                                                width={30}
+                                                height={30}
+                                                resizeMode='contain'
+                                            />
+                                        </Pressable> : null
+                                    }
+                                </View>
+                            </View>
+                            <View style={{ position: 'absolute', top: 0, left: 0, flexDirection: 'row', justifyContent: 'space-between', width: '100%', padding: 10 }}>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'snow', textTransform: 'capitalize' }}>yozgi chegirmalar <Text>{'>'}</Text></Text>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'snow', textTransform: 'capitalize' }}>{new Date().getSeconds()} kun qoldi</Text>
                             </View>
                         </View>
-
-                        <View style={styles.card}>
-                            <View style={styles.spaceBetweenRow}>
-                                <Text style={styles.sectionLabel}>Xaridorlar sharhlari</Text>
-                                <Text style={styles.blueLink}>Barchasi (6)</Text>
-                            </View>
-
-                            <View style={styles.reviewImagesGrid}>
-                                {[1, 2, 3, 4, 5, 6].map((i) => (
-                                    <View key={i} style={styles.reviewPhotoPlaceholder} />
-                                ))}
-                            </View>
-
-                            <View style={styles.reviewCardsContainer}>
-                                <View style={styles.userReviewCard}>
-                                    <View style={styles.userInfo}>
-                                        <View style={styles.avatarPlaceholder} />
-                                        <View>
-                                            <Text style={styles.userName}>Shohruh</Text>
-                                            <Text style={styles.dateText}>27 iyul</Text>
-                                        </View>
-                                    </View>
-                                    <Text style={styles.starsSmall}>⭐⭐⭐⭐⭐</Text>
-                                    <Text style={styles.reviewComment}><Text style={styles.boldText}>Afzalliklari:</Text> Karobkasidan daje ochilmagan, yangi holatda.</Text>
-                                </View>
-
-                                <View style={styles.userReviewCard}>
-                                    <View style={styles.userInfo}>
-                                        <View style={styles.avatarPlaceholder} />
-                                        <View>
-                                            <Text style={styles.userName}>Мирзо</Text>
-                                            <Text style={styles.dateText}>10 iyul</Text>
-                                        </View>
-                                    </View>
-                                    <Text style={styles.starsSmall}>⭐⭐⭐⭐⭐</Text>
-                                    <Text style={styles.reviewComment}><Text style={styles.boldText}>Izoh:</Text> Rahmat, hammasi vaqtida yetib keldi.</Text>
-                                </View>
-                            </View>
-                        </View>
-
                     </View>
-
-                    <View style={styles.rightColumn}>
-
-                        <View style={[styles.card, styles.stickyCard]}>
-
-                            <View style={styles.chillaHeader}>
-                                <Text style={styles.chillaText}>Chilla ➔</Text>
-                                <View style={styles.badge}><Text style={styles.badgeText}>3 kun qoldi</Text></View>
-                            </View>
-
-                            <View style={styles.priceContainer}>
-                                <Text style={styles.oldPriceText}>9 000 000 so'm</Text>
-                                <Text style={styles.currentPriceText}>6 830 010 so'm</Text>
-                            </View>
-
-                            <View style={styles.divider} />
-
-                            <Text style={styles.smallLabel}>Muddatli to'lov variantlari:</Text>
-                            <View style={styles.monthSelectorGrid}>
-                                <View style={styles.monthTab}><Text style={styles.monthTabText}>3 oy</Text></View>
-                                <View style={styles.monthTab}><Text style={styles.monthTabText}>6 oy</Text></View>
-                                <View style={styles.monthTab}><Text style={styles.monthTabText}>12 oy</Text></View>
-                                <View style={[styles.monthTab, styles.monthTabActive]}>
-                                    <Text style={styles.monthTabTextActive}>24 oy</Text>
-                                </View>
-                            </View>
-
-                            <View style={styles.monthlyPriceBadge}>
-                                <Text style={styles.monthlyPriceText}><Text style={styles.boldText}>483 792 so'm</Text> / oyiga x 24 oy</Text>
-                            </View>
-
-                            <Pressable style={styles.oneClickBtn}>
-                                <Text style={styles.oneClickBtnText}>1 klikda xarid qilish</Text>
-                            </Pressable>
-
-                            <Pressable style={styles.addToCartBtn}>
-                                <Text style={styles.addToCartBtnText}>Savatga qo'shish</Text>
-                            </Pressable>
-
-                            <View style={styles.statusInfo}>
-                                <Text style={styles.greenText}>✔️ 5 dona xarid qilish mumkin</Text>
-                                <Text style={styles.infoText}>🔥 Bu haftada 3 kishi sotib oldi</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.card}>
-                            <Text style={styles.cardInfoTitle}>Ertaga yetkazib beramiz</Text>
-                            <Text style={styles.cardInfoDesc}>Topshirish punktiga yoki kuryer orqali manzilingizga</Text>
-                        </View>
-
-                        <View style={styles.card}>
-                            <Text style={styles.cardInfoTitle}>Qulay usulda xavfsiz to'lov</Text>
-                            <Text style={styles.cardInfoDesc}>Karta orqali, naqd pulda yoki bo'lib to'lashga rasmiylashtirish</Text>
-                            <View style={styles.paymentIconsRow}>
-                                {[1, 2, 3, 4].map((i) => <View key={i} style={styles.miniIcon} />)}
-                            </View>
-                        </View>
-
-                    </View>
-
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12 }}>
                     {
@@ -227,347 +222,32 @@ const ProductID = () => {
                     }
                 </View>
             </ScrollView>
-        </ScreenWrapper >
+        </ScreenWrapper>
     );
 }
 
 const styles = StyleSheet.create({
-    center: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    mainContainer: {
-        padding: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    text: {
-        fontSize: 18,
-        marginVertical: 4,
-    },
-    centerContainer: {
-        alignItems: 'center',
-        paddingVertical: 20,
-    },
-    mainWrapper: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-
-    leftColumn: {
-        width: '65%',
-        gap: 15,
-    },
-    rightColumn: {
-        width: '32%',
-        gap: 15,
-    },
-
-    card: {
-        backgroundColor: '#ffffff',
-        borderRadius: 12,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: '#e9ecef',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 3,
-        elevation: 1,
-    },
-    row: {
-        flexDirection: 'row',
-    },
-    spaceBetweenRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    divider: {
-        height: 1,
-        backgroundColor: '#eee',
-        marginVertical: 15,
-    },
-
-    sliderThumbnails: {
-        width: 70,
-        gap: 10,
-        marginRight: 15,
-    },
-    thumbnailPlaceholder: {
-        width: 60,
-        height: 60,
-        backgroundColor: '#eee',
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: '#e0e0e0',
-    },
-    mainImagePlaceholder: {
-        flex: 1,
-        aspectRatio: 1,
-        backgroundColor: '#eee',
-        borderRadius: 8,
-    },
-    productTitle: {
-        fontSize: 24,
-        fontWeight: '700',
-        color: '#1f2937',
-        marginBottom: 10,
-    },
-    metaRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-    },
-    stars: {
-        color: '#ffc107',
-        fontWeight: 'bold',
-    },
-    ratingValue: {
-        color: '#1f2937',
-    },
-    blueLink: {
-        color: '#007bff',
-        fontWeight: '500',
-    },
-    mutedText: {
-        color: '#6c757d',
-    },
-    sectionLabel: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#343a40',
-        marginBottom: 12,
-    },
-    boldText: {
-        fontWeight: '700',
-    },
-    chipsRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-    },
-    chip: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#dee2e6',
-        backgroundColor: '#fff',
-    },
-    chipActive: {
-        borderColor: '#723eeb',
-        backgroundColor: '#f3efff',
-    },
-    chipText: {
-        color: '#495057',
-        fontSize: 13,
-    },
-    chipTextActive: {
-        color: '#723eeb',
-        fontWeight: '600',
-        fontSize: 13,
-    },
-
-    reviewImagesGrid: {
-        flexDirection: 'row',
-        gap: 8,
-        marginBottom: 20,
-    },
-    reviewPhotoPlaceholder: {
-        width: 56,
-        height: 56,
-        backgroundColor: '#eee',
-        borderRadius: 6,
-    },
-    reviewCardsContainer: {
-        flexDirection: 'row',
-        gap: 15,
-    },
-    userReviewCard: {
-        flex: 1,
-        backgroundColor: '#f8f9fa',
+    button: {
+        backgroundColor: 'rgb(0, 166, 255)',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
         borderRadius: 10,
-        padding: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonInCart: {
+        backgroundColor: 'rgba(0, 166, 255, 0.2)',
         borderWidth: 1,
-        borderColor: '#e9ecef',
+        borderColor: 'rgb(0, 166, 255)',
     },
-    userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: 8,
-    },
-    avatarPlaceholder: {
-        width: 32,
-        height: 32,
-        backgroundColor: '#ced4da',
-        borderRadius: 16,
-    },
-    userName: {
+    buttonText: {
+        color: '#ffffff',
         fontWeight: '600',
-        fontSize: 13,
-    },
-    dateText: {
-        fontSize: 11,
-        color: '#adb5bd',
-    },
-    starsSmall: {
-        fontSize: 11,
-        marginBottom: 6,
-    },
-    reviewComment: {
-        fontSize: 13,
-        color: '#495057',
-        lineHeight: 18,
-    },
-
-    stickyCard: {
-        borderColor: '#723eeb',
-        borderWidth: 1.5,
-    },
-    chillaHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    chillaText: {
-        color: '#723eeb',
-        fontWeight: '700',
         fontSize: 16,
     },
-    badge: {
-        backgroundColor: '#ff3366',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 6,
+    buttonTextInCart: {
+        color: 'rgb(0, 166, 255)',
     },
-    badgeText: {
-        color: '#fff',
-        fontSize: 11,
-        fontWeight: '600',
-    },
-    priceContainer: {
-        marginBottom: 5,
-    },
-    oldPriceText: {
-        fontSize: 14,
-        color: '#adb5bd',
-        textDecorationLine: 'line-through',
-        marginBottom: 2,
-    },
-    currentPriceText: {
-        fontSize: 26,
-        fontWeight: '800',
-        color: '#1f2937',
-    },
-    smallLabel: {
-        fontSize: 12,
-        color: '#6c757d',
-        marginBottom: 8,
-    },
-    monthSelectorGrid: {
-        flexDirection: 'row',
-        gap: 6,
-        marginBottom: 10,
-    },
-    monthTab: {
-        flex: 1,
-        alignItems: 'center',
-        paddingVertical: 8,
-        backgroundColor: '#f1f3f5',
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: '#e9ecef',
-    },
-    monthTabActive: {
-        backgroundColor: '#fffbe6',
-        borderColor: '#ffc107',
-    },
-    monthTabText: {
-        fontSize: 12,
-        color: '#495057',
-    },
-    monthTabTextActive: {
-        fontSize: 12,
-        color: '#b08d0a',
-        fontWeight: '700',
-    },
-    monthlyPriceBadge: {
-        backgroundColor: '#f8f9fa',
-        padding: 10,
-        borderRadius: 6,
-        marginBottom: 15,
-    },
-    monthlyPriceText: {
-        fontSize: 13,
-        color: '#212529',
-    },
-    oneClickBtn: {
-        backgroundColor: '#f1f3f5',
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginBottom: 8,
-        borderWidth: 1,
-        borderColor: '#dee2e6',
-    },
-    oneClickBtnText: {
-        color: '#212529',
-        fontWeight: '600',
-    },
-    addToCartBtn: {
-        backgroundColor: '#723eeb',
-        paddingVertical: 14,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    addToCartBtnText: {
-        color: '#fff',
-        fontWeight: '700',
-        fontSize: 15,
-    },
-    statusInfo: {
-        gap: 6,
-    },
-    greenText: {
-        color: '#198754',
-        fontSize: 12,
-        fontWeight: '500',
-    },
-    infoText: {
-        color: '#6c757d',
-        fontSize: 12,
-    },
-    cardInfoTitle: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#212529',
-        marginBottom: 4,
-    },
-    cardInfoDesc: {
-        fontSize: 12,
-        color: '#6c757d',
-        lineHeight: 16,
-    },
-    paymentIconsRow: {
-        flexDirection: 'row',
-        gap: 6,
-        marginTop: 10,
-    },
-    miniIcon: {
-        width: 35,
-        height: 22,
-        backgroundColor: '#eee',
-        borderRadius: 4,
-    }
-});
+})
 
 export default ProductID;

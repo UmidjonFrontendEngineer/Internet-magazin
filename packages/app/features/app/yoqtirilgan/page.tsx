@@ -67,8 +67,6 @@ const Yoqtirilgan = () => {
     return (
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.headerTitle}>Saralangandagi mahsulotlar</Text>
-
                 <View style={styles.grid}>
                     {yoqtirilganProducts.map((item) => (
                         <ProductCard key={item.id} product={item} products={products} />
