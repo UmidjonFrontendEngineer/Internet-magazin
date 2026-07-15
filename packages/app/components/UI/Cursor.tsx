@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     },
     cursor: {
         position: 'absolute' as any,
-        backgroundColor: 'rgb(0, 166, 255)',
+        backgroundColor: 'rgba(0, 166, 255, 0.2)',
         borderRadius: 50,
     }
 })

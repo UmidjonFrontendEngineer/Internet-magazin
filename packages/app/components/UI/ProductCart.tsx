@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet, useWindowDimensions, Platform } from 'react-native';
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, Pressable, StyleSheet, useWindowDimensions, Platform, Animated } from 'react-native';
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import { SolitoImage } from "solito/image";
@@ -23,21 +23,19 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, products }: ProductCardProps) => {
+    const [isMounted, setIsMounted] = useState(false);
+    const { cart, toggleCart } = useCartStore();
     const router = useRouter();
     const { width: windowWidth } = useWindowDimensions();
-
-    const cartIds = useCartStore(state => state.cartIds);
-    const toggleCart = useCartStore(state => state.toggleCart);
+    const isInCart = cart.some(item => item.id === product.id);
 
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
     const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan);
 
-    const [isMounted, setIsMounted] = useState(false);
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
-    const isInCart = isMounted && cartIds.includes(product.id);
     const isFavorite = isMounted && yoqtirilganIds.includes(product.id);
 
     const handleTargetIDs = (currentId: number) => {
@@ -51,32 +49,59 @@ const ProductCard = ({ product, products }: ProductCardProps) => {
         router.push(`/product/${handleTargetIDs(product.id)}`);
     };
 
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handleFavoritePress = (e: MouseEvent) => {
+        e.stopPropagation();
+        toggleYoqtirilgan(product.id);
+
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+                toValue: 1.4,
+                duration: 120,
+                useNativeDriver: Platform.OS !== 'web',
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 150,
+                useNativeDriver: Platform.OS !== 'web',
+            }),
+        ]).start();
+    };
+
+    if (!isMounted) {
+        return null;
+    }
+
+    const cardWidth = windowWidth > 1400
+        ? '19%'
+        : windowWidth > 1000
+            ? '24%'
+            : windowWidth > 650
+                ? '31%'
+                : windowWidth > 350
+                    ? '48%'
+                    : '100%';
+
     return (
-        <Pressable 
+        <Pressable
             onPress={handleCardPress}
-            style={[
-                styles.card, 
-                { width: windowWidth > 1400 ? '19%' : windowWidth > 1000 ? '24%' : windowWidth > 650 ? '31%' : windowWidth > 350 ? '48%' : '100%' }
-            ]}
+            style={[styles.card, { width: cardWidth }]}
         >
             <View style={styles.topSection}>
-                <Pressable 
-                    onPress={(e) => {
-                        e.stopPropagation();
-                        toggleYoqtirilgan(product.id);
-                    }} 
-                    style={({ pressed }) => [
-                        styles.favoriteButton, 
-                        pressed && { transform: [{ scale: 0.9 }] }
-                    ]}
+                <Pressable
+                    onPress={handleFavoritePress}
+                    style={styles.favoriteButton}
                 >
-                    <SolitoImage
-                        src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
-                        alt="Favorite Icon"
-                        width={24}
-                        height={24}
-                        resizeMode="contain"
-                    />
+                    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                        <SolitoImage
+                            src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
+                            alt="Favorite Icon"
+                            width={24}
+                            height={24}
+                            resizeMode="contain"
+                        />
+                    </Animated.View>
                 </Pressable>
 
                 <View style={styles.imageWrapper}>
@@ -99,12 +124,15 @@ const ProductCard = ({ product, products }: ProductCardProps) => {
                     {(product.price * 12500).toLocaleString()} so'm
                 </Text>
 
-                <Pressable 
-                    onPress={(e) => {
+                <Pressable
+                    onPress={(e: any) => {
                         e.stopPropagation();
                         toggleCart(product.id);
                     }}
-                    style={styles.cartButtonWrapper}
+                    style={({ pressed }: { pressed: boolean }) => [
+                        styles.cartButtonWrapper,
+                        { transform: [{ scale: pressed ? 0.95 : 1 }] }
+                    ]}
                 >
                     <View style={[styles.button, isInCart && styles.buttonInCart]}>
                         <Text numberOfLines={1} style={[styles.buttonText, isInCart && styles.buttonTextInCart]}>
@@ -126,7 +154,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#f0f0f0',
         justifyContent: 'space-between',
-        display: 'flex', 
+        display: 'flex',
         flexDirection: 'column',
         ...Platform.select({
             ios: {
@@ -158,6 +186,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 0.85)',
         padding: 6,
         borderRadius: 100,
+        ...Platform.select({
+            web: {
+                cursor: 'pointer',
+            }
+        })
     },
     imageWrapper: {
         width: '100%',
@@ -211,4 +244,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ProductCard
+export default ProductCard;

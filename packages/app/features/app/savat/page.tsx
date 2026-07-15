@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import ScreenWrapper from 'app/components/layout/ScreenWrapper';
 import { useCartStore } from 'app/store/useCartStore';
@@ -23,7 +23,8 @@ const Savat = () => {
     const [products, setProducts] = useState<ProductProps[]>([]);
     const [loading, setLoading] = useState('loading');
 
-    const cartIds = useCartStore((state) => state.cartIds);
+    const cart = useCartStore(state => state.cart);
+    const cartIds = React.useMemo(() => cart.map(item => item.id), [cart]);
     const lan = useLanStorage(state => state.lan)
 
     const fetchCartProducts = async () => {
@@ -43,7 +44,7 @@ const Savat = () => {
         if (cartIds.length > 0) {
             fetchCartProducts();
         }
-    }, [cartIds]);
+    }, [cartIds.join(',')]);
 
     const cartProducts = products.filter(product => cartIds.includes(product.id));
     if (cartIds.length === 0) return <Empty />

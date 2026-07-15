@@ -1,6 +1,6 @@
 'use client'
-import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, Pressable, StyleSheet, useWindowDimensions, Platform, Animated } from 'react-native'
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import { SolitoImage } from "solito/image";
@@ -15,96 +15,118 @@ interface ProductProps {
     rating: { rate: number; count: number };
 }
 
-const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
-
 const CardProduct = ({ product }: { product: ProductProps }) => {
-    const cartIds = useCartStore(state => state.cartIds);
+    const { width: windowWidth } = useWindowDimensions();
+    const [isMounted, setIsMounted] = useState(false);
+    
+    const cart = useCartStore(state => state.cart);
     const toggleCart = useCartStore(state => state.toggleCart);
 
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
-    // Bu yerdagi stete xatoligi tuzatildi
     const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan);
 
-    const [isMounted, setIsMounted] = useState(false);
+    const incrementQuantity = useCartStore(state => state.incrementQuantity);
+    const decrementQuantity = useCartStore(state => state.decrementQuantity);
+
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
-    const isInCart = isMounted && cartIds.includes(product.id);
+    const isInCart = cart.some(item => item.id === product.id);
     const isFavorite = isMounted && yoqtirilganIds.includes(product.id);
 
-    // Soxta ma'lumotlar (Uzum dizaynini to'ldirish uchun)
-    const quantity = 1; 
-    const oldPrice = product.price * 1.5; // Chegirmadan oldingi soxta narx
+    const cartItem = cart.find(item => item.id === product.id);
+    const quantity = cartItem ? cartItem.quantity : 1;
+    const oldPrice = product.price * 1.5;
+
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handleFavoritePress = (e: any) => {
+        e.stopPropagation();
+        toggleYoqtirilgan(product.id);
+
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+                toValue: 1.4,
+                duration: 120,
+                useNativeDriver: Platform.OS !== 'web',
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 150,
+                useNativeDriver: Platform.OS !== 'web',
+            }),
+        ]).start();
+    };
+
+    if (!isMounted) {
+        return null;
+    }
+
+    const isSmall = windowWidth < 380;
 
     return (
-        <View style={styles.card}>
-            {/* Chap tomon: Rasm va Sevimlilar tugmasi */}
-            <View style={styles.leftSection}>
-                <View style={styles.imageWrapper}>
+        <View style={[styles.card, isSmall && styles.cardSmall]}>
+            <View style={[styles.leftSection, isSmall && styles.leftSectionSmall]}>
+                <View style={[styles.imageWrapper, isSmall && styles.imageWrapperSmall]}>
                     <SolitoImage
                         src={product.image}
                         alt={product.title}
-                        width={100}
-                        height={100}
+                        width={isSmall ? 70 : 100}
+                        height={isSmall ? 70 : 100}
                         resizeMode="contain"
                     />
                 </View>
-                
-                {/* Sevimlilarga qo'shish (Yurakcha) */}
-                <Pressable 
-                    onPress={() => toggleYoqtirilgan(product.id)} 
-                    style={({ pressed }) => [styles.favoriteButton, pressed && { transform: [{ scale: 0.9 }] }]}
+
+                <Pressable
+                    onPress={handleFavoritePress}
+                    style={styles.favoriteButton}
                 >
-                    <SolitoImage
-                        src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
-                        alt="heart Icon"
-                        width={20}
-                        height={20}
-                        resizeMode="contain"
-                    />
+                    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                        <SolitoImage
+                            src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
+                            alt="heart Icon"
+                            width={18}
+                            height={18}
+                            resizeMode="contain"
+                        />
+                    </Animated.View>
                 </Pressable>
             </View>
 
-            {/* O'ng tomon: Ma'lumotlar va Narxlar */}
             <View style={styles.rightSection}>
                 <View style={styles.headerRow}>
-                    <Text numberOfLines={2} style={styles.productTitle}>
+                    <Text numberOfLines={2} style={[styles.productTitle, isSmall && styles.productTitleSmall]}>
                         {product.title}
                     </Text>
-                    
-                    {/* O'chirish / Savatdan olib tashlash tugmasi */}
+
                     <Pressable onPress={() => toggleCart(product.id)} style={styles.deleteButton}>
-                        <Text style={styles.deleteText}>Yo'q qilish</Text>
+                        <Text style={[styles.deleteText, isSmall && styles.deleteTextSmall]}>Yo'q qilish</Text>
                     </Pressable>
                 </View>
 
-                {/* Qo'shimcha ma'lumotlar (Uzum stilida) */}
                 <View style={styles.metaInfo}>
                     <Text style={styles.metaText}>Sotuvchi: <Text style={styles.metaValue}>Premium Store</Text></Text>
                     <Text style={styles.metaText}>Kategoriya: <Text style={styles.metaValue}>{product.category}</Text></Text>
                 </View>
 
-                {/* Pastki qism: Soni va Narxlar */}
-                <View style={styles.footerRow}>
-                    {/* Hisoblagich (Counter) - Faqat savatda bo'lsa yoki doimiy ko'rinadi */}
-                    <View style={styles.counterContainer}>
-                        <Pressable style={styles.counterBtn}>
+                <View style={[styles.footerRow, isSmall && styles.footerRowSmall]}>
+                    <View style={[styles.counterContainer, isSmall && styles.counterContainerSmall]}>
+                        <Pressable style={[styles.counterBtn, isSmall && styles.counterBtnSmall]} onPress={() => decrementQuantity(product.id)}>
                             <Text style={styles.counterBtnText}>-</Text>
                         </Pressable>
-                        <Text style={styles.counterValue}>{quantity}</Text>
-                        <Pressable style={styles.counterBtn}>
+                        <Text style={[styles.counterValue, isSmall && styles.counterValueSmall]}>{quantity}</Text>
+                        <Pressable style={[styles.counterBtn, isSmall && styles.counterBtnSmall]} onPress={() => incrementQuantity(product.id)}>
                             <Text style={styles.counterBtnText}>+</Text>
                         </Pressable>
                     </View>
 
-                    {/* Narx bloki */}
-                    <View style={styles.priceContainer}>
-                        <Text style={styles.currentPrice}>
-                            {(product.price * 12500).toLocaleString()} so'm
+                    <View style={[styles.priceContainer, isSmall && styles.priceContainerSmall]}>
+                        <Text style={[styles.currentPrice, isSmall && styles.currentPriceSmall]}>
+                            {(product.price * 12500 * quantity).toLocaleString()} so'm
                         </Text>
-                        <Text style={styles.oldPrice}>
-                            {(oldPrice * 12500).toLocaleString()} so'm
+                        <Text style={[styles.oldPrice, isSmall && styles.oldPriceSmall]}>
+                            {(oldPrice * 12500 * quantity).toLocaleString()} so'm
                         </Text>
                     </View>
                 </View>
@@ -116,7 +138,6 @@ const CardProduct = ({ product }: { product: ProductProps }) => {
 const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
-        width: isWeb ? '100%' : '100%',
         backgroundColor: '#ffffff',
         borderRadius: 16,
         padding: 16,
@@ -124,10 +145,17 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#e5e7eb',
         justifyContent: 'space-between',
+        width: '100%',
+    },
+    cardSmall: {
+        padding: 10,
     },
     leftSection: {
         position: 'relative',
         marginRight: 16,
+    },
+    leftSectionSmall: {
+        marginRight: 10,
     },
     imageWrapper: {
         width: 110,
@@ -138,10 +166,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 4,
     },
+    imageWrapperSmall: {
+        width: 80,
+        height: 80,
+    },
     favoriteButton: {
         position: 'absolute',
-        top: 6,
-        left: 6,
+        top: 4,
+        left: 4,
         backgroundColor: 'rgba(255,255,255,0.9)',
         borderRadius: 100,
         padding: 4,
@@ -150,6 +182,11 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 2,
         elevation: 1,
+        ...Platform.select({
+            web: {
+                cursor: 'pointer',
+            }
+        })
     },
     rightSection: {
         flex: 1,
@@ -165,8 +202,12 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '500',
         color: '#1f2937',
-        lineHeight: 20,
+        lineHeight: 18,
         paddingRight: 8,
+    },
+    productTitleSmall: {
+        fontSize: 13,
+        lineHeight: 16,
     },
     deleteButton: {
         paddingVertical: 2,
@@ -174,6 +215,9 @@ const styles = StyleSheet.create({
     deleteText: {
         fontSize: 13,
         color: '#9ca3af',
+    },
+    deleteTextSmall: {
+        fontSize: 11,
     },
     metaInfo: {
         marginTop: 4,
@@ -192,6 +236,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 12,
     },
+    footerRowSmall: {
+        flexDirection: 'column-reverse',
+        alignItems: 'stretch',
+        gap: 10,
+        marginTop: 8,
+    },
     counterContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -200,10 +250,19 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         overflow: 'hidden',
     },
+    counterContainerSmall: {
+        width: '100%',
+        justifyContent: 'space-between',
+    },
     counterBtn: {
         paddingHorizontal: 12,
         paddingVertical: 6,
         backgroundColor: '#f9fafb',
+    },
+    counterBtnSmall: {
+        flex: 1,
+        alignItems: 'center',
+        paddingVertical: 8,
     },
     counterBtnText: {
         fontSize: 16,
@@ -216,19 +275,33 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#1f2937',
     },
+    counterValueSmall: {
+        paddingHorizontal: 16,
+        fontSize: 14,
+        textAlign: 'center',
+    },
     priceContainer: {
         alignItems: 'flex-end',
+    },
+    priceContainerSmall: {
+        alignItems: 'flex-start',
     },
     currentPrice: {
         fontSize: 16,
         fontWeight: '700',
         color: '#1f2937',
     },
+    currentPriceSmall: {
+        fontSize: 15,
+    },
     oldPrice: {
-        fontSize: 12,
+        fontSize: 11,
         color: '#9ca3af',
         textDecorationLine: 'line-through',
         marginTop: 2,
+    },
+    oldPriceSmall: {
+        marginTop: 1,
     },
 });
 

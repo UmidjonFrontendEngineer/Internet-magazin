@@ -632,7 +632,7 @@ const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => voi
                 {
                     uzbekistanLocations.map(item => (
                         <TouchableOpacity key={item} onPress={() => { setLocation(item), setLocationOpen(false) }} style={{ paddingVertical: 4, borderRadius: 10, backgroundColor: 'rgba(226, 245, 255, 0.6)', width: '100%', alignItems: 'center', justifyItems: 'center', flexDirection: 'row', flex: 1, marginBottom: 4 }}>
-                            <Text style={{ textTransform: 'uppercase', fontSize: 16, color: 'skyblue' }}>{item}</Text>
+                            <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'skyblue' }}>{item}</Text>
                         </TouchableOpacity>
                     ))
                 }

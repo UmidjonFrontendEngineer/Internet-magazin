@@ -28,13 +28,15 @@ import UzPng from 'app/features/app/assets/uzbekistan.png'
 import EnPng from 'app/features/app/assets/united-kingdom.png'
 import RuPng from 'app/features/app/assets/russia.png'
 import GpsPng from 'app/features/app/assets/gps.png'
+import CancelPng from 'app/features/app/assets/cancel.png'
+import LanguagePng from 'app/features/app/assets/language.png'
 
 const SearchIcon = () => (
     <SolitoImage
         src={SearchPng}
         alt="search"
-        width={30}
-        height={30}
+        width={18}
+        height={18}
         resizeMode="contain"
     />
 )
@@ -43,8 +45,8 @@ const HomeIcon = () => (
     <SolitoImage
         src={HomePng}
         alt="home"
-        width={30}
-        height={30}
+        width={18}
+        height={18}
         resizeMode="contain"
     />
 )
@@ -52,8 +54,8 @@ const UserIcon = () => (
     <SolitoImage
         src={UserPng}
         alt="profile"
-        width={30}
-        height={30}
+        width={18}
+        height={18}
         resizeMode="contain"
     />
 )
@@ -62,8 +64,8 @@ const HeartIcon = () => (
     <SolitoImage
         src={HeartPng}
         alt="heart"
-        width={30}
-        height={30}
+        width={18}
+        height={18}
         resizeMode="contain"
     />
 )
@@ -72,8 +74,8 @@ const CartIcon = () => (
     <SolitoImage
         src={CartPng}
         alt="kart"
-        width={30}
-        height={30}
+        width={18}
+        height={18}
         resizeMode="contain"
     />
 )
@@ -82,8 +84,8 @@ const CatalogIcon = () => (
     <SolitoImage
         src={CatalogPng}
         alt="katalog"
-        width={30}
-        height={30}
+        width={18}
+        height={18}
         resizeMode="contain"
     />
 )
@@ -93,13 +95,13 @@ const Header = () => {
     const location = uselocationStorage(state => state.location)
     const { width: windowWidth } = useWindowDimensions()
     const [isHydrated, setIsHydrated] = useState(false)
-    const cartIds = useCartStore(state => state.cartIds)
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds)
     const router = useRouter()
     const tab = useTabStore(state => state.tab)
     const setTab = useTabStore(state => state.setTab)
     const pathname = usePathname()
     const [locationOpen, setLocationOpen] = useState(false)
+    const [extra, setExtra] = useState(false)
 
     useEffect(() => {
         setIsHydrated(true)
@@ -129,8 +131,8 @@ const Header = () => {
         if (pathname === '/') setTab(0)
         else if (pathname.startsWith('/katalog')) setTab(1)
         else if (pathname.startsWith('/savat')) setTab(2)
-        else if (pathname.startsWith('/yoqtirilgan')) setTab(3)
-        else if (pathname.startsWith('/profile')) setTab(4)
+        else if (pathname.startsWith('/yoqtirilgan')) setTab(4)
+        else if (pathname.startsWith('/profile')) setTab(3)
         else if (pathname.startsWith('/search')) setTab(1)
     }, [pathname])
 
@@ -145,6 +147,38 @@ const Header = () => {
 
     const input = useInputStorage(state => state.input)
     const setInput = useInputStorage(state => state.setInput)
+
+    const cart = useCartStore((state) => state.cart);
+    const uniqueItemsCount = cart.length;
+
+    const rotateAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+        Animated.timing(rotateAnim, {
+            toValue: extra ? 1 : 0,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
+
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+                toValue: 1.4,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, [extra]);
+
+    const rotate = rotateAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '45deg'],
+    });
 
     if (isMobileView) {
         return (
@@ -167,11 +201,11 @@ const Header = () => {
                             gap: 10
                         }}>
                             <Pressable
-                                onPress={() => router.push('https://internet-magazin-panel.vercel.app')}
+                                onPress={() => setLocationOpen(prev => !prev)}
                                 style={({ pressed }) => [
                                     {
-                                        width: 50,
-                                        height: 50,
+                                        width: 40,
+                                        height: 40,
                                         borderRadius: 28,
                                         overflow: 'hidden',
                                         borderWidth: 1,
@@ -182,6 +216,7 @@ const Header = () => {
                                         shadowOpacity: 0.1,
                                         shadowRadius: 10,
                                         elevation: 3,
+                                        zIndex: 999999999999999999
                                     }
                                 ]}
                             >
@@ -196,33 +231,21 @@ const Header = () => {
                                     }}
                                 >
                                     <View style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
-                                        <View
-                                            style={{
-                                                position: 'absolute',
-                                                width: 18,
-                                                height: 2.5,
-                                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                                borderRadius: 2
-                                            }}
-                                        />
-                                        <View
-                                            style={{
-                                                position: 'absolute',
-                                                width: 2.5,
-                                                height: 18,
-                                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                                borderRadius: 2
-                                            }}
+                                        <SolitoImage
+                                            src={locationOpen ? CancelPng : GpsPng}
+                                            alt='gps'
+                                            width={18}
+                                            height={18}
+                                            resizeMode='contain'
                                         />
                                     </View>
                                 </BlurView>
                             </Pressable>
-
                             <BlurView
                                 tint="light"
                                 intensity={60}
                                 style={{
-                                    width: '50%',
+                                    width: '70%',
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     backgroundColor: 'rgba(255, 255, 255, 0.4)',
@@ -235,6 +258,7 @@ const Header = () => {
                                     elevation: 3,
                                     borderWidth: 1,
                                     borderColor: 'rgba(255, 255, 255, 0.25)',
+                                    zIndex: 999999999999999
                                 }}
                             >
 
@@ -259,7 +283,7 @@ const Header = () => {
                                 <TextLink
                                     href={`/search/${input.trim().toLowerCase().replace(/\s+/g, '-')}`}
                                     style={{
-                                        padding: 5,
+                                        padding: 6,
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                     }}
@@ -268,70 +292,158 @@ const Header = () => {
                                 </TextLink>
                             </BlurView>
 
-                            <Pressable
-                                onPress={() => setLocationOpen(prev => !prev)}
-                                style={({ pressed }) => [
-                                    {
-                                        width: 50,
-                                        height: 50,
-                                        borderRadius: 28,
-                                        overflow: 'hidden',
-                                        borderWidth: 1,
-                                        borderColor: 'rgba(255, 255, 255, 0.25)',
-                                        opacity: pressed ? 0.7 : 1,
-                                        shadowColor: '#000',
-                                        shadowOffset: { width: 0, height: 4 },
-                                        shadowOpacity: 0.1,
-                                        shadowRadius: 10,
-                                        elevation: 3,
-                                    }
-                                ]}
-                            >
-                                <BlurView
-                                    tint="light"
-                                    intensity={60}
-                                    style={{
-                                        flex: 1,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.4)',
-                                    }}
-                                >
-                                    <View style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
-                                        <SolitoImage
-                                            src={GpsPng}
-                                            alt='gps'
-                                            width={30}
-                                            height={30}
-                                            resizeMode='contain'
-                                        />
-                                    </View>
-                                </BlurView>
-                            </Pressable>
                         </View>
                         {locationOpen ? (
-                            <View style={{
-                                ...Platform.select({
-                                    web: { position: 'fixed' },
-                                    default: { position: 'absolute' }
-                                }),
-                                top: Platform.OS !== 'web' ? 36 : 10,
-                                left: 0,
-                                width: '100%',
-                                height: 40,
-                                zIndex: 999999,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: 10
-                            }}>
+                            <BlurView
+                                tint="light"
+                                intensity={60}
+                                style={{
+                                    ...Platform.select({
+                                        web: { position: 'fixed' },
+                                        default: { position: 'absolute' }
+                                    }),
+                                    top: Platform.OS !== 'web' ? 86 : '8%',
+                                    left: 0,
+                                    width: '100%',
+                                    zIndex: 999999,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 10,
+                                    height: '40%'
+                                }}>
                                 <Location setLocationOpen={setLocationOpen} />
-                            </View>
+                            </BlurView>
                         ) : null}
                     </>
                 ) : null}
 
-                <View style={[styles.mobileTabBarC]}>
+                {
+                    extra ? (
+                        <View style={{
+                            ...Platform.select({
+                                web: { position: 'fixed' },
+                                default: { position: 'absolute' }
+                            }),
+                            bottom: 140,
+                            right: 0,
+                            width: '24%',
+                            height: 40,
+                            zIndex: 999999,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 10,
+                        }}>
+                            <BlurView
+                                tint="light"
+                                intensity={60}
+                                style={[styles.mobileTabItem, {
+                                    alignItems: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    borderRadius: 100,
+                                    paddingHorizontal: 10,
+                                    shadowColor: '#000',
+                                    shadowOffset: { width: 0, height: 4 },
+                                    shadowOpacity: 0.1,
+                                    shadowRadius: 10,
+                                    elevation: 3,
+                                    borderWidth: 1,
+                                    borderColor: 'rgba(255, 255, 255, 0.25)',
+                                    transform: [{ scale: scaleAnim }]
+                                }]}
+                            >
+                                <Pressable onPress={() => { setTimeout(() => setExtra(false), 600), router.push('https://internet-magazin-panel.vercel.app') }}>
+                                    <Animated.View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            transform: [{ scale: scaleAnim }]
+                                        }}
+                                    >
+                                        <HomeIcon />
+                                    </Animated.View>
+                                </Pressable>
+                            </BlurView>
+                            <BlurView
+                                tint="light"
+                                intensity={60}
+                                style={[styles.mobileTabItem, {
+                                    alignItems: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    borderRadius: 100,
+                                    paddingHorizontal: 10,
+                                    shadowColor: '#000',
+                                    shadowOffset: { width: 0, height: 4 },
+                                    shadowOpacity: 0.1,
+                                    shadowRadius: 10,
+                                    elevation: 3,
+                                    borderWidth: 1,
+                                    borderColor: 'rgba(255, 255, 255, 0.25)',
+                                    transform: [{ scale: scaleAnim }]
+                                }]}
+                            >
+                                <Pressable onPress={() => { setTimeout(() => setExtra(false), 600), handlePage('/yoqtirilgan', 4) }}>
+                                    <Animated.View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            transform: [{ scale: scaleAnim }]
+                                        }}
+                                    >
+                                        <View style={styles.badgeContainer}>
+                                            <HeartIcon />
+                                            {yoqtirilganIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
+                                        </View>
+                                    </Animated.View>
+                                </Pressable>
+                            </BlurView>
+                            <BlurView
+                                tint="light"
+                                intensity={60}
+                                style={[styles.mobileTabItem, {
+                                    alignItems: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    borderRadius: 100,
+                                    paddingHorizontal: 10,
+                                    shadowColor: '#000',
+                                    shadowOffset: { width: 0, height: 4 },
+                                    shadowOpacity: 0.1,
+                                    shadowRadius: 10,
+                                    elevation: 3,
+                                    borderWidth: 1,
+                                    borderColor: 'rgba(255, 255, 255, 0.25)',
+                                    transform: [{ scale: scaleAnim }]
+                                }]}
+                            >
+                                <Pressable onPress={() => { setTimeout(() => setExtra(false), 600), router.push('/sozlamalar'), setOpenLan(true) }}>
+                                    <Animated.View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            transform: [{ scale: scaleAnim }]
+                                        }}
+                                    >
+                                        <SolitoImage
+                                            src={LanguagePng}
+                                            alt='language'
+                                            width={18}
+                                            height={18}
+                                            resizeMode='contain'
+                                        />
+                                    </Animated.View>
+                                </Pressable>
+                            </BlurView>
+                        </View>
+                    ) : null
+                }
+
+                <View style={[styles.mobileTabBarC, { height: windowWidth > 500 ? 75 : 70 }]}>
                     <View style={[styles.mobileTabBar]}>
 
                         <BlurView
@@ -358,6 +470,7 @@ const Header = () => {
                                 }
                             }),
                             zIndex: 999999999,
+                            // transform: [{scaleY: 1.1}]
                         }}>
                         </Animated.View>
 
@@ -381,19 +494,16 @@ const Header = () => {
                                     <View style={styles.mobileTabItem}>
                                         <View style={styles.badgeContainer}>
                                             <CartIcon />
-                                            {cartIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{cartIds.length}</Text></View> : null}
+                                            {uniqueItemsCount > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{uniqueItemsCount}</Text></View> : null}
                                         </View>
                                         {tab === 2 ? <Text style={styles.mobileText}>cart</Text> : null}
                                     </View>
                                 </Pressable>
 
-                                <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/yoqtirilgan', 3)}>
+                                <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/profile', 3)}>
                                     <View style={styles.mobileTabItem}>
-                                        <View style={styles.badgeContainer}>
-                                            <HeartIcon />
-                                            {yoqtirilganIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
-                                        </View>
-                                        {tab === 2 ? <Text style={styles.mobileText}>cart</Text> : null}
+                                        <UserIcon />
+                                        {tab === 3 ? <Text style={styles.mobileText}>profile</Text> : null}
                                     </View>
                                 </Pressable>
 
@@ -418,76 +528,79 @@ const Header = () => {
                                     <View style={styles.mobileTabItem}>
                                         <View style={styles.badgeContainer}>
                                             <CartIcon />
-                                            {cartIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{cartIds.length}</Text></View> : null}
+                                            {uniqueItemsCount > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{uniqueItemsCount}</Text></View> : null}
                                         </View>
                                         {tab === 2 ? <Text style={styles.mobileText}>cart</Text> : null}
                                     </View>
                                 </TextLink>
 
-                                <TextLink href='/yoqtirilgan' style={styles.mobileTabItem}>
+                                <TextLink href='/profile' style={styles.mobileTabItem}>
                                     <View style={styles.mobileTabItem}>
-                                        <View style={styles.badgeContainer}>
-                                            <HeartIcon />
-                                            {yoqtirilganIds.length > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{yoqtirilganIds.length}</Text></View> : null}
-                                        </View>
-                                        {tab === 3 ? <Text style={styles.mobileText}>heart</Text> : null}
+                                        <UserIcon />
+                                        {tab === 3 ? <Text style={styles.mobileText}>profile</Text> : null}
                                     </View>
                                 </TextLink>
                             </>
                         )}
-                    </View >
+                    </View>
 
-                    {Platform.OS !== 'web' ? (
-                        <BlurView
-                            tint="light"
-                            intensity={60}
-                            style={[styles.mobileTabItem, {
-                                alignItems: 'center',
-                                backgroundColor: 'rgba(255, 255, 255, 0.4)',
-                                borderRadius: 100,
-                                paddingHorizontal: 10,
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: 0.1,
-                                shadowRadius: 10,
-                                elevation: 3,
-                                borderWidth: 1,
-                                borderColor: 'rgba(255, 255, 255, 0.25)',
-                            }]}
-                        >
-                            <Pressable onPress={() => handlePage('/profile', 4)}>
-                                <View style={styles.mobileTabItem}>
-                                    <UserIcon />
-                                </View>
-                            </Pressable>
-                        </BlurView>
+                    <LinearGradient
+                        colors={['rgba(0, 149, 255, 0.8)', 'rgba(0, 149, 255, 0.5)']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 0, y: 1 }}
+                        tint="light"
+                        intensity={60}
+                        style={[styles.mobileTabItem, {
+                            alignItems: 'center',
+                            borderRadius: 100,
+                            paddingHorizontal: 10,
+                            shadowColor: '#000',
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 10,
+                            elevation: 3,
+                            borderWidth: 1,
+                            borderColor: 'rgba(255, 255, 255, 0.25)',
+                            transform: [{ scale: scaleAnim }],
+                            ...Platform.select({
+                                web: {
+                                    background: 'linear-gradient(to bottom, rgba(0, 149, 255, 0.8), rgba(0, 149, 255, 0.5))',
+                                },
+                            })
+                        }]}
+                    >
+                        <Pressable onPress={() => setExtra(prev => !prev)}>
+                            <Animated.View
+                                style={{
+                                    width: 20,
+                                    height: 20,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    transform: [{ rotate }, { scale: scaleAnim }]
+                                }}
+                            >
+                                <View
+                                    style={{
+                                        position: 'absolute',
+                                        width: 20,
+                                        height: 2.4,
+                                        backgroundColor: 'snow',
+                                        borderRadius: 2
+                                    }}
+                                />
+                                <View
+                                    style={{
+                                        position: 'absolute',
+                                        width: 2.4,
+                                        height: 20,
+                                        backgroundColor: 'snow',
+                                        borderRadius: 2
+                                    }}
+                                />
+                            </Animated.View>
+                        </Pressable>
+                    </LinearGradient>
 
-                    ) : (
-                        <BlurView
-                            tint="light"
-                            intensity={60}
-                            style={[styles.mobileTabItem, {
-                                alignItems: 'center',
-                                backgroundColor: 'rgba(255, 255, 255, 0.4)',
-                                borderRadius: 100,
-                                paddingHorizontal: 10,
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: 0.1,
-                                shadowRadius: 10,
-                                elevation: 3,
-                                borderWidth: 1,
-                                borderColor: 'rgba(255, 255, 255, 0.25)',
-                            }]}
-                        >
-                            <TextLink href='/profile'>
-
-                                <View style={styles.mobileTabItem}>
-                                    <UserIcon />
-                                </View>
-                            </TextLink>
-                        </BlurView>
-                    )}
                     <LinearGradient
                         colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
                         start={{ x: 0, y: 0 }}
@@ -512,7 +625,7 @@ const Header = () => {
 
                     </LinearGradient>
 
-                </View >
+                </View>
 
                 <LinearGradient
                     colors={['rgb(255, 255, 255)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0)']}
@@ -541,7 +654,6 @@ const Header = () => {
                     }}>
 
                 </LinearGradient>
-
             </>
         )
     }
@@ -698,7 +810,7 @@ const Header = () => {
                                 <View style={styles.navItem}>
                                     <View style={styles.badgeContainer}>
                                         <CartIcon />
-                                        {cartIds.length > 0 ? <View style={styles.webBadge}><Text style={styles.badgeText}>{cartIds.length}</Text></View> : null}
+                                        {uniqueItemsCount > 0 ? <View style={styles.webBadge}><Text style={styles.badgeText}>{uniqueItemsCount}</Text></View> : null}
                                     </View>
                                     <Text style={styles.navText}>{lan === 'uz' ? 'Savat' : lan === 'en' ? 'Cart' : lan === 'ru' ? 'Корзина' : 'Savat'}</Text>
                                 </View>
@@ -856,12 +968,11 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        height: 85,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 99999,
-        gap: 12,
+        gap: 8,
         width: '100%',
         paddingBottom: 30,
     },
@@ -874,7 +985,7 @@ const styles = StyleSheet.create({
         gap: 0,
         backgroundColor: 'rgba(226, 245, 255, 0.6)',
         borderRadius: 100,
-        width: '86%',
+        width: '76%',
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
@@ -894,7 +1005,7 @@ const styles = StyleSheet.create({
         }),
         alignItems: 'center',
         justifyContent: 'center',
-        width: 50,
+        width: 40,
         height: '100%',
         backgroundColor: 'transparent',
         borderRadius: 100,
@@ -903,12 +1014,12 @@ const styles = StyleSheet.create({
         zIndex: 9999999999999999999
     },
     mobileText: {
-        fontSize: 16,
+        fontSize: 12,
         textAlign: 'center',
         marginTop: 2,
         textTransform: 'capitalize',
         color: '#1A73E8',
-        fontWeight: 'bold'
+        fontWeight: '500'
     },
 })
 
