@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Pressable, StyleSheet, useWindowDimensions, Platform, Animated } from 'react-native'
+import { useNativeAnimDriver } from 'app/utils/animation'
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import { SolitoImage } from "solito/image";
@@ -18,7 +19,7 @@ interface ProductProps {
 const CardProduct = ({ product }: { product: ProductProps }) => {
     const { width: windowWidth } = useWindowDimensions();
     const [isMounted, setIsMounted] = useState(false);
-    
+
     const cart = useCartStore(state => state.cart);
     const toggleCart = useCartStore(state => state.toggleCart);
 
@@ -39,22 +40,27 @@ const CardProduct = ({ product }: { product: ProductProps }) => {
     const quantity = cartItem ? cartItem.quantity : 1;
     const oldPrice = product.price * 1.5;
 
-    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const scaleAnim = useRef(new Animated.Value(0)).current;
 
+    const heartScale = scaleAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 1.4],
+    });
+    
     const handleFavoritePress = (e: any) => {
         e.stopPropagation();
         toggleYoqtirilgan(product.id);
 
         Animated.sequence([
             Animated.timing(scaleAnim, {
-                toValue: 1.4,
+                toValue: 1,
                 duration: 120,
-                useNativeDriver: Platform.OS !== 'web',
+                useNativeDriver: useNativeAnimDriver,
             }),
             Animated.timing(scaleAnim, {
-                toValue: 1,
+                toValue: 0,
                 duration: 150,
-                useNativeDriver: Platform.OS !== 'web',
+                useNativeDriver: useNativeAnimDriver,
             }),
         ]).start();
     };
@@ -82,7 +88,7 @@ const CardProduct = ({ product }: { product: ProductProps }) => {
                     onPress={handleFavoritePress}
                     style={styles.favoriteButton}
                 >
-                    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                    <Animated.View style={{ transform: [{ scale: heartScale }] }}>
                         <SolitoImage
                             src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
                             alt="heart Icon"

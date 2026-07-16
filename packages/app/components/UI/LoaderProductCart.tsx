@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, useWindowDimensions, Platform, Animated } from 'react-native';
+import { useNativeAnimDriver } from 'app/utils/animation';
 
 const LoaderProductCart = () => {
     const { width: windowWidth } = useWindowDimensions();
@@ -14,12 +15,12 @@ const LoaderProductCart = () => {
                 Animated.timing(fadeAnim, {
                     toValue: 0.4,
                     duration: 1000,
-                    useNativeDriver: true,
+                    useNativeDriver: useNativeAnimDriver,
                 }),
                 Animated.timing(fadeAnim, {
                     toValue: 1,
                     duration: 1000,
-                    useNativeDriver: true,
+                    useNativeDriver: useNativeAnimDriver,
                 })
             ]);
         };

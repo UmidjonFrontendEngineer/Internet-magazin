@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react'
 import { StyleSheet, Text, View, Platform, TextInput, TouchableOpacity, useWindowDimensions, Pressable, Animated, Dimensions } from 'react-native'
+import { useNativeAnimDriver } from 'app/utils/animation'
 import { TextLink } from 'solito/link'
 import { useColorStore } from 'app/store/useColorStore'
 import { SolitoImage } from 'solito/image'
@@ -152,25 +153,25 @@ const Header = () => {
     const uniqueItemsCount = cart.length;
 
     const rotateAnim = useRef(new Animated.Value(0)).current;
-    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const scaleAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         Animated.timing(rotateAnim, {
             toValue: extra ? 1 : 0,
             duration: 200,
-            useNativeDriver: true,
+            useNativeDriver: false,
         }).start();
 
         Animated.sequence([
             Animated.timing(scaleAnim, {
-                toValue: 1.4,
+                toValue: 1,
                 duration: 100,
-                useNativeDriver: true,
+                useNativeDriver: useNativeAnimDriver,
             }),
             Animated.timing(scaleAnim, {
-                toValue: 1,
+                toValue: 0,
                 duration: 200,
-                useNativeDriver: true,
+                useNativeDriver: useNativeAnimDriver,
             }),
         ]).start();
     }, [extra]);
@@ -178,6 +179,11 @@ const Header = () => {
     const rotate = rotateAnim.interpolate({
         inputRange: [0, 1],
         outputRange: ['0deg', '45deg'],
+    });
+
+    const scale = scaleAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 1.4],
     });
 
     if (isMobileView) {
@@ -349,7 +355,6 @@ const Header = () => {
                                     elevation: 3,
                                     borderWidth: 1,
                                     borderColor: 'rgba(255, 255, 255, 0.25)',
-                                    transform: [{ scale: scaleAnim }]
                                 }]}
                             >
                                 <Pressable onPress={() => { setTimeout(() => setExtra(false), 600), router.push('https://internet-magazin-panel.vercel.app') }}>
@@ -359,7 +364,7 @@ const Header = () => {
                                             height: 20,
                                             justifyContent: 'center',
                                             alignItems: 'center',
-                                            transform: [{ scale: scaleAnim }]
+                                            transform: [{ scale }]
                                         }}
                                     >
                                         <HomeIcon />
@@ -381,7 +386,6 @@ const Header = () => {
                                     elevation: 3,
                                     borderWidth: 1,
                                     borderColor: 'rgba(255, 255, 255, 0.25)',
-                                    transform: [{ scale: scaleAnim }]
                                 }]}
                             >
                                 <Pressable onPress={() => { setTimeout(() => setExtra(false), 600), handlePage('/yoqtirilgan', 4) }}>
@@ -391,7 +395,7 @@ const Header = () => {
                                             height: 20,
                                             justifyContent: 'center',
                                             alignItems: 'center',
-                                            transform: [{ scale: scaleAnim }]
+                                            transform: [{ scale }]
                                         }}
                                     >
                                         <View style={styles.badgeContainer}>
@@ -416,7 +420,6 @@ const Header = () => {
                                     elevation: 3,
                                     borderWidth: 1,
                                     borderColor: 'rgba(255, 255, 255, 0.25)',
-                                    transform: [{ scale: scaleAnim }]
                                 }]}
                             >
                                 <Pressable onPress={() => { setTimeout(() => setExtra(false), 600), router.push('/sozlamalar'), setOpenLan(true) }}>
@@ -426,7 +429,7 @@ const Header = () => {
                                             height: 20,
                                             justifyContent: 'center',
                                             alignItems: 'center',
-                                            transform: [{ scale: scaleAnim }]
+                                            transform: [{ scale }]
                                         }}
                                     >
                                         <SolitoImage
@@ -561,7 +564,6 @@ const Header = () => {
                             elevation: 3,
                             borderWidth: 1,
                             borderColor: 'rgba(255, 255, 255, 0.25)',
-                            transform: [{ scale: scaleAnim }],
                             ...Platform.select({
                                 web: {
                                     background: 'linear-gradient(to bottom, rgba(0, 149, 255, 0.8), rgba(0, 149, 255, 0.5))',
@@ -576,27 +578,37 @@ const Header = () => {
                                     height: 20,
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    transform: [{ rotate }, { scale: scaleAnim }]
+                                    transform: [{ scale }],
                                 }}
                             >
-                                <View
+                                <Animated.View
                                     style={{
-                                        position: 'absolute',
                                         width: 20,
-                                        height: 2.4,
-                                        backgroundColor: 'snow',
-                                        borderRadius: 2
-                                    }}
-                                />
-                                <View
-                                    style={{
-                                        position: 'absolute',
-                                        width: 2.4,
                                         height: 20,
-                                        backgroundColor: 'snow',
-                                        borderRadius: 2
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        transform: [{ rotate }],
                                     }}
-                                />
+                                >
+                                    <View
+                                        style={{
+                                            position: 'absolute',
+                                            width: 20,
+                                            height: 2.4,
+                                            backgroundColor: 'snow',
+                                            borderRadius: 2
+                                        }}
+                                    />
+                                    <View
+                                        style={{
+                                            position: 'absolute',
+                                            width: 2.4,
+                                            height: 20,
+                                            backgroundColor: 'snow',
+                                            borderRadius: 2
+                                        }}
+                                    />
+                                </Animated.View>
                             </Animated.View>
                         </Pressable>
                     </LinearGradient>

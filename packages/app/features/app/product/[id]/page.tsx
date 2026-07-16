@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable, useWindowDimensions, Animated, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable, useWindowDimensions, Animated, Platform, GestureResponderEvent } from 'react-native';
+import { useNativeAnimDriver } from 'app/utils/animation';
 import ScreenWrapper from 'app/components/layout/ScreenWrapper';
 import ProductCart from 'app/components/UI/ProductCart';
 import { useLanStorage } from 'app/store/useLanStore';
@@ -12,6 +13,8 @@ import HeartPng from 'app/features/app/assets/heart.png'
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import CartPng from 'app/features/app/assets/cart.png'
+import CheckPng from 'app/features/app/assets/check.png'
+import CheckedPng from 'app/features/app/assets/checked.png'
 import { useRouter } from 'solito/navigation';
 
 interface ProductProps {
@@ -31,11 +34,19 @@ const ProductID = () => {
     const { width: windowWidth } = useWindowDimensions()
     const router = useRouter()
     const isMobileView = windowWidth < 1000
+    const elementRef = useRef<any>(null)
+    const [elementHeight, setElementHeight] = useState(0)
+
+    useEffect(() => {
+        if (elementRef.current) {
+            const elementHeight = elementRef.current.offsetHeight;
+            setElementHeight(elementHeight);
+        }
+    }, [])
 
     const { id } = useSearchParams();
     const productIdToFind = id ? parseInt(id as string, 10) : Number(pathname?.split('/')[2]?.split(',')[0]);
-    console.log(pathname?.split('/')[2])
-    console.log(pathname?.split('/')[2]?.split(',')?.slice(1))
+    
     const productsIDs = pathname?.split('/')[2]?.split(',')?.slice(1).map(Number) || []
     const [nextProducts, setNextProducts] = useState<ProductProps[]>([])
     const [products, setProducts] = useState<ProductProps[]>([]);
@@ -47,25 +58,31 @@ const ProductID = () => {
     const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan);
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
 
-    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const scaleAnim = useRef(new Animated.Value(0)).current;
 
-    const handleFavoritePress = (e: MouseEvent) => {
+    const handleFavoritePress = (e: GestureResponderEvent) => {
         e.stopPropagation();
+        if (!product) return;
         toggleYoqtirilgan(product.id);
 
         Animated.sequence([
             Animated.timing(scaleAnim, {
-                toValue: 1.4,
+                toValue: 1,
                 duration: 120,
-                useNativeDriver: Platform.OS !== 'web',
+                useNativeDriver: useNativeAnimDriver,
             }),
             Animated.timing(scaleAnim, {
-                toValue: 1,
+                toValue: 0,
                 duration: 150,
-                useNativeDriver: Platform.OS !== 'web',
+                useNativeDriver: useNativeAnimDriver,
             }),
         ]).start();
     };
+
+    const heartScale = scaleAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 1.4],
+    });
 
     useEffect(() => {
         const saralanganMaxsulotlar = products.filter(maxsulot => {
@@ -109,18 +126,20 @@ const ProductID = () => {
     return (
         <ScreenWrapper>
             <ScrollView>
-                <View style={{ width: '100%', flexDirection: isMobileView ? 'column' : 'row', backgroundColor: '#eee', borderRadius: 10, padding: 8, gap: 8 }}>
-                    <View style={{ flex: 65, height: '100%', backgroundColor: 'skyblue', borderRadius: 8, padding: 7, gap: 7, flexDirection: 'row' }}>
-                        <View style={{ flex: 1, height: '100%', backgroundColor: '#9c9c9c', borderRadius: 7, padding: 7, gap: 7, flexDirection: 'row' }}>
-                            {isMobileView ? null : (<View style={{ flex: 15, height: '100%', backgroundColor: '#4c4c4c', borderRadius: 5, gap: 5, padding: 5 }}>
-                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
-                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
-                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
-                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
-                                <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 8 }}></View>
-                            </View>)}
-                            <View style={{ flex: 85, height: '100%', backgroundColor: '#4c4c4c', borderRadius: 5, gap: 5, padding: 5 }}>
-                                <View style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: '100%', flexDirection: isMobileView ? 'column' : 'row', gap: 16, padding: 20 }}>
+                    <View style={{ flex: 7, height: '100%', flexDirection: 'row', gap: 16 }}>
+                        <View style={{ flex: 3, height: '100%', flexDirection: 'row', gap: 14 }}>
+                            {isMobileView ? null : (
+                                <View style={{ flex: 15, height: elementHeight, gap: 5 }}>
+                                    <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 10 }}></View>
+                                    <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 10 }}></View>
+                                    <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 10 }}></View>
+                                    <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 10 }}></View>
+                                    <View style={{ width: '100%', flex: 1, backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 10 }}></View>
+                                </View>
+                            )}
+                            <View style={{ flex: 85, height: elementHeight, gap: 5 }}>
+                                <View style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0, 166, 255, 0.8)', borderRadius: 20, alignItems: 'center', justifyContent: 'center' }}>
                                     <SolitoImage
                                         src={product.image}
                                         alt={product.title}
@@ -132,18 +151,18 @@ const ProductID = () => {
                             </View>
                         </View>
                         {!isMobileView ? (
-                            <View style={{ flex: 1, height: '100%', backgroundColor: '#9c9c9c', borderRadius: 7, padding: 10, gap: 8 }}>
-                                <Text style={{ fontSize: 18, fontWeight: 600, color: 'snow', textTransform: 'capitalize' }}>{product.title}</Text>
+                            <View style={{ flex: 2, height: elementHeight, padding: 10, gap: 8 }}>
+                                <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
                                 <Text>***** {product.rating.count} sharh | {product.id}+ buyrutma</Text>
                             </View>
                         ) : null}
                     </View>
-                    <View style={{ flex: 35, height: '100%', backgroundColor: 'skyblue', borderRadius: 8, padding: 8, gap: 8 }}>
+                    <View style={{ flex: 3, height: '100%', gap: 8 }} ref={elementRef}>
                         <View style={{ width: '100%', flex: 7, paddingTop: 50, gap: 5, borderRadius: 28, backgroundColor: 'rgba(0, 166, 255, 0.6)' }}>
-                            <View style={{ width: '100%', height: '100%', backgroundColor: 'rgba(255, 255, 255, 0.8)', borderTopLeftRadius: 28, borderTopRightRadius: 26, padding: 20, gap: 16 }}>
+                            <View style={{ width: '100%', height: '100%', backgroundColor: 'rgba(255, 255, 255, 0.8)', borderTopLeftRadius: 28, borderTopRightRadius: 26, padding: 20, gap: 22 }}>
                                 {isMobileView ? <Text style={{ fontWeight: '700', fontSize: 20 }}>{product.title}</Text> : null}
                                 <Text style={{ fontWeight: '700', fontSize: 30 }}>{product.price} so'm</Text>
-                                <Text style={{ fontWeight: '400', fontSize: 14, textDecorationLine: 'line-through', color: 'gray' }}>{product.price / 100 * 120}</Text>
+                                <Text style={{ fontWeight: '400', fontSize: 14, textDecorationLine: 'line-through', color: 'gray' }}>{(product.price / 100) * 120}</Text>
                                 <View style={{ width: '100%', padding: 10, gap: 6, backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: 14 }}>
                                     <View style={{ width: '100%', padding: 4, gap: 4, borderRadius: 6, backgroundColor: '#9c9c9c', flexDirection: 'row' }}>
                                         <Pressable onPress={() => setMoon(24)} style={{ height: '100%', padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -164,13 +183,13 @@ const ProductID = () => {
                                         <Text>{'>'}</Text>
                                     </Pressable>
                                 </View>
-                                <View style={{ width: '100%', flexDirection: 'row', gap: 16 }}>
+                                <View style={{ width: '100%', flexDirection: 'row', gap: 22 }}>
                                     <Pressable style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', padding: 12, borderRadius: 14, flex: 9, justifyContent: 'center', alignItems: 'center' }}>
                                         <Text style={{ fontSize: 16, fontWeight: '700', textTransform: 'capitalize' }}>1 klikda xarid qilish</Text>
                                     </Pressable>
                                     <Pressable onPress={handleFavoritePress} style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', padding: 12, borderRadius: 14, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-                                        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                                        
+                                        <Animated.View style={{ transform: [{ scale: heartScale }] }}>
                                             <SolitoImage
                                                 src={yoqtirilganIds.includes(product.id) ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
                                                 alt="Favorite Icon"
@@ -182,7 +201,7 @@ const ProductID = () => {
 
                                     </Pressable>
                                 </View>
-                                <View style={{ flexDirection: 'row', width: '100%', gap: 16 }}>
+                                <View style={{ flexDirection: 'row', width: '100%', gap: 22 }}>
                                     <Pressable
                                         onPress={(e: any) => {
                                             e.stopPropagation();
@@ -206,6 +225,37 @@ const ProductID = () => {
                                         </Pressable> : null
                                     }
                                 </View>
+                                <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                                    <SolitoImage
+                                        src={CheckPng}
+                                        alt='check'
+                                        width={30}
+                                        height={30}
+                                        resizeMode='contain'
+                                    />
+                                    <Text>11 dona xarid qilish mumkin</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                                    <View>
+                                        <SolitoImage
+                                            src={CartPng}
+                                            alt='cart'
+                                            width={30}
+                                            height={30}
+                                            resizeMode='contain'
+                                        />
+
+                                        <SolitoImage
+                                            style={{ position: 'absolute', bottom: 0, right: 0 }}
+                                            src={CheckedPng}
+                                            alt='check'
+                                            width={10}
+                                            height={10}
+                                            resizeMode='contain'
+                                        />
+                                    </View>
+                                    <Text>Bu haftada 5 kishi sotib oldi</Text>
+                                </View>
                             </View>
                             <View style={{ position: 'absolute', top: 0, left: 0, flexDirection: 'row', justifyContent: 'space-between', width: '100%', padding: 10 }}>
                                 <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'snow', textTransform: 'capitalize' }}>yozgi chegirmalar <Text>{'>'}</Text></Text>
@@ -227,6 +277,11 @@ const ProductID = () => {
 }
 
 const styles = StyleSheet.create({
+    center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     button: {
         backgroundColor: 'rgb(0, 166, 255)',
         paddingVertical: 10,

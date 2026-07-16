@@ -41,7 +41,7 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
         Animated.timing(animX, {
             toValue: targetValue,
             duration: 300,
-            useNativeDriver: true,
+            useNativeDriver: false,
         }).start()
     }
 
@@ -150,7 +150,7 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
                                     transition: 'all 0.3s ease'
                                 },
                                 pressed && {
-                                    transform: [{ translateY: -20 }, { rotate: '180deg' }, { scale: 0.5 }]
+                                    opacity: 0.7,
                                 }
                             ]}
                             onPress={() => setCount(prev => (prev > 0 ? prev - 1 : totalSlides - 1))}
@@ -178,7 +178,7 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
                                     transition: 'all 0.3s ease'
                                 },
                                 pressed && {
-                                    transform: [{ translateY: -20 }, { scale: 0.5 }]
+                                    opacity: 0.7,
                                 }
                             ]}
                             onPress={() => setCount(prev => (prev < totalSlides - 1 ? prev + 1 : 0))}

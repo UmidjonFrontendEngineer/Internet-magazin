@@ -38,7 +38,6 @@ const NotLoad = ({ fetchProducts }: { fetchProducts: () => void }) => {
                         },
                         pressed && {
                             opacity: 0.85,
-                            transform: [{ scale: 0.98 }],
                         }
                     ]}
                     onPress={fetchProducts}

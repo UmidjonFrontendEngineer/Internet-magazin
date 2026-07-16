@@ -46,7 +46,6 @@ const Empty = () => {
                         },
                         pressed && {
                             opacity: 0.85,
-                            transform: [{ scale: 0.98 }],
                         }
                     ]}
                     onPress={() => router.back()}
