@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#e5e7eb',
-        borderRadius: 8,
+        borderRadius: 12,
         overflow: 'hidden',
     },
     counterContainerSmall: {

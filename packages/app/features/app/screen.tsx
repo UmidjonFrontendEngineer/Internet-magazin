@@ -26,6 +26,7 @@ const HomeScreen = () => {
     const [products, setProducts] = useState<ProductProps[]>([]);
     const [loading, setLoading] = useState('loading');
     const { width: screenWidth } = useWindowDimensions();
+    const [count, setCount] = useState(0)
 
     const fetchProducts = async () => {
         try {
@@ -77,7 +78,7 @@ const HomeScreen = () => {
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={{ padding: screenWidth > 900 ? 12 : 0 }}>
-                    <Slider products={products} />
+                    <Slider products={products} link={true} count={count} setCount={setCount} />
                 </View>
 
                 <View style={styles.grid}>

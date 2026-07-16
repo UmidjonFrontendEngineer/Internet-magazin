@@ -204,7 +204,7 @@ const Header = () => {
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: 10
+                            gap: 10,
                         }}>
                             <Pressable
                                 onPress={() => setLocationOpen(prev => !prev)}
@@ -221,7 +221,6 @@ const Header = () => {
                                         shadowOffset: { width: 0, height: 4 },
                                         shadowOpacity: 0.1,
                                         shadowRadius: 10,
-                                        elevation: 3,
                                         zIndex: 999999999999999999
                                     }
                                 ]}
@@ -232,19 +231,17 @@ const Header = () => {
                                     style={{
                                         flex: 1,
                                         justifyContent: 'center',
+                                        backgroundColor: 'rgba(0, 132, 255, 0.11)',
                                         alignItems: 'center',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.4)',
                                     }}
                                 >
-                                    <View style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
-                                        <SolitoImage
-                                            src={locationOpen ? CancelPng : GpsPng}
-                                            alt='gps'
-                                            width={18}
-                                            height={18}
-                                            resizeMode='contain'
-                                        />
-                                    </View>
+                                    <SolitoImage
+                                        src={locationOpen ? CancelPng : GpsPng}
+                                        alt='gps'
+                                        width={18}
+                                        height={18}
+                                        resizeMode='contain'
+                                    />
                                 </BlurView>
                             </Pressable>
                             <BlurView
@@ -254,14 +251,13 @@ const Header = () => {
                                     width: '70%',
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    backgroundColor: 'rgba(0, 132, 255, 0.11)',
                                     borderRadius: 100,
                                     paddingHorizontal: 10,
                                     shadowColor: '#000',
                                     shadowOffset: { width: 0, height: 4 },
                                     shadowOpacity: 0.1,
                                     shadowRadius: 10,
-                                    elevation: 3,
                                     borderWidth: 1,
                                     borderColor: 'rgba(255, 255, 255, 0.25)',
                                     zIndex: 999999999999999
@@ -348,11 +344,6 @@ const Header = () => {
                                     backgroundColor: 'rgba(255, 255, 255, 0.4)',
                                     borderRadius: 100,
                                     paddingHorizontal: 10,
-                                    shadowColor: '#000',
-                                    shadowOffset: { width: 0, height: 4 },
-                                    shadowOpacity: 0.1,
-                                    shadowRadius: 10,
-                                    elevation: 3,
                                     borderWidth: 1,
                                     borderColor: 'rgba(255, 255, 255, 0.25)',
                                 }]}
@@ -379,11 +370,6 @@ const Header = () => {
                                     backgroundColor: 'rgba(255, 255, 255, 0.4)',
                                     borderRadius: 100,
                                     paddingHorizontal: 10,
-                                    shadowColor: '#000',
-                                    shadowOffset: { width: 0, height: 4 },
-                                    shadowOpacity: 0.1,
-                                    shadowRadius: 10,
-                                    elevation: 3,
                                     borderWidth: 1,
                                     borderColor: 'rgba(255, 255, 255, 0.25)',
                                 }]}
@@ -413,11 +399,6 @@ const Header = () => {
                                     backgroundColor: 'rgba(255, 255, 255, 0.4)',
                                     borderRadius: 100,
                                     paddingHorizontal: 10,
-                                    shadowColor: '#000',
-                                    shadowOffset: { width: 0, height: 4 },
-                                    shadowOpacity: 0.1,
-                                    shadowRadius: 10,
-                                    elevation: 3,
                                     borderWidth: 1,
                                     borderColor: 'rgba(255, 255, 255, 0.25)',
                                 }]}
@@ -473,7 +454,6 @@ const Header = () => {
                                 }
                             }),
                             zIndex: 999999999,
-                            // transform: [{scaleY: 1.1}]
                         }}>
                         </Animated.View>
 
@@ -557,11 +537,6 @@ const Header = () => {
                             alignItems: 'center',
                             borderRadius: 100,
                             paddingHorizontal: 10,
-                            shadowColor: '#000',
-                            shadowOffset: { width: 0, height: 4 },
-                            shadowOpacity: 0.1,
-                            shadowRadius: 10,
-                            elevation: 3,
                             borderWidth: 1,
                             borderColor: 'rgba(255, 255, 255, 0.25)',
                             ...Platform.select({

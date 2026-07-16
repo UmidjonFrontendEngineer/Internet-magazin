@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     },
     imageWrapper: {
         width: '100%',
-        height: 150,
+        height: 250,
         backgroundColor: '#fcfcfc',
         borderRadius: 14,
         alignItems: 'center',
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     priceText: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#1a0dab',
+        color: 'rgb(0, 89, 255)',
     },
     cartButtonWrapper: {
         width: '100%',

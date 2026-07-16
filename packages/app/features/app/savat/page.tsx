@@ -52,7 +52,7 @@ const Savat = () => {
     if (loading === 'loading') {
         return (
             <ScreenWrapper>
-                <View style={styles.grid}>
+                <View style={[styles.grid, {padding: 12}]}>
                     <LoaderCart />
                     <LoaderCart />
                     <LoaderCart />

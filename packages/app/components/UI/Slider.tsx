@@ -15,9 +15,8 @@ interface ProductProps {
     rating: { rate: number; count: number };
 }
 
-const Slider = ({ products }: { products: ProductProps[] }) => {
+const Slider = ({ products, link, count, setCount }: { products: ProductProps[], link: boolean, count: number, setCount: (prev: number) => void }) => {
     const { width: screenWidth } = useWindowDimensions();
-    const [count, setCount] = useState(0)
     const [width, setWidth] = useState(0)
 
     const animX = useRef(new Animated.Value(0)).current
@@ -90,10 +89,12 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
     ).current
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCount(prev => (prev < totalSlides - 1 ? prev + 1 : 0))
-        }, 3000);
-        return () => clearInterval(timer);
+        if (link) {
+            const timer = setInterval(() => {
+                setCount(prev => (prev < totalSlides - 1 ? prev + 1 : 0))
+            }, 3000);
+            return () => clearInterval(timer);
+        }
     }, [totalSlides])
 
     return (
@@ -117,7 +118,7 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
                     {
                         products.map(item => (
                             <View key={item.id} style={{ width: width || '100%', marginHorizontal: screenWidth > 900 ? 0 : 5, height: '100%', borderRadius: screenWidth > 900 ? 0 : 15, alignItems: 'center', padding: 0, justifyContent: 'center', backgroundColor: 'rgba(0, 149, 255, 0.1)' }}>
-                                <TextLink href={`/${item.id}`}>
+                                {link === true ? <TextLink href={`/${item.id}`}>
                                     <SolitoImage
                                         src={item.image}
                                         alt={`${item.id}`}
@@ -126,6 +127,16 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
                                         resizeMode={'contain'}
                                     />
                                 </TextLink>
+                                    :
+                                    <View>
+                                        <SolitoImage
+                                            src={item.image}
+                                            alt={`${item.id}`}
+                                            width={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
+                                            height={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
+                                            resizeMode={'contain'}
+                                        />
+                                    </View>}
                             </View>
                         ))
                     }
@@ -138,7 +149,7 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
                         <Pressable
                             style={({ pressed }) => [
                                 {
-                                    padding: 10,
+                                    padding: 8,
                                     borderRadius: 100,
                                     marginHorizontal: 10,
                                     backgroundColor: 'rgba(255, 255, 255, 0.4)',
@@ -158,15 +169,15 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
                             <SolitoImage
                                 src={NextPng}
                                 alt='next'
-                                width={30}
-                                height={30}
+                                width={20}
+                                height={20}
                                 resizeMode={'contain'}
                             />
                         </Pressable>
                         <Pressable
                             style={({ pressed }) => [
                                 {
-                                    padding: 10,
+                                    padding: 8,
                                     borderRadius: 100,
                                     marginHorizontal: 10,
                                     backgroundColor: 'rgba(255, 255, 255, 0.4)',
@@ -186,8 +197,8 @@ const Slider = ({ products }: { products: ProductProps[] }) => {
                             <SolitoImage
                                 src={NextPng}
                                 alt='next'
-                                width={30}
-                                height={30}
+                                width={20}
+                                height={20}
                                 resizeMode={'contain'}
                             />
                         </Pressable>
