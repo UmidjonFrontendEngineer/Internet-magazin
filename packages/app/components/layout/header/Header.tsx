@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react'
-import { StyleSheet, Text, View, Platform, TextInput, TouchableOpacity, useWindowDimensions, Pressable, Animated, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Platform, TextInput, TouchableOpacity, useWindowDimensions, Pressable, Animated, Dimensions, Modal } from 'react-native'
 import { useNativeAnimDriver } from 'app/utils/animation'
 import { TextLink } from 'solito/link'
 import { useColorStore } from 'app/store/useColorStore'
@@ -189,6 +189,39 @@ const Header = () => {
     if (isMobileView) {
         return (
             <>
+	            <Modal
+	                    transparent={true}
+	                    visible={locationOpen}
+	                    animationType="fade"
+	                    onRequestClose={() => setLocationOpen(false)}
+                >
+	                <Pressable onPress={() => setLocationOpen(false)}>
+	                    <BlurView
+	                        tint='light'
+	                        intensity={60}
+	                        style={{
+	                            flex: 1,
+	                            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+	                            justifyContent: 'center',
+	                            alignItems: 'center',
+	                            ...Platform.select({
+	                                web: {
+	                                position: 'fixed',
+	                                top: 0,
+	                                left: 0,
+	                                right: 0,
+	                                bottom: 0,
+	                                zIndex: 999999
+	                                }
+	                            }),
+	                            paddingBottom: 500
+	                        }}
+	                    >
+	                        <Location setLocationOpen={setLocationOpen} />
+	                    </BlurView>
+                    </Pressable>
+                </Modal>
+
                 {(tab !== 2 && tab !== 4) ? (
                     <>
                         <View style={{
@@ -293,34 +326,11 @@ const Header = () => {
                                     <SearchIcon />
                                 </TextLink>
                             </BlurView>
-
                         </View>
-                        {locationOpen ? (
-                            <BlurView
-                                tint="light"
-                                intensity={60}
-                                style={{
-                                    ...Platform.select({
-                                        web: { position: 'fixed' },
-                                        default: { position: 'absolute' }
-                                    }),
-                                    top: Platform.OS !== 'web' ? 86 : '8%',
-                                    left: 0,
-                                    width: '100%',
-                                    zIndex: 999999,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 10,
-                                    height: '40%'
-                                }}>
-                                <Location setLocationOpen={setLocationOpen} />
-                            </BlurView>
-                        ) : null}
                     </>
                 ) : null}
-
-                {
+                
+                                {
                     extra ? (
                         <View style={{
                             ...Platform.select({
@@ -647,12 +657,45 @@ const Header = () => {
 
     return (
         <>
+    		<Modal
+                transparent={true}
+                visible={locationOpen}
+                animationType="fade"
+                onRequestClose={() => setLocationOpen(false)}
+            >
+            <Pressable onPress={() => setLocationOpen(false)}>
+                <BlurView
+                    tint='light'
+                    intensity={60}
+                    style={{
+                        flex: 1,
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        ...Platform.select({
+                            web: {
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 999999
+                            }
+                        }),
+                        paddingBottom: 500
+                    }}
+                >
+                    <Location setLocationOpen={setLocationOpen} />
+                </BlurView>
+                </Pressable>
+            </Modal>
+
             <View style={styles.webHeaderWrapper}>
                 <View style={styles.topBar}>
                     <View style={[styles.containerRow, { backgroundColor: '#f4f5f5', height: 28 }]}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text>📍 </Text>
-                            {locationOpen ? <Location setLocationOpen={setLocationOpen} /> : <Pressable onPress={() => setLocationOpen(true)}><Text>{location}</Text></Pressable>}
+                            <Pressable onPress={() => setLocationOpen(true)}><Text>{location}</Text></Pressable>
                             <Text> | </Text>
                             <TextLink href='/about/punkt'><Text>{lan === 'uz' ? 'Topshirish punktlari' : lan === 'en' ? 'Pickup points' : lan === 'ru' ? 'Пункты выдачи' : 'Topshirish punktlari'}</Text></TextLink>
                         </View>

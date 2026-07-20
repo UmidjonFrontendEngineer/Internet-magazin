@@ -2,7 +2,7 @@
   "expo": {
     "name": "Online Market",
     "slug": "solito-blank",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "scheme": "online-market",
     "platforms": [
       "ios",
@@ -23,8 +23,8 @@
     "android": {
       "package": "com.market.online",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/grape.png",
-        "backgroundColor": "#000000"
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#13a255"
       }
     },
     "owner": "umidjonfrontenddeveloper"

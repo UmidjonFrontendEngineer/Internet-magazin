@@ -18,6 +18,8 @@ import CheckedPng from 'app/features/app/assets/checked.png'
 import { useRouter } from 'solito/navigation';
 import Slider from 'app/components/UI/Slider';
 import ProductSlider from 'app/components/UI/ProductSlider';
+import accesStarPng from 'app/features/app/assets/acces-star.png'
+import starPng from 'app/features/app/assets/star.png'
 
 interface ProductProps {
     id: number;
@@ -186,7 +188,35 @@ const ProductID = () => {
                         {!(isTabletView || isMobileView) ? (
                             <View style={{ flex: 2, height: elementHeight, padding: 10, gap: 8 }}>
                                 <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
-                                <Text>***** {product.rating.count} sharh | {product.id}+ buyrutma</Text>
+                                <View style={{ flexDirection: 'row', gap: 4 }}>
+	                                {
+	                                		Array.from({ length: Math.round(product.rating.rate) }, (_, index) => index + 1).map((_, index) => 
+	                                            <SolitoImage
+	                                            	key={index}
+	                                                src={accesStarPng}
+	                                                alt={product.title}
+	                                                width={20}
+	                                                height={20}
+	                                                resizeMode='contain'
+	                                            />
+	
+	                                		)
+	                                }
+	                                {
+	                                Array.from({ length: Math.round(5 - product.rating.rate) }, (_, index) => index + 1).map((_, index) => 
+	                                            <SolitoImage
+	                                            	key={index}
+	                                                src={starPng}
+	                                                alt={product.title}
+	                                                width={20}
+	                                                height={20}
+	                                                resizeMode='contain'
+	                                            />
+	
+	                                		)
+	                                }
+	                                <Text>{product.rating.rate} | {product.rating.count} sharh | {product.id}+ buyrutma</Text>
+                                </View>
                             </View>
                         ) : null}
                     </View>
@@ -273,7 +303,7 @@ const ProductID = () => {
                                         height={30}
                                         resizeMode='contain'
                                     />
-                                    <Text>11 dona xarid qilish mumkin</Text>
+                                    <Text>{product.id * 2} dona xarid qilish mumkin</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
                                     <View>

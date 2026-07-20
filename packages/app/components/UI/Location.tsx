@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ScrollView, StyleSheet, Dimensions, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Dimensions, Pressable, TouchableOpacity, TextInput } from 'react-native'
 import { uselocationStorage } from 'app/store/useLocationStore';
 
 const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => void }) => {
@@ -627,8 +627,9 @@ const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => voi
         "Zomin"
     ];
     return (
-        <View>
-            <ScrollView style={{ gap: 4, width: '100%', backgroundColor: 'white', borderRadius: 16, padding: 4, zIndex: 99999999999999, maxHeight: 500, transform: [{translateY: 235}] }}>
+        <View style={{width: '80%', justifyContent: 'center', maxWidth: 500}}>
+            <ScrollView style={{ gap: 4, width: '100%', backgroundColor: 'white', borderRadius: 16, padding: 4, zIndex: 99999999999999, maxHeight: 600, transform: [{translateY: 235}] }}>
+
                 {
                     uzbekistanLocations.map(item => (
                         <TouchableOpacity key={item} onPress={() => { setLocation(item), setLocationOpen(false) }} style={{ paddingVertical: 4, borderRadius: 10, backgroundColor: 'rgba(226, 245, 255, 0.6)', width: '100%', alignItems: 'center', justifyItems: 'center', flexDirection: 'row', flex: 1, marginBottom: 4 }}>
