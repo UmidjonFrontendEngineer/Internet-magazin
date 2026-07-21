@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     },
     imageWrapper: {
         width: '100%',
-        height: 250,
+        height: 180,
         backgroundColor: '#fcfcfc',
         borderRadius: 14,
         alignItems: 'center',

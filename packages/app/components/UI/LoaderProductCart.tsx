@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     },
     imageWrapper: {
         width: '100%',
-        height: 250,
+        height: 180,
         backgroundColor: '#e5e7eb',
         borderRadius: 14,
         marginBottom: 10,

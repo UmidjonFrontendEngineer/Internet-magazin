@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, TouchableOpacity, useWindowDimensions, Pressabl
 import { SolitoImage } from 'solito/image';
 import { useLink } from 'solito/navigation';
 import { useLanStorage } from 'app/store/useLanStore';
+import { BlurView } from 'expo-blur'
 
 interface LinkItem {
     name: string;
@@ -88,49 +89,59 @@ export default function UzumFooter() {
 
     return (
         <>
-            <Modal
-                transparent={true}
-                visible={contact}
-                animationType="fade"
-                onRequestClose={() => setContact(false)}
-            >
-                <Pressable onPress={() => setContact(false)} style={styles.modalOverlay}>
-                    <Pressable onPress={(e) => e.stopPropagation()} style={[styles.modalContent, { width: isWeb ? 500 : '90%' }]}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Biz bilan bogʻlanish</Text>
-                            <TouchableOpacity onPress={() => setContact(false)} style={styles.closeButton}>
-                                <Text style={styles.closeButtonText}>✕</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View>
-                            <Text style={styles.modalDescription}>
-                                Mutaxassislarimizga sizga qulay ijtimoiy tarmoq chati yoki telefon orqali savol bering:
-                            </Text>
-                        </View>
-
-                        <View style={styles.modalBody}>
-                            <ExternalLink href='https://t.me/Uzum_Support_Bot' style={{ width: '100%' }}>
-                                <View style={styles.telegramCard}>
-                                    <SolitoImage src="https://i.ibb.co/Q3m8LCVq/telegram.png" alt="telegram" width={40} height={40} resizeMode="contain" />
-                                    <View>
-                                        <Text style={styles.telegramTitle}>Telegram</Text>
-                                        <Text style={styles.telegramHandle}>@Uzum_Support_Bot</Text>
-                                    </View>
-                                </View>
-                            </ExternalLink>
-
-                            <View style={styles.emailSection}>
-                                <Text style={styles.emailLabel}>Qoʻllab-quvvatlash xizmatining email manzili:</Text>
-                                <TouchableOpacity onPress={() => Linking.openURL('mailto:support@uzum.com')}>
-                                    <Text style={styles.emailAddress}>support@uzum.com</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Pressable>
-                </Pressable>
-            </Modal>
-
+		<Modal
+		    transparent={true}
+		    visible={contact}
+		    animationType="fade"
+		    onRequestClose={() => setContact(false)}
+		>
+		    <Pressable style={[styles.modalOverlay, {...Platform.select({web: {cursor: 'default'}})}]} onPress={() => setContact(false)}>
+		        <BlurView
+		            tint="light"
+		            intensity={50}
+		            style={StyleSheet.absoluteFill}
+		        >
+		            <View style={styles.modalContainer}>
+		                <Pressable 
+		                    onPress={(e) => e.stopPropagation()} 
+		                    style={[styles.modalContent, { width: Platform.OS === 'web' ? 500 : '90%' }]}
+		                >
+		                    <View style={styles.modalHeader}>
+		                        <Text style={styles.modalTitle}>Biz bilan bogʻlanish</Text>
+		                        <TouchableOpacity onPress={() => setContact(false)} style={styles.closeButton}>
+		                            <Text style={styles.closeButtonText}>✕</Text>
+		                        </TouchableOpacity>
+		                    </View>
+		
+		                    <View>
+		                        <Text style={styles.modalDescription}>
+		                            Mutaxassislarimizga sizga qulay ijtimoiy tarmoq chati yoki telefon orqali savol bering:
+		                        </Text>
+		                    </View>
+		
+		                    <View style={styles.modalBody}>
+		                        <ExternalLink href="https://t.me/Uzum_Support_Bot" style={{ width: '100%' }}>
+		                            <View style={styles.telegramCard}>
+		                                <SolitoImage src="https://i.ibb.co/Q3m8LCVq/telegram.png" alt="telegram" width={40} height={40} resizeMode="contain" />
+		                                <View>
+		                                    <Text style={styles.telegramTitle}>Telegram</Text>
+		                                    <Text style={styles.telegramHandle}>@Uzum_Support_Bot</Text>
+		                                </View>
+		                            </View>
+		                        </ExternalLink>
+		
+		                        <View style={styles.emailSection}>
+		                            <Text style={styles.emailLabel}>Qoʻllab-quvvatlash xizmatining email manzili:</Text>
+		                            <TouchableOpacity onPress={() => Linking.openURL('mailto:support@uzum.com')}>
+		                                <Text style={styles.emailAddress}>support@uzum.com</Text>
+		                            </TouchableOpacity>
+		                        </View>
+		                    </View>
+		                </Pressable>
+		            </View>
+		        </BlurView>
+		    </Pressable>
+		</Modal>
             <View style={styles.container}>
                 <View style={styles.containerC}>
                     <View style={[styles.mainSection, isWeb ? styles.row : styles.column]}>
@@ -191,8 +202,6 @@ const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        justifyContent: 'center',
-        alignItems: 'center',
         ...Platform.select({
             web: {
                 position: 'fixed',
@@ -200,9 +209,15 @@ const styles = StyleSheet.create({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                zIndex: 99999
+                zIndex: 99999,
             }
         })
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
     },
     modalContent: {
         backgroundColor: 'white',
@@ -214,6 +229,11 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 13.16,
         elevation: 20,
+        ...Platform.select({
+            web: {
+                cursor: 'auto',
+            }
+        })
     },
     modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#1f1f1f' },

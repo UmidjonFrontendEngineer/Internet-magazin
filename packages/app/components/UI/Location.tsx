@@ -1,10 +1,15 @@
-import React from 'react'
-import { View, Text, ScrollView, StyleSheet, Dimensions, Pressable, TouchableOpacity, TextInput } from 'react-native'
+'use client'
+
+import React, { useState, useEffect } from 'react'
+import { View, Text, ScrollView, StyleSheet, Dimensions, Pressable, TouchableOpacity, TextInput, Platform } from 'react-native'
 import { uselocationStorage } from 'app/store/useLocationStore';
+import { useLanStorage } from 'app/store/useLanStore'
 
 const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => void }) => {
+    const lan = useLanStorage(state => state.lan)
     const setLocation = uselocationStorage(state => state.setLocation);
-    const uzbekistanLocations = [
+    const [searchValue, setSearchValue] = useState('')
+    const uzbekistanLocations: string[] = [
         "Abdukarim",
         "Ahmad Yassaviy",
         "Alaja",
@@ -626,18 +631,85 @@ const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => voi
         "Ziyokor",
         "Zomin"
     ];
-    return (
-        <View style={{width: '80%', justifyContent: 'center', maxWidth: 500}}>
-            <ScrollView style={{ gap: 4, width: '100%', backgroundColor: 'white', borderRadius: 16, padding: 4, zIndex: 99999999999999, maxHeight: 600, transform: [{translateY: 235}] }}>
 
-                {
-                    uzbekistanLocations.map(item => (
-                        <TouchableOpacity key={item} onPress={() => { setLocation(item), setLocationOpen(false) }} style={{ paddingVertical: 4, borderRadius: 10, backgroundColor: 'rgba(226, 245, 255, 0.6)', width: '100%', alignItems: 'center', justifyItems: 'center', flexDirection: 'row', flex: 1, marginBottom: 4 }}>
-                            <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'skyblue' }}>{item}</Text>
-                        </TouchableOpacity>
-                    ))
-                }
-            </ScrollView>
+    const [searchUzbekistanLocations, setSearchUzbekistanLocations] = useState<string[]>([])
+
+    useEffect(() => {
+        if (!searchValue.trim()) {
+            setSearchUzbekistanLocations(uzbekistanLocations)
+        } else {
+            setSearchUzbekistanLocations(
+                uzbekistanLocations.filter(item =>
+                    item.trim().toLowerCase().includes(searchValue.trim().toLowerCase())
+                )
+            )
+        }
+    }, [searchValue])
+    return (
+        <View style={{ width: '80%', justifyContent: 'center', maxWidth: 500, flexDirection: 'row' }}>
+            <View
+                {...({
+                    onStartShouldSetResponder: () => true,
+                    onClick: (e: any) => e.stopPropagation(),
+                    onResponderTerminationRequest: () => false,
+                })}
+                style={{
+                    gap: 4,
+                    width: '100%',
+                    backgroundColor: 'white',
+                    borderRadius: 16,
+                    padding: 4,
+                    zIndex: 99999999999999,
+                    maxHeight: 600,
+
+                }}
+            >
+                <TextInput
+                    onChangeText={setSearchValue}
+                    value={searchValue}
+                    style={{
+                        fontSize: 14,
+                        color: '#333',
+                        outline: 'none',
+                        borderWidth: 1,
+                        borderColor: 'rgb(226, 245, 255)',
+                        borderRadius: 1000,
+                        padding: 6,
+                        ...Platform.select({ web: { outlineStyle: 'none' } }),
+                    }}
+                    placeholder={
+                        lan === 'en' ? 'Search region' :
+                            lan === 'ru' ? 'Искать регион' :
+                                'Hududni qidirish'
+                    }
+                    placeholderTextColor="#1A73E8"
+                />
+
+                <ScrollView>
+
+                    {
+                        searchUzbekistanLocations.map(item => (
+                            <TouchableOpacity
+                                key={item}
+                                onPress={() => { setLocation(item); setLocationOpen(false); }}
+                                style={{
+                                    paddingVertical: 4,
+                                    paddingHorizontal: 6,
+                                    borderRadius: 10,
+                                    backgroundColor: 'rgba(226, 245, 255, 0.6)',
+                                    width: '100%',
+                                    alignItems: 'center',
+                                    flexDirection: 'row',
+                                    flex: 1,
+                                    marginBottom: 4
+                                }}
+                            >
+                                <Text style={{ textTransform: 'uppercase', fontSize: 12, color: '#1A73E8' }}>{item}</Text>
+                            </TouchableOpacity>
+                        ))
+                    }
+                </ScrollView>
+            </View>
         </View>
     )
 }

@@ -189,39 +189,44 @@ const Header = () => {
     if (isMobileView) {
         return (
             <>
-	            <Modal
-	                    transparent={true}
-	                    visible={locationOpen}
-	                    animationType="fade"
-	                    onRequestClose={() => setLocationOpen(false)}
+                <Modal
+                    transparent={true}
+                    visible={locationOpen}
+                    animationType="fade"
+                    onRequestClose={() => setLocationOpen(false)}
                 >
-	                <Pressable onPress={() => setLocationOpen(false)}>
-	                    <BlurView
-	                        tint='light'
-	                        intensity={60}
-	                        style={{
-	                            flex: 1,
-	                            backgroundColor: 'rgba(0, 0, 0, 0.4)',
-	                            justifyContent: 'center',
-	                            alignItems: 'center',
-	                            ...Platform.select({
-	                                web: {
-	                                position: 'fixed',
-	                                top: 0,
-	                                left: 0,
-	                                right: 0,
-	                                bottom: 0,
-	                                zIndex: 999999
-	                                }
-	                            }),
-	                            paddingBottom: 500
-	                        }}
-	                    >
-	                        <Location setLocationOpen={setLocationOpen} />
-	                    </BlurView>
-                    </Pressable>
+                    <BlurView
+                        tint="light"
+                        intensity={40}
+                        style={{
+                            flex: 1,
+                            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                            ...Platform.select({
+                                web: {
+                                    position: 'fixed',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                }
+                            })
+                        }}
+                    >
+                        <Pressable
+                            style={{
+                                flex: 1,
+                                width: '100%',
+                                height: '100%',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                ...Platform.select({ web: { cursor: 'default' } })
+                            }}
+                            onPress={() => setLocationOpen(false)}
+                        >
+                            <Location setLocationOpen={setLocationOpen} />
+                        </Pressable>
+                    </BlurView>
                 </Modal>
-
                 {(tab !== 2 && tab !== 4) ? (
                     <>
                         <View style={{
@@ -329,8 +334,8 @@ const Header = () => {
                         </View>
                     </>
                 ) : null}
-                
-                                {
+
+                {
                     extra ? (
                         <View style={{
                             ...Platform.select({
@@ -657,45 +662,60 @@ const Header = () => {
 
     return (
         <>
-    		<Modal
+            <Modal
                 transparent={true}
                 visible={locationOpen}
                 animationType="fade"
                 onRequestClose={() => setLocationOpen(false)}
             >
-            <Pressable onPress={() => setLocationOpen(false)}>
                 <BlurView
-                    tint='light'
-                    intensity={60}
+                    tint="light"
+                    intensity={40}
                     style={{
                         flex: 1,
-                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        backgroundColor: 'rgba(0, 0, 0, 0.2)',
                         ...Platform.select({
                             web: {
-                            position: 'fixed',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            zIndex: 999999
+                                position: 'fixed',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
                             }
-                        }),
-                        paddingBottom: 500
+                        })
                     }}
                 >
-                    <Location setLocationOpen={setLocationOpen} />
+                    <Pressable
+                        style={{
+                            flex: 1,
+                            width: '100%',
+                            height: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            ...Platform.select({ web: { cursor: 'default' } })
+                        }}
+                        onPress={() => setLocationOpen(false)}
+                    >
+                        <Location setLocationOpen={setLocationOpen} />
+                    </Pressable>
                 </BlurView>
-                </Pressable>
             </Modal>
 
             <View style={styles.webHeaderWrapper}>
                 <View style={styles.topBar}>
                     <View style={[styles.containerRow, { backgroundColor: '#f4f5f5', height: 28 }]}>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text>📍 </Text>
-                            <Pressable onPress={() => setLocationOpen(true)}><Text>{location}</Text></Pressable>
+                            <Pressable onPress={() => setLocationOpen(true)} style={{ flexDirection: 'row', gap: 4 }}>
+                                <SolitoImage
+                                    src={GpsPng}
+                                    alt="gps"
+                                    width={18}
+                                    height={18}
+                                    resizeMode="contain"
+                                />
+
+                                <Text>{location}</Text>
+                            </Pressable>
                             <Text> | </Text>
                             <TextLink href='/about/punkt'><Text>{lan === 'uz' ? 'Topshirish punktlari' : lan === 'en' ? 'Pickup points' : lan === 'ru' ? 'Пункты выдачи' : 'Topshirish punktlari'}</Text></TextLink>
                         </View>
