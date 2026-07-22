@@ -8,7 +8,7 @@ import { useLanStorage } from 'app/store/useLanStore';
 import { useSearchParams } from 'solito/navigation';
 import { useInputStorage } from 'app/store/useInputStore';
 import { usePathname } from 'solito/navigation';
-import { SolitoImage } from 'solito/image';
+import { UniversalImage } from 'app/components/UI/UniversalImage';
 import HeartPng from 'app/features/app/assets/heart.png'
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
@@ -60,6 +60,22 @@ const ProductID = () => {
     const elementRef = useRef<any>(null);
 
     const scaleAnim = useRef(new Animated.Value(0)).current;
+    const btnScaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handleButtonPressIn = () => {
+        Animated.spring(btnScaleAnim, {
+            toValue: 0.96,
+            useNativeDriver: useNativeAnimDriver,
+        }).start();
+    };
+
+    const handleButtonPressOut = () => {
+        Animated.spring(btnScaleAnim, {
+            toValue: 1,
+            friction: 3,
+            useNativeDriver: useNativeAnimDriver,
+        }).start();
+    };
 
     const handleFavoritePress = (e: GestureResponderEvent) => {
         e.stopPropagation();
@@ -153,10 +169,23 @@ const ProductID = () => {
         fetchSearchProducts();
     }, []);
 
+    useEffect(() => {
+        if (products.length === 0) return;
+
+        const currentPathIds = pathname?.split('/')[2]?.split(',')?.map(Number) || [];
+        const currentTargetId = id ? parseInt(id as string, 10) : currentPathIds[0];
+        const remainingIds = currentPathIds.slice(1);
+
+        const saralanganMaxsulotlar = products.filter(maxsulot => {
+            return remainingIds.includes(maxsulot.id);
+        });
+        setNextProducts(saralanganMaxsulotlar);
+    }, [products, pathname, id]);
+
     if (loading) {
         return (
             <View style={styles.center}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="skyblue" />
             </View>
         );
     }
@@ -171,17 +200,20 @@ const ProductID = () => {
 
     return (
         <ScreenWrapper>
-            <ScrollView>
-                <View style={{ width: '100%', flexDirection: (isTabletView || isMobileView) ? 'column' : 'row', gap: 16, padding: 20 }}>
+            <ScrollView contentContainerStyle={isMobileView ? styles.mobileContainer : undefined}>
+                <View style={{ width: '100%', flexDirection: (isTabletView || isMobileView) ? 'column' : 'row', gap: 16 }}>
 
-                    <View style={{ flex: 7, flexDirection: 'row', gap: 16, minHeight: (isTabletView || isMobileView) ? undefined : elementHeight, maxHeight: isTabletView ? 400 : isMobileView ? 200 : undefined }}>
+                    <View style={[
+                        { flex: 7, flexDirection: 'row', gap: 16 },
+                        isMobileView && styles.mobileImageStickySection
+                    ]}>
                         <View style={{ flex: 3, flexDirection: 'row', gap: 20 }}>
                             {(isTabletView || isMobileView) ? null : (
-                                <View style={{ flex: 15, height: isTabletView ? 400 : isMobileView ? 200 : elementHeight, gap: 8 }}>
+                                <View style={{ flex: 15, height: isTabletView ? 400 : isMobileView ? 300 : elementHeight, gap: 8 }}>
                                     <ProductSlider products={products} count={count} setCount={setCount} />
                                 </View>
                             )}
-                            <View style={{ flex: 85, height: isTabletView ? 400 : isMobileView ? 200 : elementHeight, gap: 5 }}>
+                            <View style={{ flex: 85, height: isTabletView ? 400 : isMobileView ? 350 : elementHeight, gap: 5 }}>
                                 <Slider products={products} link={false} count={count} setCount={setCount} />
                             </View>
                         </View>
@@ -189,51 +221,52 @@ const ProductID = () => {
                             <View style={{ flex: 2, height: elementHeight, padding: 10, gap: 8 }}>
                                 <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
                                 <View style={{ flexDirection: 'row', gap: 4 }}>
-	                                {
-	                                		Array.from({ length: Math.round(product.rating.rate) }, (_, index) => index + 1).map((_, index) => 
-	                                            <SolitoImage
-	                                            	key={index}
-	                                                src={accesStarPng}
-	                                                alt={product.title}
-	                                                width={20}
-	                                                height={20}
-	                                                resizeMode='contain'
-	                                            />
-	
-	                                		)
-	                                }
-	                                {
-	                                Array.from({ length: Math.round(5 - product.rating.rate) }, (_, index) => index + 1).map((_, index) => 
-	                                            <SolitoImage
-	                                            	key={index}
-	                                                src={starPng}
-	                                                alt={product.title}
-	                                                width={20}
-	                                                height={20}
-	                                                resizeMode='contain'
-	                                            />
-	
-	                                		)
-	                                }
-	                                <Text>{product.rating.rate} | {product.rating.count} sharh | {product.id}+ buyrutma</Text>
+                                    {
+                                        Array.from({ length: Math.round(product.rating.rate) }, (_, index) => index + 1).map((_, index) =>
+                                            <UniversalImage
+                                                key={index}
+                                                src={accesStarPng}
+                                                alt={product.title}
+                                                width={20}
+                                                height={20}
+                                                resizeMode='contain'
+                                            />
+                                        )
+                                    }
+                                    {
+                                        Array.from({ length: Math.round(5 - product.rating.rate) }, (_, index) => index + 1).map((_, index) =>
+                                            <UniversalImage
+                                                key={index}
+                                                src={starPng}
+                                                alt={product.title}
+                                                width={20}
+                                                height={20}
+                                                resizeMode='contain'
+                                            />
+                                        )
+                                    }
+                                    <Text>{product.rating.rate} | {product.rating.count} sharh | {product.id}+ buyrutma</Text>
                                 </View>
                             </View>
                         ) : null}
                     </View>
 
                     <View
-                        style={{ flex: 3, gap: 8 }}
+                        style={[
+                            { flex: 3, gap: 8 },
+                            isMobileView && styles.mobileContentOverlay
+                        ]}
                         ref={Platform.OS === 'web' ? elementRef : undefined}
                         onLayout={handleLayout}
                     >
-                        <View style={{ width: '100%', paddingTop: 50, gap: 5, borderRadius: 28, backgroundColor: 'rgba(0, 166, 255, 0.6)' }}>
-                            <View style={{ width: '100%', backgroundColor: 'rgba(255, 255, 255, 0.8)', borderTopLeftRadius: 28, borderTopRightRadius: 26, padding: 20, gap: 22 }}>
+                        <View style={{ width: '100%', paddingTop: 50, gap: 5, borderRadius: 28, backgroundColor: 'skyblue' }}>
+                            <View style={{ width: '100%', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20, gap: 22 }}>
                                 {(isTabletView || isMobileView) ? <Text style={{ fontWeight: '700', fontSize: 20 }}>{product.title}</Text> : null}
-                                <Text style={{ fontWeight: '700', fontSize: 30 }}>{product.price} so'm</Text>
+                                <Text style={{ fontWeight: '700', fontSize: 30, color: '#111' }}>{product.price} so'm</Text>
                                 <Text style={{ fontWeight: '400', fontSize: 14, textDecorationLine: 'line-through', color: 'gray' }}>{((product.price / 100) * 120).toFixed(0)}</Text>
 
-                                <View style={{ width: '100%', padding: 10, gap: 6, backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: 14 }}>
-                                    <View style={{ width: '100%', padding: 4, gap: 4, borderRadius: 6, backgroundColor: '#9c9c9c', flexDirection: 'row' }}>
+                                <View style={{ width: '100%', padding: 10, gap: 6, backgroundColor: 'rgba(135, 206, 235, 0.15)', borderRadius: 16 }}>
+                                    <View style={{ width: '100%', padding: 4, gap: 4, borderRadius: 8, backgroundColor: '#d0eaf8', flexDirection: 'row' }}>
                                         <Pressable onPress={() => setMoon(24)} style={{ padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                                             <Text style={{ fontWeight: '700' }}>24 oy</Text>
                                         </Pressable>
@@ -247,19 +280,25 @@ const ProductID = () => {
                                             <Text style={{ fontWeight: '700' }}>3 oy</Text>
                                         </Pressable>
                                     </View>
-                                    <Pressable style={{ width: '100%', padding: 8, borderRadius: 14, flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text><Text style={{ padding: 6, backgroundColor: 'yellow', borderRadius: 10, fontWeight: 'bold', fontSize: 16 }}>{(product.price / moon).toFixed(0)} so'm</Text> × {moon} oy</Text>
+                                    <Pressable style={{ width: '100%', padding: 8, borderRadius: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Text><Text style={{ padding: 6, backgroundColor: 'skyblue', borderRadius: 10, fontWeight: 'bold', fontSize: 16, color: '#fff' }}>{(product.price / moon).toFixed(0)} so'm</Text> × {moon} oy</Text>
                                         <Text style={{ fontSize: 16 }}>{'>'}</Text>
                                     </Pressable>
                                 </View>
 
-                                <View style={{ width: '100%', flexDirection: 'row', gap: 22 }}>
-                                    <Pressable style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', padding: 12, borderRadius: 14, flex: 9, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ fontSize: 16, fontWeight: '700', textTransform: 'capitalize' }}>1 klikda xarid qilish</Text>
-                                    </Pressable>
-                                    <Pressable onPress={handleFavoritePress} style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', padding: 12, borderRadius: 14, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ width: '100%', flexDirection: 'row', gap: 16 }}>
+                                    <Animated.View style={{ flex: 9, transform: [{ scale: btnScaleAnim }] }}>
+                                        <Pressable
+                                            onPressIn={handleButtonPressIn}
+                                            onPressOut={handleButtonPressOut}
+                                            style={{ backgroundColor: 'skyblue', padding: 14, borderRadius: 16, justifyContent: 'center', alignItems: 'center' }}
+                                        >
+                                            <Text style={{ fontSize: 16, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>1 klikda xarid qilish</Text>
+                                        </Pressable>
+                                    </Animated.View>
+                                    <Pressable onPress={handleFavoritePress} style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', padding: 12, borderRadius: 16, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                         <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-                                            <SolitoImage
+                                            <UniversalImage
                                                 src={yoqtirilganIds.includes(product.id) ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
                                                 alt="Favorite Icon"
                                                 width={24}
@@ -270,21 +309,25 @@ const ProductID = () => {
                                     </Pressable>
                                 </View>
 
-                                <View style={{ flexDirection: 'row', width: '100%', gap: 22 }}>
-                                    <Pressable
-                                        onPress={(e: any) => {
-                                            e.stopPropagation();
-                                            toggleCart(product.id);
-                                        }}
-                                        style={[styles.button, isInCart ? styles.buttonInCart : styles.button, { flex: 8 }]}>
-                                        <Text style={[styles.buttonText, isInCart && styles.buttonTextInCart]}>{isInCart ? 'savatda ✓' : 'savatga qo\'shish'}</Text>
-                                    </Pressable>
+                                <View style={{ flexDirection: 'row', width: '100%', gap: 16 }}>
+                                    <Animated.View style={{ flex: 8, transform: [{ scale: btnScaleAnim }] }}>
+                                        <Pressable
+                                            onPressIn={handleButtonPressIn}
+                                            onPressOut={handleButtonPressOut}
+                                            onPress={(e: any) => {
+                                                e.stopPropagation();
+                                                toggleCart(product.id);
+                                            }}
+                                            style={[styles.button, isInCart ? styles.buttonInCart : styles.button, { width: '100%' }]}>
+                                            <Text style={[styles.buttonText, isInCart && styles.buttonTextInCart]}>{isInCart ? 'savatda ✓' : 'savatga qo\'shish'}</Text>
+                                        </Pressable>
+                                    </Animated.View>
                                     {isInCart ? (
                                         <Pressable onPress={() => router.push('/savat')} style={{
-                                            flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 166, 255, 0.2)', borderRadius: 10, borderWidth: 1,
-                                            borderColor: 'rgb(0, 166, 255)',
+                                            flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(135, 206, 235, 0.2)', borderRadius: 14, borderWidth: 1,
+                                            borderColor: 'skyblue',
                                         }}>
-                                            <SolitoImage
+                                            <UniversalImage
                                                 src={CartPng}
                                                 alt={product.title}
                                                 width={30}
@@ -296,7 +339,7 @@ const ProductID = () => {
                                 </View>
 
                                 <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-                                    <SolitoImage
+                                    <UniversalImage
                                         src={CheckPng}
                                         alt='check'
                                         width={30}
@@ -307,14 +350,14 @@ const ProductID = () => {
                                 </View>
                                 <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
                                     <View>
-                                        <SolitoImage
+                                        <UniversalImage
                                             src={CartPng}
                                             alt='cart'
                                             width={30}
                                             height={30}
                                             resizeMode='contain'
                                         />
-                                        <SolitoImage
+                                        <UniversalImage
                                             style={{ position: 'absolute', bottom: 0, right: 0 }}
                                             src={CheckedPng}
                                             alt='check'
@@ -334,9 +377,9 @@ const ProductID = () => {
                     </View>
 
                 </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12 }}>
-                    {nextProducts.map(item => (
-                        <ProductCart key={item.id} product={item} products={nextProducts} />
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12, backgroundColor: '#fff' }}>
+                    {nextProducts.map((item, index) => (
+                        <ProductCart key={item.id} product={item} products={nextProducts} index={index} />
                     ))}
                 </View>
             </ScrollView>
@@ -350,18 +393,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    mobileImageStickySection: {
+        position: 'sticky' as any,
+        top: 10,
+        zIndex: 1,
+        backgroundColor: '#fff',
+    },
+    mobileContentOverlay: {
+        zIndex: 2,
+        elevation: 5,
+    },
     button: {
-        backgroundColor: 'rgb(0, 166, 255)',
-        paddingVertical: 10,
-        paddingHorizontal: 12,
-        borderRadius: 10,
+        backgroundColor: 'skyblue',
+        paddingVertical: 12,
+        paddingHorizontal: 14,
+        borderRadius: 14,
         alignItems: 'center',
         justifyContent: 'center',
     },
     buttonInCart: {
-        backgroundColor: 'rgba(0, 166, 255, 0.2)',
+        backgroundColor: 'rgba(135, 206, 235, 0.2)',
         borderWidth: 1,
-        borderColor: 'rgb(0, 166, 255)',
+        borderColor: 'skyblue',
     },
     buttonText: {
         color: '#ffffff',
@@ -369,7 +422,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     buttonTextInCart: {
-        color: 'rgb(0, 166, 255)',
+        color: 'skyblue',
     },
 });
 

@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, useWindowDimensions, Pressable, Platform, Modal, Linking } from 'react-native';
-import { SolitoImage } from 'solito/image';
+import { UniversalImage } from 'app/components/UI/UniversalImage';
 import { useLink } from 'solito/navigation';
 import { useLanStorage } from 'app/store/useLanStore';
 import { BlurView } from 'expo-blur'
@@ -122,7 +122,7 @@ export default function UzumFooter() {
 		                    <View style={styles.modalBody}>
 		                        <ExternalLink href="https://t.me/Uzum_Support_Bot" style={{ width: '100%' }}>
 		                            <View style={styles.telegramCard}>
-		                                <SolitoImage src="https://i.ibb.co/Q3m8LCVq/telegram.png" alt="telegram" width={40} height={40} resizeMode="contain" />
+		                                <UniversalImage src="https://i.ibb.co/Q3m8LCVq/telegram.png" alt="telegram" width={40} height={40} resizeMode="contain" />
 		                                <View>
 		                                    <Text style={styles.telegramTitle}>Telegram</Text>
 		                                    <Text style={styles.telegramHandle}>@Uzum_Support_Bot</Text>
@@ -175,10 +175,10 @@ export default function UzumFooter() {
 
                             <Text style={[styles.title, { marginTop: 20 }]}>{lan === 'uz' ? 'Tarmoqlar' : lan === 'en' ? 'Social media' : lan === 'ru' ? 'Uzum в соцсетях' : 'Tarmoqlar'}</Text>
                             <View style={styles.socialMedias}>
-                                <ExternalLink href="https://instagram.com"><SolitoImage src="https://i.ibb.co/607bCCgd/instagram.png" alt="instagram" width={30} height={30} resizeMode="contain" /></ExternalLink>
-                                <ExternalLink href="https://t.me/uzum_market"><SolitoImage src="https://i.ibb.co/Q3m8LCVq/telegram.png" alt="telegram" width={30} height={30} resizeMode="contain" /></ExternalLink>
-                                <ExternalLink href="https://facebook.com"><SolitoImage src="https://i.ibb.co/Cs9jwDWj/facebook.png" alt="facebook" width={30} height={30} resizeMode="contain" /></ExternalLink>
-                                <ExternalLink href="https://youtube.com"><SolitoImage src="https://i.ibb.co/Kx8QwBQW/youtube.png" alt="youtube" width={30} height={30} resizeMode="contain" /></ExternalLink>
+                                <ExternalLink href="https://www.instagram.com/umidjon_sharipov_dev"><UniversalImage src="https://i.ibb.co/607bCCgd/instagram.png" alt="instagram" width={30} height={30} resizeMode="contain" /></ExternalLink>
+                                <ExternalLink href="https://t.me/uzum_market"><UniversalImage src="https://i.ibb.co/Q3m8LCVq/telegram.png" alt="telegram" width={30} height={30} resizeMode="contain" /></ExternalLink>
+                                <ExternalLink href="https://www.facebook.com/profile.php?id=61590541989133"><UniversalImage src="https://i.ibb.co/Cs9jwDWj/facebook.png" alt="facebook" width={30} height={30} resizeMode="contain" /></ExternalLink>
+                                <ExternalLink href="https://youtube.com/@UmidjonDev"><UniversalImage src="https://i.ibb.co/Kx8QwBQW/youtube.png" alt="youtube" width={30} height={30} resizeMode="contain" /></ExternalLink>
                             </View>
                         </View>
                     </View>

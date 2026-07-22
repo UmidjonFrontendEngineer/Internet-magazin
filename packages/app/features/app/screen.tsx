@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, useWindowDimensions } from 'react-native';
 import ScreenWrapper from 'app/components/layout/ScreenWrapper';
-import { SolitoImage } from 'solito/image';
 import ProductCard from 'app/components/UI/ProductCart';
 import LoaderProductCard from 'app/components/UI/LoaderProductCart';
 import Slider from 'app/components/UI/Slider';
@@ -82,8 +81,8 @@ const HomeScreen = () => {
                 </View>
 
                 <View style={styles.grid}>
-                    {products.map((item) => (
-                        <ProductCard key={item.id} product={item} products={products} />
+                    {products.map((item, index) => (
+                        <ProductCard key={item.id} product={item} products={products} index={index} />
                     ))}
                 </View>
             </ScrollView>

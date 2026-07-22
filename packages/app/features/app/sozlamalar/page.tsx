@@ -1,6 +1,6 @@
 'use client'
 import { Text, View, StyleSheet, Pressable } from 'react-native'
-import { SolitoImage } from 'solito/image'
+import { UniversalImage } from 'app/components/UI/UniversalImage'
 import Language from 'app/components/UI/Language'
 import React, { useState, useEffect } from 'react'
 
@@ -10,7 +10,7 @@ const Sozlamalar = () => {
         <View style={{ marginTop: 120 }}>
             <Text>Sozlamalar</Text>
             <View style={styles.container}>
-                <SolitoImage
+                <UniversalImage
                     src="https://i.ibb.co/Myj2g1pg/settings.png"
                     alt="Settings Icon"
                     width={24}
@@ -23,7 +23,7 @@ const Sozlamalar = () => {
             <Pressable onPress={() => setOpenLan(prew => !prew)}>
                 <Text>Til Sozlamalari</Text>
                 <View style={styles.container}>
-                    <SolitoImage
+                    <UniversalImage
                         src="https://i.ibb.co/Myj2g1pg/settings.png"
                         alt="Settings Icon"
                         width={24}

@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, Pressable, Animated, PanResponder, LayoutChangeEvent, useWindowDimensions } from 'react-native'
-import { SolitoImage } from 'solito/image'
+import { UniversalImage } from './UniversalImage'
 import NextPng from 'app/features/app/assets/next.png'
 import { TextLink } from 'solito/link'
 
@@ -100,9 +100,9 @@ const Slider = ({ products, link, count, setCount }: { products: ProductProps[],
     return (
         <View
             onLayout={onLayout}
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: 'skyblue', borderRadius: 40, position: 'relative' }}
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, borderRadius: 40, position: 'relative' }}
         >
-            <View style={{ width: '100%', height: '100%', backgroundColor: 'white', borderRadius: screenWidth > 900 ? 24 : 0, overflow: 'hidden' }}>
+            <View style={{ width: '100%', height: '100%', borderRadius: screenWidth > 900 ? 24 : 0, overflow: 'hidden' }}>
                 <Animated.View
                     {...panResponder.panHandlers}
                     style={{
@@ -117,24 +117,24 @@ const Slider = ({ products, link, count, setCount }: { products: ProductProps[],
                 >
                     {
                         products.map(item => (
-                            <View key={item.id} style={{ width: width || '100%', marginHorizontal: screenWidth > 900 ? 0 : 5, height: '100%', borderRadius: screenWidth > 900 ? 0 : 15, alignItems: 'center', padding: 0, justifyContent: 'center', backgroundColor: 'rgba(0, 149, 255, 0.1)' }}>
+                            <View key={item.id} style={{ width: width || '100%', marginHorizontal: screenWidth > 900 ? 0 : 5, height: '100%', borderRadius: screenWidth > 900 ? 0 : 15, alignItems: 'center', padding: 0, justifyContent: 'center', backgroundColor: '#EEF2F6' }}>
                                 {link === true ? <TextLink href={`/${item.id}`}>
-                                    <SolitoImage
+                                    <UniversalImage
                                         src={item.image}
                                         alt={`${item.id}`}
                                         width={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
                                         height={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
-                                        resizeMode={'contain'}
+                                        resizeMode="contain"
                                     />
                                 </TextLink>
                                     :
                                     <View>
-                                        <SolitoImage
+                                        <UniversalImage
                                             src={item.image}
                                             alt={`${item.id}`}
                                             width={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
                                             height={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
-                                            resizeMode={'contain'}
+                                            resizeMode="contain"
                                         />
                                     </View>}
                             </View>
@@ -166,12 +166,12 @@ const Slider = ({ products, link, count, setCount }: { products: ProductProps[],
                             ]}
                             onPress={() => setCount(prev => (prev > 0 ? prev - 1 : totalSlides - 1))}
                         >
-                            <SolitoImage
+                            <UniversalImage
                                 src={NextPng}
                                 alt='next'
                                 width={20}
                                 height={20}
-                                resizeMode={'contain'}
+                                resizeMode="contain"
                             />
                         </Pressable>
                         <Pressable
@@ -194,12 +194,12 @@ const Slider = ({ products, link, count, setCount }: { products: ProductProps[],
                             ]}
                             onPress={() => setCount(prev => (prev < totalSlides - 1 ? prev + 1 : 0))}
                         >
-                            <SolitoImage
+                            <UniversalImage
                                 src={NextPng}
                                 alt='next'
                                 width={20}
                                 height={20}
-                                resizeMode={'contain'}
+                                resizeMode="contain"
                             />
                         </Pressable>
                     </>

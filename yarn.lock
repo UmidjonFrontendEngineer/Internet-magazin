@@ -5090,7 +5090,7 @@ __metadata:
     babel-plugin-react-compiler: "npm:19.0.0-beta-3229e95-20250315"
     expo: "npm:^54.0.16"
     expo-blur: "npm:~15.0.8"
-    expo-image: "npm:~3.0.10"
+    expo-image: "npm:~3.0.11"
     expo-linear-gradient: "npm:~15.0.7"
     expo-linking: "npm:~8.0.8"
     expo-splash-screen: "npm:~31.0.10"
@@ -5192,7 +5192,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-image@npm:~3.0.10":
+"expo-image@npm:~3.0.11":
   version: 3.0.11
   resolution: "expo-image@npm:3.0.11"
   peerDependencies:

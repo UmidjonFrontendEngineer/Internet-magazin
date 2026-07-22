@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native'
 import ScreenWrapper from 'app/components/layout/ScreenWrapper'
-import { SolitoImage } from 'solito/image'
+import { UniversalImage } from 'app/components/UI/UniversalImage'
 import { TextLink } from 'solito/link'
 import React from 'react'
 
@@ -11,7 +11,7 @@ const Profile = () => {
 
             <TextLink href="/sozlamalar">
                 <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                    <SolitoImage
+                    <UniversalImage
                         src="https://i.ibb.co/Myj2g1pg/settings.png"
                         alt="Settings Icon"
                         width={24}

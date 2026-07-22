@@ -1,8 +1,13 @@
 'use client'
-import React, { useState } from 'react'
-import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { StyleSheet, Text, View, ScrollView, Pressable, Animated, Platform, UIManager } from 'react-native'
 import ScreenWrapper from 'app/components/layout/ScreenWrapper'
 import { useLanStorage } from 'app/store/useLanStore'
+import { useNativeAnimDriver } from 'app/utils/animation';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const FAQ_DATA = [
     {
@@ -15,7 +20,12 @@ const FAQ_DATA = [
         items: [
             {
                 id: "reg_intro",
-                text: {
+                q: {
+                    uz: "Text",
+                    en: "Text",
+                    ru: "Text",
+                },
+                a: {
                     uz: "Buyurtmani rasmiylashtirib to’lovni bajarish uchun siz ro'yxatdan o’tishingiz kerak bo'ladi. Uning yordamida ma'lumotlarni doimiy ravishda to'ldirishingiz shart bo’lmaydi. Ro'yxatdan o'tish vaqti 3 daqiqadan oshmaydi.",
                     en: "In order to place an order and complete the payment, you will need to register. This prevents you from having to repeatedly fill in your details. Registration takes no more than 3 minutes.",
                     ru: "Для оформления заказа и выполнения оплаты вам необходимо зарегистрироваться. Благодаря этому вам не придется постоянно заполнять свои данные. Время регистрации не превышает 3 минут."
@@ -274,7 +284,12 @@ const FAQ_DATA = [
         items: [
             {
                 id: "payment_intro",
-                text: {
+                q: {
+                    uz: "Text",
+                    en: "Text",
+                    ru: "Text",
+                },
+                a: {
                     uz: "Sizga qulay bo’lgan to’lov uslubini tanlashingiz mumkin:\n- Uzcard, Humo kartalaridan buyurtma uchun onlayn to’lov bajaring;\n- Uzum Nasiya muddatli to’lovi orqali buyurtma rasmiylashtiring;\n- qabul qilish vaqtida Uzcard, Humo, Visa, Mastercard kartalari va naqd pul asosida to’lovni amalga oshiring.",
                     en: "You can choose a convenient payment method:\n- Make an online payment for the order using Uzcard or Humo cards;\n- Place an order through Uzum Nasiya installment plan;\n- Pay upon receipt using Uzcard, Humo, Visa, Mastercard, or cash.",
                     ru: "Вы можете выбрать удобный для вас способ оплаты:\n- Оплатите заказ онлайн с помощью карт Uzcard, Humo;\n- Оформите заказ в рассрочку через Uzum Nasiya;\n- Оплатите при получении картами Uzcard, Humo, Visa, Mastercard или наличными."
@@ -490,17 +505,137 @@ const FAQ_DATA = [
     }
 ];
 
+const FaqItem = ({ item, lan, isSelected, onToggle }: { item: any, lan: string, isSelected: boolean, onToggle: () => void }) => {
+    const [contentHeight, setContentHeight] = useState(0);
+    const animController = useRef(new Animated.Value(0)).current;
+
+    const onTextLayout = (e: any) => {
+        const height = e.nativeEvent.layout.height;
+        if (height > 0 && contentHeight === 0) {
+            setContentHeight(height);
+        }
+    };
+
+    useEffect(() => {
+        Animated.timing(animController, {
+            toValue: isSelected ? 1 : 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start();
+    }, [isSelected, animController]);
+
+    const heightInterpolate = animController.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, contentHeight > 0 ? contentHeight + 8 : 100],
+    });
+
+    const translateYInterpolate = animController.interpolate({
+        inputRange: [0, 1],
+        outputRange: [15, 0],
+    });
+
+    const opacityInterpolate = animController.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+    });
+
+    return (
+        <View
+            style={[
+                styles.faqCard,
+                { backgroundColor: isSelected ? 'rgb(144, 216, 255)' : '#ffffff' }
+            ]}
+        >
+            <Pressable
+                onPress={onToggle}
+                onMouseEnter={onToggle}
+                style={styles.pressableArea}
+            >
+                {item.q && item.q[lan] ? (
+                    <Text style={[
+                        styles.questionText,
+                        { color: isSelected ? '#ffffff' : '#1F2937' }
+                    ]}>
+                        {item.q[lan]}
+                    </Text>
+                ) : null}
+
+                <Animated.View
+                    style={[
+                        styles.answerWrapper,
+                        {
+                            height: heightInterpolate,
+                            opacity: opacityInterpolate,
+                            transform: [{ translateY: translateYInterpolate }]
+                        }
+                    ]}
+                >
+                    <View
+                        style={styles.measureContainer}
+                        onLayout={onTextLayout}
+                    >
+                        <Text style={[
+                            styles.answerText,
+                            { color: isSelected ? '#000' : '#4B5563' }
+                        ]}>
+                            {item.a ? item.a[lan] : item.text?.[lan]}
+                        </Text>
+                    </View>
+                </Animated.View>
+            </Pressable>
+        </View>
+    );
+};
+
 const SavolJavob = () => {
     const lan = useLanStorage(state => state.lan);
     const [selectedId, setSelectedId] = useState(null);
+    const [isMounted, setIsMounted] = useState(false);
+
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(30)).current;
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (isMounted) {
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 450,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+                Animated.timing(slideAnim, {
+                    toValue: 0,
+                    duration: 450,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+            ]).start();
+        }
+    }, [isMounted, fadeAnim, slideAnim]);
 
     const toggleSelect = (id) => {
         setSelectedId(prevId => prevId === id ? null : id);
     };
 
+    if (!isMounted) {
+        return null;
+    }
+
     return (
         <ScreenWrapper style={styles.wrapper}>
-            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+            <Animated.ScrollView
+                contentContainerStyle={[
+                    styles.container,
+                    {
+                        opacity: fadeAnim,
+                        transform: [{ translateY: slideAnim }]
+                    }
+                ]}
+                showsVerticalScrollIndicator={false}
+            >
                 <View style={styles.header}>
                     <Text style={styles.mainTitle}>
                         {lan === 'uz' ? 'Yordam markazi' : lan === 'en' ? 'Help Center' : lan === 'ru' ? 'Центр помощи' : 'Yordam markazi'}
@@ -514,46 +649,23 @@ const SavolJavob = () => {
                     <View key={section.id} style={styles.sectionContainer}>
                         <Text style={styles.categoryTitle}>{section.category[lan]}</Text>
 
-                        {section.items.map((item) => {
-                            const isSelected = selectedId === item.id;
-
-                            return (
-                                <View
-                                    key={item.id}
-                                    style={[
-                                        styles.faqCard,
-                                        { backgroundColor: isSelected ? 'rgb(144, 216, 255)' : '#ffffff', transition: 'all 0.6s ease' }
-                                    ]}
-                                >
-                                    <Pressable onPress={() => toggleSelect(item.id)} onMouseEnter={() => toggleSelect(item.id)}>
-                                        {item.q && item.q[lan] ? (
-                                            <Text style={[
-                                                styles.questionText,
-                                                { color: isSelected ? '#ffffff' : '#1F2937' }
-                                            ]}>
-                                                {item.q[lan]}
-                                            </Text>
-                                        ) : null}
-
-                                        <Text style={[
-                                            styles.answerText,
-                                            { color: isSelected ? '#000' : '#4B5563' }
-                                        ]}>
-                                            {item.a ? item.a[lan] : item.text?.[lan]}
-                                        </Text>
-                                    </Pressable>
-                                </View>
-                            );
-                        })}
+                        {section.items.map((item) => (
+                            <FaqItem
+                                key={item.id}
+                                item={item}
+                                lan={lan}
+                                isSelected={selectedId === item.id}
+                                onToggle={() => toggleSelect(item.id)}
+                            />
+                        ))}
                     </View>
                 ))}
-            </ScrollView>
+            </Animated.ScrollView>
         </ScreenWrapper>
     );
 };
 
-
-export default SavolJavob
+export default SavolJavob;
 
 const styles = StyleSheet.create({
     wrapper: {
@@ -581,9 +693,8 @@ const styles = StyleSheet.create({
         marginBottom: 28,
     },
     categoryTitle: {
-        fontSize: 16,
         fontWeight: '700',
-        color: '#rgb(0, 166, 255)',
+        color: 'rgb(0, 166, 255)',
         marginBottom: 12,
         letterSpacing: -0.2,
         textTransform: 'uppercase',
@@ -601,16 +712,27 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 2,
     },
+    pressableArea: {
+        width: '100%',
+    },
     questionText: {
         fontSize: 15,
         fontWeight: '600',
         color: '#1F2937',
-        marginBottom: 8,
         lineHeight: 22,
+    },
+    answerWrapper: {
+        overflow: 'hidden',
+    },
+    measureContainer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
     },
     answerText: {
         fontSize: 14,
-        color: '#4B5563',
         lineHeight: 22,
+        marginTop: 8,
     }
-})
+});

@@ -1,16 +1,59 @@
-import React from 'react'
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react'
 import ScreenWrapper from '../layout/ScreenWrapper'
-import { View, Text, Pressable } from 'react-native'
-import { SolitoImage } from 'solito/image'
+import { View, Text, Pressable, Animated } from 'react-native'
+import { UniversalImage } from './UniversalImage';
 import noInternet from 'app/features/app/assets/no-wifi.png'
 import { useLanStorage } from 'app/store/useLanStore'
+import { useNativeAnimDriver } from 'app/utils/animation'
 
 const NotLoad = ({ fetchProducts }: { fetchProducts: () => void }) => {
     const lan = useLanStorage(state => state.lan)
+    const [isMounted, setIsMounted] = useState(false)
+
+    const fadeAnim = useRef(new Animated.Value(0)).current
+    const slideAnim = useRef(new Animated.Value(30)).current
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
+
+    useEffect(() => {
+        if (isMounted) {
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 450,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+                Animated.timing(slideAnim, {
+                    toValue: 0,
+                    duration: 450,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+            ]).start()
+        }
+    }, [isMounted, fadeAnim, slideAnim])
+
+    if (!isMounted) {
+        return null
+    }
+
     return (
         <ScreenWrapper>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, minHeight: 400 }}>
-                <SolitoImage
+            <Animated.View 
+                style={{ 
+                    flex: 1, 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    padding: 24, 
+                    minHeight: 400,
+                    opacity: fadeAnim,
+                    transform: [{ translateY: slideAnim }]
+                }}
+            >
+                <UniversalImage
                     src={noInternet}
                     alt='noInternet'
                     width={70}
@@ -46,7 +89,7 @@ const NotLoad = ({ fetchProducts }: { fetchProducts: () => void }) => {
                         {lan === 'uz' ? 'Qayta urinish' : lan === 'en' ? 'retry' : lan === 'ru' ? 'повторить попытку' : 'Qayta urinish'}
                     </Text>
                 </Pressable>
-            </View>
+            </Animated.View>
         </ScreenWrapper>
     )
 }

@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import { View, Pressable, Animated, LayoutChangeEvent, useWindowDimensions } from 'react-native'
-import { SolitoImage } from 'solito/image'
 import NextPng from 'app/features/app/assets/next.png'
+import { UniversalImage } from './UniversalImage'
 
 interface ProductProps {
     id: number;
@@ -124,7 +124,7 @@ const ProductSlider = ({ products, count, setCount }: { products: ProductProps[]
                                         transform: [{ scale: isActive ? 0.95 : 0.85 }],
                                     }}
                                 >
-                                    <SolitoImage
+                                    <UniversalImage
                                         src={item.image}
                                         alt={`${item.id}`}
                                         width={itemHeight * 0.6}
@@ -158,7 +158,7 @@ const ProductSlider = ({ products, count, setCount }: { products: ProductProps[]
                 ]}
                 onPress={() => setCount(count > 0 ? count - 1 : maxScrollIndex)}
             >
-                <SolitoImage
+                <UniversalImage
                     src={NextPng}
                     alt='prev'
                     width={18}
@@ -187,7 +187,7 @@ const ProductSlider = ({ products, count, setCount }: { products: ProductProps[]
                 ]}
                 onPress={() => setCount(count < maxScrollIndex ? count + 1 : 0)}
             >
-                <SolitoImage
+                <UniversalImage
                     src={NextPng}
                     alt='next'
                     width={18}

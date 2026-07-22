@@ -1,20 +1,62 @@
-import React from 'react'
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react'
 import ScreenWrapper from '../layout/ScreenWrapper'
-import { View, Text, Pressable } from 'react-native'
-import { SolitoImage } from 'solito/image'
+import { View, Text, Pressable, Animated } from 'react-native'
+import { UniversalImage } from './UniversalImage';
 import emptyPng from 'app/features/app/assets/black-hole.png'
 import { useRouter } from 'solito/navigation'
 import { TextLink } from 'solito/link'
 import { useLanStorage } from 'app/store/useLanStore'
+import { useNativeAnimDriver } from 'app/utils/animation'
 
 const Empty = () => {
     const router = useRouter()
     const lan = useLanStorage(state => state.lan)
+    const [isMounted, setIsMounted] = useState(false)
+
+    const fadeAnim = useRef(new Animated.Value(0)).current
+    const slideAnim = useRef(new Animated.Value(30)).current
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
+
+    useEffect(() => {
+        if (isMounted) {
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 450,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+                Animated.timing(slideAnim, {
+                    toValue: 0,
+                    duration: 450,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+            ]).start()
+        }
+    }, [isMounted, fadeAnim, slideAnim])
+
+    if (!isMounted) {
+        return null
+    }
+
     return (
         <ScreenWrapper>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, minHeight: 400 }}>
-
-                <SolitoImage
+            <Animated.View 
+                style={{ 
+                    flex: 1, 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    padding: 24, 
+                    minHeight: 400,
+                    opacity: fadeAnim,
+                    transform: [{ translateY: slideAnim }]
+                }}
+            >
+                <UniversalImage
                     src={emptyPng}
                     alt='empty'
                     width={160}
@@ -54,7 +96,7 @@ const Empty = () => {
                         {lan === 'uz' ? 'Ortga qaytish' : lan === 'en' ? 'Go back' : lan === 'ru' ? 'Возвращаться' : 'Ortga qaytish'}
                     </Text>
                 </Pressable>
-            </View>
+            </Animated.View>
         </ScreenWrapper>
     )
 }

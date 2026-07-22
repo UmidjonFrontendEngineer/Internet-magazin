@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, useWindowDimensions, Pressable, ScrollView, Animated, TextInput, Platform } from 'react-native'
 import { useLanStorage } from 'app/store/useLanStore'
-import { SolitoImage } from 'solito/image'
+import { UniversalImage } from './UniversalImage'
 import { TextLink } from 'solito/link'
 import { useInputStorage } from 'app/store/useInputStore'
 import { useRouter } from 'solito/navigation'
@@ -83,7 +83,7 @@ const AnimatedSubCategory = ({ subItem, lan, isMobileView }: { subItem: SubCateg
                             >
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 }}>
                                     <Text style={{ fontSize: 14, color: '#444', flex: 1 }}>{descrItem[lan]}</Text>
-                                    <SolitoImage src="https://i.ibb.co/PZsbKfGr/search.png" alt="search" width={14} height={14} />
+                                    <UniversalImage src="https://i.ibb.co/PZsbKfGr/search.png" alt="search" width={14} height={14} resizeMode='contain' />
                                 </View>
                             </Pressable>
                         )
@@ -103,7 +103,7 @@ const AnimatedSubCategory = ({ subItem, lan, isMobileView }: { subItem: SubCateg
                                 >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 }}>
                                         <Text style={{ fontSize: 14, color: '#444', flex: 1 }}>{descrItem[lan]}</Text>
-                                        <SolitoImage src="https://i.ibb.co/PZsbKfGr/search.png" alt="search" width={14} height={14} />
+                                        <UniversalImage src="https://i.ibb.co/PZsbKfGr/search.png" alt="search" width={14} height={14} resizeMode='contain' />
                                     </View>
                                 </Pressable>
                             )
@@ -357,7 +357,7 @@ const KatalogTizimi = () => {
             width: '100%',
             maxWidth: 1340,
             marginHorizontal: 'auto',
-            marginTop: isMobileView ? 40 : 140,
+            marginTop: isMobileView ? 80 : 140,
             paddingHorizontal: 16,
         }}>
 

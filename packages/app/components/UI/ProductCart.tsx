@@ -5,7 +5,7 @@ import { View, Text, Pressable, StyleSheet, useWindowDimensions, Platform, Anima
 import { useNativeAnimDriver } from 'app/utils/animation';
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
-import { SolitoImage } from "solito/image";
+import { UniversalImage } from "./UniversalImage";
 import { useRouter } from "solito/navigation";
 
 interface ProductProps {
@@ -21,9 +21,12 @@ interface ProductProps {
 interface ProductCardProps {
     product: ProductProps;
     products: ProductProps[];
+    index: number;
 }
 
-const ProductCard = ({ product, products }: ProductCardProps) => {
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const ProductCard = ({ product, products, index }: ProductCardProps) => {
     const [isMounted, setIsMounted] = useState(false);
     const { cart, toggleCart } = useCartStore();
     const router = useRouter();
@@ -37,13 +40,77 @@ const ProductCard = ({ product, products }: ProductCardProps) => {
         setIsMounted(true);
     }, []);
 
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+
+    useEffect(() => {
+        if (!isMounted) return;
+
+        if (Platform.OS === 'web') {
+            const cardElement = document.getElementById(`product-card-${product.id}`);
+            if (!cardElement) return;
+
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        const rowOffset = (index % 4) * 50;
+                        const delay = rowOffset;
+
+                        Animated.parallel([
+                            Animated.timing(fadeAnim, {
+                                toValue: 1,
+                                duration: 450,
+                                delay: delay,
+                                useNativeDriver: useNativeAnimDriver,
+                            }),
+                            Animated.timing(slideAnim, {
+                                toValue: 0,
+                                duration: 450,
+                                delay: delay,
+                                useNativeDriver: useNativeAnimDriver,
+                            }),
+                        ]).start();
+
+                        observer.unobserve(entry.target);
+                    }
+                },
+                {
+                    root: null,
+                    threshold: 0.1,
+                }
+            );
+
+            observer.observe(cardElement);
+
+            return () => {
+                if (cardElement) observer.unobserve(cardElement);
+            };
+        } else {
+            const delay = (index % 4) * 70;
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 400,
+                    delay: delay,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+                Animated.timing(slideAnim, {
+                    toValue: 0,
+                    duration: 400,
+                    delay: delay,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+            ]).start();
+        }
+    }, [isMounted, index, fadeAnim, slideAnim, product.id]);
+
     const isFavorite = isMounted && yoqtirilganIds.includes(product.id);
 
     const handleTargetIDs = (currentId: number) => {
         const currentIndex = products.findIndex(p => p.id === currentId);
         if (currentIndex === -1) return `${currentId}`;
-        const nextProducts = products.slice(currentIndex, currentIndex + 10);
-        return nextProducts.map(p => p.id).join(',');
+        const nextProductsSlice = products.slice(currentIndex, currentIndex + 10);
+        return nextProductsSlice.map(p => p.id).join(',');
     };
 
     const handleCardPress = () => {
@@ -90,9 +157,17 @@ const ProductCard = ({ product, products }: ProductCardProps) => {
                     : '100%';
 
     return (
-        <Pressable
+        <AnimatedPressable
+            {...({ nativeID: `product-card-${product.id}` } as any)}
             onPress={handleCardPress}
-            style={[styles.card, { width: cardWidth }]}
+            style={[
+                styles.card,
+                {
+                    width: cardWidth,
+                    opacity: fadeAnim,
+                    transform: [{ translateY: slideAnim }]
+                }
+            ]}
         >
             <View style={styles.topSection}>
                 <Pressable
@@ -100,9 +175,9 @@ const ProductCard = ({ product, products }: ProductCardProps) => {
                     style={styles.favoriteButton}
                 >
                     <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-                        <SolitoImage
+                        <UniversalImage
                             src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
-                            alt="Favorite Icon"
+                            alt={product.title}
                             width={24}
                             height={24}
                             resizeMode="contain"
@@ -111,7 +186,7 @@ const ProductCard = ({ product, products }: ProductCardProps) => {
                 </Pressable>
 
                 <View style={styles.imageWrapper}>
-                    <SolitoImage
+                    <UniversalImage
                         src={product.image}
                         alt={product.title}
                         width={130}
@@ -147,7 +222,7 @@ const ProductCard = ({ product, products }: ProductCardProps) => {
                     </View>
                 </Pressable>
             </View>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 
@@ -177,7 +252,6 @@ const styles = StyleSheet.create({
                 cursor: 'pointer',
                 flexShrink: 0,
                 flexGrow: 0,
-                flexBottom: 0,
             }
         })
     },

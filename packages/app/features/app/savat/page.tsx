@@ -69,11 +69,9 @@ const Savat = () => {
     return (
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.headerTitle}>{lan === 'uz' ? 'Savatdagi mahsulotlar' : lan === 'en' ? 'Products in cart' : lan === 'ru' ? 'Товары в корзине' : 'Savatdagi mahsulotlar'}</Text>
-
                 <View style={styles.grid}>
-                    {cartProducts.map((item) => (
-                        <Card key={item.id} product={item} />
+                    {cartProducts.map((item, index) => (
+                        <Card key={item.id} product={item} index={index} />
                     ))}
                 </View>
             </ScrollView>

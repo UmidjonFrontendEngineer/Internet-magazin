@@ -4,7 +4,7 @@ import { View, Text, Pressable, StyleSheet, useWindowDimensions, Platform, Anima
 import { useNativeAnimDriver } from 'app/utils/animation'
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
-import { SolitoImage } from "solito/image";
+import { UniversalImage } from "./UniversalImage";
 
 interface ProductProps {
     id: number;
@@ -16,7 +16,7 @@ interface ProductProps {
     rating: { rate: number; count: number };
 }
 
-const CardProduct = ({ product }: { product: ProductProps }) => {
+const CardProduct = ({ product, index }: { product: ProductProps; index?: number }) => {
     const { width: windowWidth } = useWindowDimensions();
     const [isMounted, setIsMounted] = useState(false);
 
@@ -29,9 +29,30 @@ const CardProduct = ({ product }: { product: ProductProps }) => {
     const incrementQuantity = useCartStore(state => state.incrementQuantity);
     const decrementQuantity = useCartStore(state => state.decrementQuantity);
 
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(40)).current;
+
     useEffect(() => {
         setIsMounted(true);
-    }, []);
+        const delay = Math.min(index * 60, 400);
+
+        const timer = setTimeout(() => {
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 400,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+                Animated.timing(slideAnim, {
+                    toValue: 0,
+                    duration: 400,
+                    useNativeDriver: useNativeAnimDriver,
+                }),
+            ]).start();
+        }, delay);
+
+        return () => clearTimeout(timer);
+    }, [index, fadeAnim, slideAnim]);
 
     const isInCart = cart.some(item => item.id === product.id);
     const isFavorite = isMounted && yoqtirilganIds.includes(product.id);
@@ -72,72 +93,74 @@ const CardProduct = ({ product }: { product: ProductProps }) => {
     const isSmall = windowWidth < 380;
 
     return (
-        <View style={[styles.card, isSmall && styles.cardSmall]}>
-            <View style={[styles.leftSection, isSmall && styles.leftSectionSmall]}>
-                <View style={[styles.imageWrapper, isSmall && styles.imageWrapperSmall]}>
-                    <SolitoImage
-                        src={product.image}
-                        alt={product.title}
-                        width={isSmall ? 70 : 100}
-                        height={isSmall ? 70 : 100}
-                        resizeMode="contain"
-                    />
-                </View>
-
-                <Pressable
-                    onPress={handleFavoritePress}
-                    style={styles.favoriteButton}
-                >
-                    <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-                        <SolitoImage
-                            src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
-                            alt="heart Icon"
-                            width={18}
-                            height={18}
+        <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }], width: '100%' }]}>
+            <View style={[styles.card, isSmall && styles.cardSmall]}>
+                <View style={[styles.leftSection, isSmall && styles.leftSectionSmall]}>
+                    <View style={[styles.imageWrapper, isSmall && styles.imageWrapperSmall]}>
+                        <UniversalImage
+                            src={product.image}
+                            alt={product.title}
+                            width={isSmall ? 70 : 100}
+                            height={isSmall ? 70 : 100}
                             resizeMode="contain"
                         />
-                    </Animated.View>
-                </Pressable>
-            </View>
+                    </View>
 
-            <View style={styles.rightSection}>
-                <View style={styles.headerRow}>
-                    <Text numberOfLines={2} style={[styles.productTitle, isSmall && styles.productTitleSmall]}>
-                        {product.title}
-                    </Text>
-
-                    <Pressable onPress={() => toggleCart(product.id)} style={styles.deleteButton}>
-                        <Text style={[styles.deleteText, isSmall && styles.deleteTextSmall]}>Yo'q qilish</Text>
+                    <Pressable
+                        onPress={handleFavoritePress}
+                        style={styles.favoriteButton}
+                    >
+                        <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+                            <UniversalImage
+                                src={isFavorite ? 'https://i.ibb.co/XkFkG62y/image.png' : 'https://i.ibb.co/GfZzh6Y7/heart.png'}
+                                alt="heart Icon"
+                                width={18}
+                                height={18}
+                                resizeMode="contain"
+                            />
+                        </Animated.View>
                     </Pressable>
                 </View>
 
-                <View style={styles.metaInfo}>
-                    <Text style={styles.metaText}>Sotuvchi: <Text style={styles.metaValue}>Premium Store</Text></Text>
-                    <Text style={styles.metaText}>Kategoriya: <Text style={styles.metaValue}>{product.category}</Text></Text>
-                </View>
+                <View style={styles.rightSection}>
+                    <View style={styles.headerRow}>
+                        <Text numberOfLines={2} style={[styles.productTitle, isSmall && styles.productTitleSmall]}>
+                            {product.title}
+                        </Text>
 
-                <View style={[styles.footerRow, isSmall && styles.footerRowSmall]}>
-                    <View style={[styles.counterContainer, isSmall && styles.counterContainerSmall]}>
-                        <Pressable style={[styles.counterBtn, isSmall && styles.counterBtnSmall]} onPress={() => decrementQuantity(product.id)}>
-                            <Text style={styles.counterBtnText}>-</Text>
-                        </Pressable>
-                        <Text style={[styles.counterValue, isSmall && styles.counterValueSmall]}>{quantity}</Text>
-                        <Pressable style={[styles.counterBtn, isSmall && styles.counterBtnSmall]} onPress={() => incrementQuantity(product.id)}>
-                            <Text style={styles.counterBtnText}>+</Text>
+                        <Pressable onPress={() => toggleCart(product.id)} style={styles.deleteButton}>
+                            <Text style={[styles.deleteText, isSmall && styles.deleteTextSmall]}>Yo'q qilish</Text>
                         </Pressable>
                     </View>
 
-                    <View style={[styles.priceContainer, isSmall && styles.priceContainerSmall]}>
-                        <Text style={[styles.currentPrice, isSmall && styles.currentPriceSmall]}>
-                            {(product.price * 12500 * quantity).toLocaleString()} so'm
-                        </Text>
-                        <Text style={[styles.oldPrice, isSmall && styles.oldPriceSmall]}>
-                            {(oldPrice * 12500 * quantity).toLocaleString()} so'm
-                        </Text>
+                    <View style={styles.metaInfo}>
+                        <Text style={styles.metaText}>Sotuvchi: <Text style={styles.metaValue}>Premium Store</Text></Text>
+                        <Text style={styles.metaText}>Kategoriya: <Text style={styles.metaValue}>{product.category}</Text></Text>
+                    </View>
+
+                    <View style={[styles.footerRow, isSmall && styles.footerRowSmall]}>
+                        <View style={[styles.counterContainer, isSmall && styles.counterContainerSmall]}>
+                            <Pressable style={[styles.counterBtn, isSmall && styles.counterBtnSmall]} onPress={() => decrementQuantity(product.id)}>
+                                <Text style={styles.counterBtnText}>-</Text>
+                            </Pressable>
+                            <Text style={[styles.counterValue, isSmall && styles.counterValueSmall]}>{quantity}</Text>
+                            <Pressable style={[styles.counterBtn, isSmall && styles.counterBtnSmall]} onPress={() => incrementQuantity(product.id)}>
+                                <Text style={styles.counterBtnText}>+</Text>
+                            </Pressable>
+                        </View>
+
+                        <View style={[styles.priceContainer, isSmall && styles.priceContainerSmall]}>
+                            <Text style={[styles.currentPrice, isSmall && styles.currentPriceSmall]}>
+                                {(product.price * 12500 * quantity).toLocaleString()} so'm
+                            </Text>
+                            <Text style={[styles.oldPrice, isSmall && styles.oldPriceSmall]}>
+                                {(oldPrice * 12500 * quantity).toLocaleString()} so'm
+                            </Text>
+                        </View>
                     </View>
                 </View>
             </View>
-        </View>
+        </Animated.View>
     );
 };
 

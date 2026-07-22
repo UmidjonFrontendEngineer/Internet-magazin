@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Platform, TextInput, TouchableOpacity, useWindo
 import { useNativeAnimDriver } from 'app/utils/animation'
 import { TextLink } from 'solito/link'
 import { useColorStore } from 'app/store/useColorStore'
-import { SolitoImage } from 'solito/image'
+import { UniversalImage } from 'app/components/UI/UniversalImage'
 import { BlurView } from 'expo-blur'
 import { LinearGradient } from 'expo-linear-gradient'
 import Language from 'app/components/UI/Language'
@@ -33,7 +33,7 @@ import CancelPng from 'app/features/app/assets/cancel.png'
 import LanguagePng from 'app/features/app/assets/language.png'
 
 const SearchIcon = () => (
-    <SolitoImage
+    <UniversalImage
         src={SearchPng}
         alt="search"
         width={18}
@@ -43,7 +43,7 @@ const SearchIcon = () => (
 )
 
 const HomeIcon = () => (
-    <SolitoImage
+    <UniversalImage
         src={HomePng}
         alt="home"
         width={18}
@@ -52,7 +52,7 @@ const HomeIcon = () => (
     />
 )
 const UserIcon = () => (
-    <SolitoImage
+    <UniversalImage
         src={UserPng}
         alt="profile"
         width={18}
@@ -62,7 +62,7 @@ const UserIcon = () => (
 )
 
 const HeartIcon = () => (
-    <SolitoImage
+    <UniversalImage
         src={HeartPng}
         alt="heart"
         width={18}
@@ -72,7 +72,7 @@ const HeartIcon = () => (
 )
 
 const CartIcon = () => (
-    <SolitoImage
+    <UniversalImage
         src={CartPng}
         alt="kart"
         width={18}
@@ -82,7 +82,7 @@ const CartIcon = () => (
 )
 
 const CatalogIcon = () => (
-    <SolitoImage
+    <UniversalImage
         src={CatalogPng}
         alt="katalog"
         width={18}
@@ -273,7 +273,7 @@ const Header = () => {
                                         alignItems: 'center',
                                     }}
                                 >
-                                    <SolitoImage
+                                    <UniversalImage
                                         src={locationOpen ? CancelPng : GpsPng}
                                         alt='gps'
                                         width={18}
@@ -305,6 +305,8 @@ const Header = () => {
                                 <TextInput
                                     value={input}
                                     onChangeText={setInput}
+                                    returnKeyType="search"
+                                    onSubmitEditing={() => router.push(`/search/${input.trim().toLowerCase().replace(/\s+/g, '-')}`)}
                                     style={{
                                         flex: 1,
                                         height: '100%',
@@ -428,7 +430,7 @@ const Header = () => {
                                             transform: [{ scale }]
                                         }}
                                     >
-                                        <SolitoImage
+                                        <UniversalImage
                                             src={LanguagePng}
                                             alt='language'
                                             width={18}
@@ -706,7 +708,7 @@ const Header = () => {
                     <View style={[styles.containerRow, { backgroundColor: '#f4f5f5', height: 28 }]}>
                         <View style={{ flexDirection: 'row' }}>
                             <Pressable onPress={() => setLocationOpen(true)} style={{ flexDirection: 'row', gap: 4 }}>
-                                <SolitoImage
+                                <UniversalImage
                                     src={GpsPng}
                                     alt="gps"
                                     width={18}
@@ -722,13 +724,13 @@ const Header = () => {
                         <View style={{ flexDirection: 'row', gap: 14, height: '100%' }}>
                             <TextLink href='https://seller.uzum.uz/?utm_source=uzum_market_main&utm_medium=web&utm_campaign=header_link'><Text>{lan === 'uz' ? "Sotuvchi bo'lish" : lan === 'en' ? 'Become a seller' : lan === 'ru' ? 'ПСтать продавцом' : "Sotuvchi bo'lish"}</Text></TextLink>
                             <Text>|</Text>
-                            <TextLink href='https://promo.uzum.uz/uz/promo/pvz'><Text>{lan === 'uz' ? 'Topshirish punktini ochish' : lan === 'en' ? 'Pickup points' : lan === 'ru' ? 'Пункты выдачи' : 'Topshirish punktini ochish'}</Text></TextLink>
+                            <TextLink href='https://promo.uzum.uz/uz/promo/pvz'><Text>{lan === 'uz' ? 'Topshirish punktini ochish' : lan === 'en' ? 'Open a pickup point' : lan === 'ru' ? 'Открыть пункт выдачи' : 'Topshirish punktini ochish'}</Text></TextLink>
                             <TextLink href='/savolJavob'><Text>{lan === 'uz' ? 'Savol-javob' : lan === 'en' ? 'FAQ (yoki Questions & Answers)' : lan === 'ru' ? 'Вопросы и ответы (или Частые вопросы)' : 'Savol-javob'}</Text></TextLink>
                             <Text>{lan === 'uz' ? 'Buyrutmalarim' : lan === 'en' ? 'My orders' : lan === 'ru' ? 'Мои заказы' : 'Buyrutmalarim'}</Text>
                             <View style={{ width: 80 }}>
                                 {openLan ? <Language setOpenLan={setOpenLan} /> :
                                     <Pressable style={{ paddingHorizontal: 12, borderRadius: 10, backgroundColor: 'rgba(226, 245, 255, 0.6)', width: '100%', alignItems: 'center', justifyItems: 'center', flexDirection: 'row', gap: 4 }} onPress={() => setOpenLan(prew => !prew)}>
-                                        <SolitoImage
+                                        <UniversalImage
                                             src={lan === 'uz' ? UzPng : lan === 'ru' ? RuPng : lan === 'en' ? EnPng : ''}
                                             alt={lan === 'uz' ? 'uz' : lan === 'ru' ? 'ru' : lan === 'en' ? 'en' : ''}
                                             width={20}
@@ -809,7 +811,7 @@ const Header = () => {
 
                         <TextLink href='/'>
                             <View style={{ gap: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                <SolitoImage
+                                <UniversalImage
                                     src={GrapePng}
                                     alt="home Icon"
                                     width={30}
@@ -829,6 +831,8 @@ const Header = () => {
 
                         <View style={styles.searchContainer}>
                             <TextInput
+                                returnKeyType="search"
+                                onSubmitEditing={() => router.push(`/search/${input.trim().toLowerCase().replace(/\s+/g, '-')}`)}
                                 onChangeText={text => setInput(text)}
                                 placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
                                 style={styles.searchInput}
