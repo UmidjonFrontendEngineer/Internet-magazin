@@ -114,10 +114,7 @@ const Profile = () => {
     }
 
     return (
-        <LinearGradient
-            colors={['#0B192C', '#1E3E62', '#000000']}
-            style={[styles.container, { paddingTop: width > 500 ? 10 : 90 }]}
-        >
+        <View style={[styles.container]}>
             <Animated.ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -131,7 +128,7 @@ const Profile = () => {
                 {!isEditing ? (
                     <View style={styles.phoneFrame}>
                         <View style={styles.phoneHeader}>
-                            <Pressable style={styles.iconButton}>
+                            <Pressable style={styles.iconButton} onPress={() => router.back()}>
                                 <Text style={styles.headerNavArrow}>‹</Text>
                             </Pressable>
                             <Text style={styles.phoneHeaderTitle}>{t.myProfile}</Text>
@@ -353,7 +350,7 @@ const Profile = () => {
                                     {genderOpen ? null : <Text style={styles.selectArrow}>▼</Text>}
                                     {
                                         genderOpen ? (
-                                            <Pressable onPress={() => {setGender(prev => prev === 'Male' ? 'Female' : 'Male'), setGenderOpen(false)}}>
+                                            <Pressable onPress={() => { setGender(prev => prev === 'Male' ? 'Female' : 'Male'), setGenderOpen(false) }}>
                                                 <Text style={styles.selectText}>{gender === 'Male' ? 'Female' : 'Male'}</Text>
                                             </Pressable>
                                         ) : null
@@ -375,7 +372,7 @@ const Profile = () => {
                 )}
 
             </Animated.ScrollView>
-        </LinearGradient >
+        </View >
     )
 }
 
@@ -388,7 +385,6 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         alignItems: 'center',
-        paddingBottom: 100,
     },
     orbTop: {
         position: 'absolute',
@@ -439,6 +435,8 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: '#FFFFFF',
         padding: 18,
+        paddingBottom: 100,
+        paddingTop: 40
     },
     phoneHeader: {
         flexDirection: 'row',
