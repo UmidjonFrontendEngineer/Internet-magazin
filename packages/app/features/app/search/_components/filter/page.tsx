@@ -36,7 +36,7 @@ const FilterSearch = () => {
             const response = await fetch("https://fakestoreapi.com/products");
             const data = await response.json();
 
-            const searchProducts = data.filter(product =>
+            const searchProducts = data.filter((product: ProductProps) =>
                 product.title.toLowerCase().includes(inputValue)
             );
             setProducts(searchProducts);
@@ -55,12 +55,14 @@ const FilterSearch = () => {
     if (loading === 'loading') {
         return (
             <ScreenWrapper>
-                <View style={styles.grid}>
-                    <LoaderProductCart />
-                    <LoaderProductCart />
-                    <LoaderProductCart />
-                    <LoaderProductCart />
-                </View>
+                <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+                    <View style={styles.grid}>
+                        <LoaderProductCart />
+                        <LoaderProductCart />
+                        <LoaderProductCart />
+                        <LoaderProductCart />
+                    </View>
+                </ScrollView>
             </ScreenWrapper>
         );
     }
@@ -77,8 +79,8 @@ const FilterSearch = () => {
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.grid}>
-                    {products.map((item) => (
-                        <ProductCard key={item.id} product={item} products={products} />
+                    {products.map((item, index) => (
+                        <ProductCard key={item.id} product={item} products={products} index={index} />
                     ))}
                 </View>
             </ScrollView>

@@ -1,23 +1,31 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { ScrollView, StyleSheet, View, useWindowDimensions, Platform } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Footer from 'app/components/layout/footer/Footer'
 import { useTabStore } from 'app/store/useTabStore'
+import { useScrollStore } from 'app/store/useScrollStore'
 
-export default function ScreenWrapper({ children }: {children: React.ReactNode}) {
+export default function ScreenWrapper({ children }: { children: React.ReactNode }) {
     let insets = { bottom: 0, top: 0 }
     const tab = useTabStore(state => state.tab)
+    
+    const scrollViewRef = useRef<ScrollView>(null);
+    const setScrollToTopFunc = useScrollStore((state) => state.setScrollToTopFunc);
+
+    useEffect(() => {
+        setScrollToTopFunc(() => {
+            scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+        });
+    }, [setScrollToTopFunc]);
 
     try {
         const hookInsets = useSafeAreaInsets()
         if (hookInsets) {
             insets = hookInsets
         }
-    } catch (error) {
-
-    }
+    } catch (error) {}
 
     const { width: windowWidth } = useWindowDimensions()
     const [isHydrated, setIsHydrated] = useState(false)
@@ -32,11 +40,12 @@ export default function ScreenWrapper({ children }: {children: React.ReactNode})
     return (
         <View style={styles.outerContainer}>
             <ScrollView
+                ref={scrollViewRef}
                 style={[
-                    styles.scroll, 
-                    { 
-                        maxWidth: 1400, 
-                        width: '100%' 
+                    styles.scroll,
+                    {
+                        maxWidth: 1400,
+                        width: '100%'
                     }
                 ]}
                 contentContainerStyle={[

@@ -51,10 +51,12 @@ const Search = () => {
         return (
             <ScreenWrapper>
                 <View style={styles.grid}>
-                    <LoaderProductCart />
-                    <LoaderProductCart />
-                    <LoaderProductCart />
-                    <LoaderProductCart />
+                    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+                        <LoaderProductCart />
+                        <LoaderProductCart />
+                        <LoaderProductCart />
+                        <LoaderProductCart />
+                    </ScrollView>
                 </View>
             </ScreenWrapper>
         )

@@ -47,7 +47,7 @@ const HomeScreen = () => {
     if (loading === 'loading') {
         return (
             <ScreenWrapper>
-                <ScrollView contentContainerStyle={styles.container}>
+                <View contentContainerStyle={styles.container}>
 
                     <View style={{ padding: 24 }}>
                         <SliderLoader />
@@ -60,7 +60,7 @@ const HomeScreen = () => {
                         <LoaderProductCard />
                     </View>
 
-                </ScrollView>
+                </View>
             </ScreenWrapper>
         );
     }
@@ -75,7 +75,7 @@ const HomeScreen = () => {
 
     return (
         <ScreenWrapper>
-            <ScrollView contentContainerStyle={styles.container}>
+            <View contentContainerStyle={styles.container}>
                 <View style={{ padding: screenWidth > 900 ? 12 : 0 }}>
                     <Slider products={products} link={true} count={count} setCount={setCount} />
                 </View>
@@ -85,7 +85,7 @@ const HomeScreen = () => {
                         <ProductCard key={item.id} product={item} products={products} index={index} />
                     ))}
                 </View>
-            </ScrollView>
+            </View>
         </ScreenWrapper>
     );
 };

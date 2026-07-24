@@ -31,6 +31,12 @@ import RuPng from 'app/features/app/assets/russia.png'
 import GpsPng from 'app/features/app/assets/gps.png'
 import CancelPng from 'app/features/app/assets/cancel.png'
 import LanguagePng from 'app/features/app/assets/language.png'
+import { useModalStore } from 'app/store/useModalStore'
+import ModalComponent from 'app/components/UI/Modal'
+import TopPng from 'app/features/app/assets/back.png'
+import ArrowPng from 'app/features/app/assets/arrow.png'
+import BlueArrowPng from 'app/features/app/assets/blue-arrow.png'
+import { useScrollStore } from 'app/store/useScrollStore'
 
 const SearchIcon = () => (
     <UniversalImage
@@ -103,6 +109,8 @@ const Header = () => {
     const pathname = usePathname()
     const [locationOpen, setLocationOpen] = useState(false)
     const [extra, setExtra] = useState(false)
+    const modal = useModalStore(state => state.modal)
+    const setModal = useModalStore(state => state.setModal)
 
     useEffect(() => {
         setIsHydrated(true)
@@ -186,6 +194,8 @@ const Header = () => {
         outputRange: [1, 1.4],
     });
 
+    const scrollToTop = useScrollStore((state) => state.scrollToTop);
+
     if (isMobileView) {
         return (
             <>
@@ -227,7 +237,7 @@ const Header = () => {
                         </Pressable>
                     </BlurView>
                 </Modal>
-                {(tab !== 2 && tab !== 4) ? (
+                {(modal === '' && tab !== 3) ? (
                     <>
                         <View style={{
                             ...Platform.select({
@@ -335,7 +345,8 @@ const Header = () => {
                             </BlurView>
                         </View>
                     </>
-                ) : null}
+                ) : (modal !== '' && tab !== 3) ? <ModalComponent top={Platform.OS !== 'web' ? 36 : 10} left={0} /> : null}
+
 
                 {
                     extra ? (
@@ -344,7 +355,7 @@ const Header = () => {
                                 web: { position: 'fixed' },
                                 default: { position: 'absolute' }
                             }),
-                            bottom: 140,
+                            bottom: 160,
                             right: 0,
                             width: '24%',
                             height: 40,
@@ -437,6 +448,33 @@ const Header = () => {
                                             height={18}
                                             resizeMode='contain'
                                         />
+                                    </Animated.View>
+                                </Pressable>
+                            </BlurView>
+
+                            <BlurView
+                                tint="light"
+                                intensity={60}
+                                style={[styles.mobileTabItem, {
+                                    alignItems: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                    borderRadius: 100,
+                                    paddingHorizontal: 10,
+                                    borderWidth: 1,
+                                    borderColor: 'rgba(255, 255, 255, 0.25)',
+                                }]}
+                            >
+                                <Pressable onPress={() => { setTimeout(() => setExtra(false), 600), scrollToTop() }}>
+                                    <Animated.View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            transform: [{ scale }]
+                                        }}
+                                    >
+                                        <UniversalImage src={BlueArrowPng} alt='top' height={20} width={20} resizeMode='contain' />
                                     </Animated.View>
                                 </Pressable>
                             </BlurView>
@@ -554,6 +592,10 @@ const Header = () => {
                             alignItems: 'center',
                             borderRadius: 100,
                             paddingHorizontal: 10,
+                            shadowColor: '#000',
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 10,
                             borderWidth: 1,
                             borderColor: 'rgba(255, 255, 255, 0.25)',
                             ...Platform.select({
@@ -702,6 +744,48 @@ const Header = () => {
                     </Pressable>
                 </BlurView>
             </Modal>
+
+            <View style={{
+                ...Platform.select({
+                    web: { position: 'fixed' },
+                    default: { position: 'absolute' }
+                }),
+                bottom: 30,
+                left: 0,
+                width: '100%',
+                height: 40,
+                zIndex: 999999,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'end',
+                gap: 10,
+            }}>
+
+                <Pressable style={[styles.mobileTabItem,
+                {
+                    backgroundColor: '#007bff9e',
+                    borderRadius: 100,
+                    padding: 18,
+                    borderWidth: 2,
+                    alignItems: 'center',
+                    borderColor: 'rgba(255, 255, 255, 0.25)',
+                    justifyContent: 'center',
+                    transform: [{ translateX: -30 }]
+                }
+                ]} onPress={() => { setTimeout(() => setExtra(false), 600), scrollToTop() }}>
+                    <Animated.View
+                        style={{
+                            width: 20,
+                            height: 20,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            transform: [{ scale }]
+                        }}
+                    >
+                        <UniversalImage src={ArrowPng} alt='top' height={30} width={30} resizeMode='contain' />
+                    </Animated.View>
+                </Pressable>
+            </View>
 
             <View style={styles.webHeaderWrapper}>
                 <View style={styles.topBar}>
@@ -1037,7 +1121,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         zIndex: 99999,
         gap: 0,
-        backgroundColor: 'rgba(226, 245, 255, 0.6)',
+        backgroundColor: 'rgba(235, 245, 255, 0.6)',
         borderRadius: 100,
         width: '76%',
         borderWidth: 1,

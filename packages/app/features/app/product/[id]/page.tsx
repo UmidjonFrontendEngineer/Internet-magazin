@@ -20,6 +20,7 @@ import Slider from 'app/components/UI/Slider';
 import ProductSlider from 'app/components/UI/ProductSlider';
 import accesStarPng from 'app/features/app/assets/acces-star.png'
 import starPng from 'app/features/app/assets/star.png'
+import { useModalStore } from 'app/store/useModalStore';
 
 interface ProductProps {
     id: number;
@@ -55,6 +56,16 @@ const ProductID = () => {
     const isInCart = cart.some(item => item.id === product?.id);
     const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan);
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
+    const setModal = useModalStore(state => state.setModal)
+    const modal = useModalStore(state => state.modal)
+
+    useEffect(() => {
+        setModal('product')
+
+        return () => {
+            setModal('')
+        }
+    }, [])
 
     const [elementHeight, setElementHeight] = useState<number>(500);
     const elementRef = useRef<any>(null);
@@ -99,6 +110,22 @@ const ProductID = () => {
     const heartScale = scaleAnim.interpolate({
         inputRange: [0, 1],
         outputRange: [1, 1.4],
+    });
+
+    const moonAnimate = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(moonAnimate, {
+            toValue: moon,
+            duration: 300,
+            useNativeDriver: false
+        }).start()
+    }, [moon])
+
+    const moonLeft = moonAnimate.interpolate({
+        inputRange: [3, 6, 12, 24],
+        outputRange: ['75%', '50%', '25%', '0%'],
+        extrapolate: 'clamp'
     });
 
     const measureHeight = () => {
@@ -185,7 +212,7 @@ const ProductID = () => {
     if (loading) {
         return (
             <View style={styles.center}>
-                <ActivityIndicator size="large" color="skyblue" />
+                <ActivityIndicator size="large" color="rgba(115, 185, 255, 0.85)" />
             </View>
         );
     }
@@ -200,7 +227,7 @@ const ProductID = () => {
 
     return (
         <ScreenWrapper>
-            <ScrollView contentContainerStyle={isMobileView ? styles.mobileContainer : undefined}>
+            <View contentContainerStyle={isMobileView ? styles.mobileContainer : undefined}>
                 <View style={{ width: '100%', flexDirection: (isTabletView || isMobileView) ? 'column' : 'row', gap: 16 }}>
 
                     <View style={[
@@ -259,29 +286,33 @@ const ProductID = () => {
                         ref={Platform.OS === 'web' ? elementRef : undefined}
                         onLayout={handleLayout}
                     >
-                        <View style={{ width: '100%', paddingTop: 50, gap: 5, borderRadius: 28, backgroundColor: 'skyblue' }}>
+                        <View style={{ width: '100%', paddingTop: 50, gap: 5, borderRadius: 28, backgroundColor: 'rgba(115, 185, 255, 0.85)' }}>
                             <View style={{ width: '100%', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20, gap: 22 }}>
                                 {(isTabletView || isMobileView) ? <Text style={{ fontWeight: '700', fontSize: 20 }}>{product.title}</Text> : null}
                                 <Text style={{ fontWeight: '700', fontSize: 30, color: '#111' }}>{product.price} so'm</Text>
                                 <Text style={{ fontWeight: '400', fontSize: 14, textDecorationLine: 'line-through', color: 'gray' }}>{((product.price / 100) * 120).toFixed(0)}</Text>
 
-                                <View style={{ width: '100%', padding: 10, gap: 6, backgroundColor: 'rgba(135, 206, 235, 0.15)', borderRadius: 16 }}>
-                                    <View style={{ width: '100%', padding: 4, gap: 4, borderRadius: 8, backgroundColor: '#d0eaf8', flexDirection: 'row' }}>
-                                        <Pressable onPress={() => setMoon(24)} style={{ padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                            <Text style={{ fontWeight: '700' }}>24 oy</Text>
-                                        </Pressable>
-                                        <Pressable onPress={() => setMoon(12)} style={{ padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                            <Text style={{ fontWeight: '700' }}>12 oy</Text>
-                                        </Pressable>
-                                        <Pressable onPress={() => setMoon(6)} style={{ padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                            <Text style={{ fontWeight: '700' }}>6 oy</Text>
-                                        </Pressable>
-                                        <Pressable onPress={() => setMoon(3)} style={{ padding: 6, borderRadius: 6, backgroundColor: 'snow', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                            <Text style={{ fontWeight: '700' }}>3 oy</Text>
-                                        </Pressable>
+                                <View style={{ width: '100%' }}>
+                                    <View style={{ width: '100%', padding: 4, backgroundColor: 'background-color: rgba(220, 238, 255, 0.9)', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+                                        <View style={{ width: '100%', gap: 4, flexDirection: 'row', position: 'relative' }}>
+                                            <Animated.View style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: 12, position: 'absolute', top: 0, left: moonLeft, width: '25%', height: '100%' }}>
+                                            </Animated.View>
+                                            <Pressable onPress={() => setMoon(24)} style={{ padding: 6, borderRadius: 12, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                                <Text style={{ fontWeight: '700', color: `${moon === 24 ? 'rgba(10, 20, 30, 1)' : 'rgba(20, 40, 60, 0.85)'}` }}>24 oy</Text>
+                                            </Pressable>
+                                            <Pressable onPress={() => setMoon(12)} style={{ padding: 6, borderRadius: 12, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                                <Text style={{ fontWeight: '700', color: `${moon === 12 ? 'rgba(10, 20, 30, 1)' : 'rgba(20, 40, 60, 0.85)'}` }}>12 oy</Text>
+                                            </Pressable>
+                                            <Pressable onPress={() => setMoon(6)} style={{ padding: 6, borderRadius: 12, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                                <Text style={{ fontWeight: '700', color: `${moon === 6 ? 'rgba(10, 20, 30, 1)' : 'rgba(20, 40, 60, 0.85)'}` }}>6 oy</Text>
+                                            </Pressable>
+                                            <Pressable onPress={() => setMoon(3)} style={{ padding: 6, borderRadius: 12, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                                <Text style={{ fontWeight: '700', color: `${moon === 3 ? 'rgba(10, 20, 30, 1)' : 'rgba(20, 40, 60, 0.85)'}` }}>3 oy</Text>
+                                            </Pressable>
+                                        </View>
                                     </View>
-                                    <Pressable style={{ width: '100%', padding: 8, borderRadius: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Text><Text style={{ padding: 6, backgroundColor: 'skyblue', borderRadius: 10, fontWeight: 'bold', fontSize: 16, color: '#fff' }}>{(product.price / moon).toFixed(0)} so'm</Text> × {moon} oy</Text>
+                                    <Pressable style={{ width: '100%', padding: 8, backgroundColor: 'rgba(37, 146, 255, 0.48), 0.8)', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Text><Text style={{ padding: 3, backgroundColor: 'rgba(80, 160, 240, 0.95)', borderRadius: 12, fontWeight: 'bold', fontSize: 16, color: 'rgba(255, 255, 255, 1)' }}>{(product.price / moon).toFixed(0)} so'm</Text> × {moon} oy</Text>
                                         <Text style={{ fontSize: 16 }}>{'>'}</Text>
                                     </Pressable>
                                 </View>
@@ -291,7 +322,7 @@ const ProductID = () => {
                                         <Pressable
                                             onPressIn={handleButtonPressIn}
                                             onPressOut={handleButtonPressOut}
-                                            style={{ backgroundColor: 'skyblue', padding: 14, borderRadius: 16, justifyContent: 'center', alignItems: 'center' }}
+                                            style={{ backgroundColor: 'rgba(115, 185, 255, 0.85)', padding: 14, borderRadius: 16, justifyContent: 'center', alignItems: 'center' }}
                                         >
                                             <Text style={{ fontSize: 16, fontWeight: '700', textTransform: 'capitalize', color: '#fff' }}>1 klikda xarid qilish</Text>
                                         </Pressable>
@@ -325,7 +356,7 @@ const ProductID = () => {
                                     {isInCart ? (
                                         <Pressable onPress={() => router.push('/savat')} style={{
                                             flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(135, 206, 235, 0.2)', borderRadius: 14, borderWidth: 1,
-                                            borderColor: 'skyblue',
+                                            borderColor: 'rgba(115, 185, 255, 0.85)',
                                         }}>
                                             <UniversalImage
                                                 src={CartPng}
@@ -377,12 +408,17 @@ const ProductID = () => {
                     </View>
 
                 </View>
+                <View style={{ padding: 12 }}>
+                    <Text >
+                        {product.description}
+                    </Text>
+                </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12, backgroundColor: '#fff' }}>
                     {nextProducts.map((item, index) => (
                         <ProductCart key={item.id} product={item} products={nextProducts} index={index} />
                     ))}
                 </View>
-            </ScrollView>
+            </View>
         </ScreenWrapper>
     );
 };
@@ -404,7 +440,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     button: {
-        backgroundColor: 'skyblue',
+        backgroundColor: 'rgba(115, 185, 255, 0.85)',
         paddingVertical: 12,
         paddingHorizontal: 14,
         borderRadius: 14,
@@ -414,7 +450,7 @@ const styles = StyleSheet.create({
     buttonInCart: {
         backgroundColor: 'rgba(135, 206, 235, 0.2)',
         borderWidth: 1,
-        borderColor: 'skyblue',
+        borderColor: 'rgba(115, 185, 255, 0.85)',
     },
     buttonText: {
         color: '#ffffff',
@@ -422,7 +458,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     buttonTextInCart: {
-        color: 'skyblue',
+        color: 'rgba(115, 185, 255, 0.85)',
     },
 });
 

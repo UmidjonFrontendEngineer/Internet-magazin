@@ -39,8 +39,25 @@ body {
   box-sizing: border-box;
   text-decoration: none;
   user-select: none;
+  -webkit-user-drag: none;
+  user-drag: none;
 
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+img, 
+image, 
+svg {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  pointer-events: auto; /* Agar bosish (click) funksiyasi ishlab turishi kerak bo'lsa */
+}
+
+input {
+  outline: none;
 }

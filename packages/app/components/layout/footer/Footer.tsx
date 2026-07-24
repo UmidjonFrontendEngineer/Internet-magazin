@@ -37,7 +37,7 @@ const ExternalLink = ({ href, children, style }: { href: string; children: React
     );
 };
 
-export default function UzumFooter() {
+export default function OnlineMarketFooter() {
     const [isMount, setIsMount] = useState(false)
     const { width } = useWindowDimensions();
     const [contact, setContact] = useState<boolean>(false);
@@ -52,7 +52,7 @@ export default function UzumFooter() {
     const FOOTER_DATA: FooterSection[] = [
         { title: { uz: 'Biz haqimizda', en: 'About us', ru: 'О нас' }, links: [{ name: { uz: 'Topshirish punktlari', en: 'Pickup points', ru: 'Пункты выдачи', }, pages: '/about/punkt' }, { name: { uz: 'Vakansiyalar', en: 'Vacancies', ru: 'Вакансии' }, pages: '/about/careres' }] },
         { title: { uz: 'Foydalanuvchilarga', en: 'For users', ru: 'Пользователям' }, links: [{ name: { uz: 'Biz bilan bog‘lanish', en: 'Contact us', ru: 'Связаться с нами' }, pages: '', func: () => setContact(true) }, { name: { uz: 'Savol-Javob', en: 'FAQ (Questions & Answers)', ru: 'Вопросы и ответы (FAQ)' }, pages: '/savolJavob' }] },
-        { title: { uz: 'Tadbirkorlarga', en: 'For businesses', ru: 'Предпринимателям' }, links: [{ name: { uz: 'Uzumda soting', en: 'Sell on Uzum', ru: 'Продавайте на Uzum' }, pages: 'https://seller.uzum.uz/?utm_source=uzum_market_main&utm_medium=web&utm_campaign=header_link' }, { name: { uz: 'Sotuvchi kabineti', en: 'Seller dashboard', ru: 'Кабинет продавца' }, pages: 'https://seller.uzum.uz/seller/signin' }, { name: { uz: 'Topshirish punktini ochish', en: 'Open a pickup point', ru: 'Открыть пункт выдачи' }, pages: 'https://promo.uzum.uz/uz/promo/pvz' }] },
+        { title: { uz: 'Tadbirkorlarga', en: 'For businesses', ru: 'Предпринимателям' }, links: [{ name: { uz: 'Online Marketda soting', en: 'Sell on Online Market', ru: 'Продавайте на Online Market' }, pages: 'https://seller.uzum.uz/?utm_source=uzum_market_main&utm_medium=web&utm_campaign=header_link' }, { name: { uz: 'Sotuvchi kabineti', en: 'Seller dashboard', ru: 'Кабинет продавца' }, pages: 'https://seller.uzum.uz/seller/signin' }, { name: { uz: 'Topshirish punktini ochish', en: 'Open a pickup point', ru: 'Открыть пункт выдачи' }, pages: 'https://promo.uzum.uz/uz/promo/pvz' }] },
     ];
 
     if (!isMount) {
@@ -89,59 +89,59 @@ export default function UzumFooter() {
 
     return (
         <>
-		<Modal
-		    transparent={true}
-		    visible={contact}
-		    animationType="fade"
-		    onRequestClose={() => setContact(false)}
-		>
-		    <Pressable style={[styles.modalOverlay, {...Platform.select({web: {cursor: 'default'}})}]} onPress={() => setContact(false)}>
-		        <BlurView
-		            tint="light"
-		            intensity={50}
-		            style={StyleSheet.absoluteFill}
-		        >
-		            <View style={styles.modalContainer}>
-		                <Pressable 
-		                    onPress={(e) => e.stopPropagation()} 
-		                    style={[styles.modalContent, { width: Platform.OS === 'web' ? 500 : '90%' }]}
-		                >
-		                    <View style={styles.modalHeader}>
-		                        <Text style={styles.modalTitle}>Biz bilan bogʻlanish</Text>
-		                        <TouchableOpacity onPress={() => setContact(false)} style={styles.closeButton}>
-		                            <Text style={styles.closeButtonText}>✕</Text>
-		                        </TouchableOpacity>
-		                    </View>
-		
-		                    <View>
-		                        <Text style={styles.modalDescription}>
-		                            Mutaxassislarimizga sizga qulay ijtimoiy tarmoq chati yoki telefon orqali savol bering:
-		                        </Text>
-		                    </View>
-		
-		                    <View style={styles.modalBody}>
-		                        <ExternalLink href="https://t.me/Uzum_Support_Bot" style={{ width: '100%' }}>
-		                            <View style={styles.telegramCard}>
-		                                <UniversalImage src="https://i.ibb.co/Q3m8LCVq/telegram.png" alt="telegram" width={40} height={40} resizeMode="contain" />
-		                                <View>
-		                                    <Text style={styles.telegramTitle}>Telegram</Text>
-		                                    <Text style={styles.telegramHandle}>@Uzum_Support_Bot</Text>
-		                                </View>
-		                            </View>
-		                        </ExternalLink>
-		
-		                        <View style={styles.emailSection}>
-		                            <Text style={styles.emailLabel}>Qoʻllab-quvvatlash xizmatining email manzili:</Text>
-		                            <TouchableOpacity onPress={() => Linking.openURL('mailto:support@uzum.com')}>
-		                                <Text style={styles.emailAddress}>support@uzum.com</Text>
-		                            </TouchableOpacity>
-		                        </View>
-		                    </View>
-		                </Pressable>
-		            </View>
-		        </BlurView>
-		    </Pressable>
-		</Modal>
+            <Modal
+                transparent={true}
+                visible={contact}
+                animationType="fade"
+                onRequestClose={() => setContact(false)}
+            >
+                <Pressable style={[styles.modalOverlay, { ...Platform.select({ web: { cursor: 'default' } }) }]} onPress={() => setContact(false)}>
+                    <BlurView
+                        tint="light"
+                        intensity={50}
+                        style={StyleSheet.absoluteFill}
+                    >
+                        <View style={styles.modalContainer}>
+                            <Pressable
+                                onPress={(e) => e.stopPropagation()}
+                                style={[styles.modalContent, { width: Platform.OS === 'web' ? 500 : '90%' }]}
+                            >
+                                <View style={styles.modalHeader}>
+                                    <Text style={styles.modalTitle}>Biz bilan bogʻlanish</Text>
+                                    <TouchableOpacity onPress={() => setContact(false)} style={styles.closeButton}>
+                                        <Text style={styles.closeButtonText}>✕</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <View>
+                                    <Text style={styles.modalDescription}>
+                                        Mutaxassislarimizga sizga qulay ijtimoiy tarmoq chati yoki telefon orqali savol bering:
+                                    </Text>
+                                </View>
+
+                                <View style={styles.modalBody}>
+                                    <ExternalLink href="https://t.me/Uzum_Support_Bot" style={{ width: '100%' }}>
+                                        <View style={styles.telegramCard}>
+                                            <UniversalImage src="https://i.ibb.co/Q3m8LCVq/telegram.png" alt="telegram" width={40} height={40} resizeMode="contain" />
+                                            <View>
+                                                <Text style={styles.telegramTitle}>Telegram</Text>
+                                                <Text style={styles.telegramHandle}>@Uzum_Support_Bot</Text>
+                                            </View>
+                                        </View>
+                                    </ExternalLink>
+
+                                    <View style={styles.emailSection}>
+                                        <Text style={styles.emailLabel}>Qoʻllab-quvvatlash xizmatining email manzili:</Text>
+                                        <TouchableOpacity onPress={() => Linking.openURL('mailto:support@uzum.com')}>
+                                            <Text style={styles.emailAddress}>support@uzum.com</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </Pressable>
+                        </View>
+                    </BlurView>
+                </Pressable>
+            </Modal>
             <View style={styles.container}>
                 <View style={styles.containerC}>
                     <View style={[styles.mainSection, isWeb ? styles.row : styles.column]}>
@@ -190,7 +190,7 @@ export default function UzumFooter() {
                             <ExternalLink href='https://legal.uzum.uz/privacy-policy-uz.html'><Text style={styles.legalLink}>{lan === 'uz' ? 'Maxfiylik kelishuvi' : lan === 'en' ? 'Privacy policy' : lan === 'ru' ? 'Соглашение о конфиденциальности' : 'Maxfiylik kelishuvi'}</Text></ExternalLink>
                             <ExternalLink href='https://legal.uzum.uz/user-agreement-uz.html'><Text style={styles.legalLink}>{lan === 'uz' ? 'Foydalanuvchi kelishuvi' : lan === 'en' ? 'User agreement' : lan === 'ru' ? 'Пользовательское соглашение' : 'Foydalanuvchi kelishuvi'}</Text></ExternalLink>
                         </View>
-                        <Text style={styles.copy}>© {new Date().getFullYear()} <Text style={{textTransform: 'uppercase'}}>online market</Text>. {lan === 'uz' ? 'Barcha huquqlar himoyalangan.' : lan === 'en' ? 'All rights reserved.' : lan === 'ru' ? 'Все права защищены.' : 'Barcha huquqlar himoyalangan.'}</Text>
+                        <Text style={styles.copy}>© {new Date().getFullYear()} <Text style={{ textTransform: 'uppercase' }}>online market</Text>. {lan === 'uz' ? 'Barcha huquqlar himoyalangan.' : lan === 'en' ? 'All rights reserved.' : lan === 'ru' ? 'Все права защищены.' : 'Barcha huquqlar himoyalangan.'}</Text>
                     </View>
                 </View>
             </View>
