@@ -37,6 +37,8 @@ import TopPng from 'app/features/app/assets/back.png'
 import ArrowPng from 'app/features/app/assets/arrow.png'
 import BlueArrowPng from 'app/features/app/assets/blue-arrow.png'
 import { useScrollStore } from 'app/store/useScrollStore'
+import { useTokenStore } from 'app/store/useTokenStore'
+import { useLocationOpenStore } from 'app/store/useLocationOpenStore'
 
 const SearchIcon = () => (
     <UniversalImage
@@ -52,15 +54,6 @@ const HomeIcon = () => (
     <UniversalImage
         src={HomePng}
         alt="home"
-        width={18}
-        height={18}
-        resizeMode="contain"
-    />
-)
-const UserIcon = () => (
-    <UniversalImage
-        src={UserPng}
-        alt="profile"
         width={18}
         height={18}
         resizeMode="contain"
@@ -98,6 +91,8 @@ const CatalogIcon = () => (
 )
 
 const Header = () => {
+    const [openLan, setOpenLan] = useState(false)
+    const token = useTokenStore(state => state.token)
     const color = useColorStore((state) => state.color)
     const location = uselocationStorage(state => state.location)
     const { width: windowWidth } = useWindowDimensions()
@@ -107,7 +102,9 @@ const Header = () => {
     const tab = useTabStore(state => state.tab)
     const setTab = useTabStore(state => state.setTab)
     const pathname = usePathname()
-    const [locationOpen, setLocationOpen] = useState(false)
+    const locationOpen = useLocationOpenStore(state => state.locationOpen)
+    const setLocationOpen = useLocationOpenStore(state => state.setLocationOpen)
+    const [userName, setUserName] = useState('')
     const [extra, setExtra] = useState(false)
     const modal = useModalStore(state => state.modal)
     const setModal = useModalStore(state => state.setModal)
@@ -142,6 +139,7 @@ const Header = () => {
         else if (pathname.startsWith('/savat')) setTab(2)
         else if (pathname.startsWith('/yoqtirilgan')) setTab(4)
         else if (pathname.startsWith('/profile')) setTab(3)
+        else if (pathname.startsWith('/auth')) setTab(3)
         else if (pathname.startsWith('/search')) setTab(1)
     }, [pathname])
 
@@ -151,7 +149,6 @@ const Header = () => {
         extrapolate: 'clamp'
     });
 
-    const [openLan, setOpenLan] = useState(false)
     const lan = useLanStorage(state => state.lan)
 
     const input = useInputStorage(state => state.input)
@@ -193,6 +190,34 @@ const Header = () => {
         inputRange: [0, 1],
         outputRange: [1, 1.4],
     });
+
+    const [image, setImage] = useState(UserPng)
+
+    const renderToken = async (token) => {
+        try {
+            const res = await fetch('https://internet-magazin-nest-server.onrender.com/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const req = await res.json()
+            console.log(req)
+            setImage(req.image)
+            setUserName(req.userName)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    useEffect(() => {
+        if (!token || token === '') {
+            setImage(UserPng)
+        } else {
+            renderToken(token)
+        }
+    }, [token])
+
 
     const scrollToTop = useScrollStore((state) => state.scrollToTop);
 
@@ -540,11 +565,16 @@ const Header = () => {
 
                                 <Pressable style={styles.mobileTabItem} onPress={() => handlePage('/profile', 3)}>
                                     <View style={styles.mobileTabItem}>
-                                        <UserIcon />
-                                        {tab === 3 ? <Text style={styles.mobileText}>profile</Text> : null}
+                                        <UniversalImage
+                                            src={image}
+                                            alt="profile"
+                                            width={18}
+                                            height={18}
+                                            resizeMode="contain"
+                                        />
+                                        {tab === 3 ? <Text style={styles.mobileText}>{userName ? userName : 'profile'}</Text> : null}
                                     </View>
                                 </Pressable>
-
                             </>
                         ) : (
                             <>
@@ -574,8 +604,14 @@ const Header = () => {
 
                                 <TextLink href='/profile' style={styles.mobileTabItem}>
                                     <View style={styles.mobileTabItem}>
-                                        <UserIcon />
-                                        {tab === 3 ? <Text style={styles.mobileText}>profile</Text> : null}
+                                        <UniversalImage
+                                            src={image}
+                                            alt="profile"
+                                            width={18}
+                                            height={18}
+                                            resizeMode="contain"
+                                        />
+                                        {tab === 3 ? <Text style={styles.mobileText}>{userName ? userName : 'profile'}</Text> : null}
                                     </View>
                                 </TextLink>
                             </>
@@ -931,8 +967,14 @@ const Header = () => {
                         <View style={styles.navLinks}>
                             <TextLink href='/profile'>
                                 <View style={styles.navItem}>
-                                    <UserIcon />
-                                    <Text style={styles.navText}>{lan === 'uz' ? 'Kirish' : lan === 'en' ? 'Sign in' : lan === 'ru' ? 'Войти' : 'Kirish'}</Text>
+                                    <UniversalImage
+                                        src={image}
+                                        alt="profile"
+                                        width={18}
+                                        height={18}
+                                        resizeMode="contain"
+                                    />
+                                    <Text style={styles.navText}>{userName ? userName : lan === 'uz' ? 'Kirish' : lan === 'en' ? 'Sign in' : lan === 'ru' ? 'Войти' : 'Kirish'}</Text>
                                 </View>
                             </TextLink>
                             <TextLink href='/yoqtirilgan'>

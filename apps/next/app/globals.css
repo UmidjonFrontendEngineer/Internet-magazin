@@ -58,6 +58,6 @@ svg {
   pointer-events: auto; /* Agar bosish (click) funksiyasi ishlab turishi kerak bo'lsa */
 }
 
-input {
+input, textarea {
   outline: none;
 }

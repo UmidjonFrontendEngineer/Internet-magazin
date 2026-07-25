@@ -8,6 +8,7 @@ import Slider from 'app/components/UI/Slider';
 import SliderLoader from 'app/components/UI/SliderLoader';
 import NotLoad from 'app/components/UI/NotLoad';
 import Empty from 'app/components/UI/Empty';
+import { useRouter } from 'solito/navigation';
 
 interface ProductProps {
     id: number;
@@ -22,6 +23,7 @@ interface ProductProps {
 const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
 
 const HomeScreen = () => {
+    const router = useRouter()
     const [products, setProducts] = useState<ProductProps[]>([]);
     const [loading, setLoading] = useState('loading');
     const { width: screenWidth } = useWindowDimensions();

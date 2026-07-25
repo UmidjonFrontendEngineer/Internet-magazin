@@ -16,7 +16,6 @@ export function NavigationProvider({
             initialRouteName: 'home',
             screens: {
               home: '',
-              sozlamalar: 'sozlamalar',
               katalog: 'katalog',
               savat: 'savat',
               saralangan: 'yoqtirilgan',
@@ -25,6 +24,7 @@ export function NavigationProvider({
               search: 'search',
               careres: 'about/careres',
               punkt: 'about/punkt',
+              auth: 'auth',
               'filter': 'search/:id',
               'products': 'product/:id'
             },

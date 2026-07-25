@@ -5,7 +5,6 @@ import Header from 'app/features/app/Header'
 import Cursor from 'app/components/UI/Cursor'
 
 import HomeScreen from 'app/features/app/screen'
-import SozlamalarScreen from 'app/features/app/sozlamalar/page'
 import KatalogScreen from 'app/features/app/katalog/page'
 import SavatScreen from 'app/features/app/savat/page'
 import SaralanganScreen from 'app/features/app/yoqtirilgan/page'
@@ -14,12 +13,12 @@ import SavolJavobScreen from 'app/features/app/savolJavob/page'
 import Search from 'app/features/app/search/page'
 import CareresScreen from 'app/features/app/about/careres/page'
 import PunktScreen from 'app/features/app/about/punkt/page'
+import AuthScreen from 'app/features/app/auth/page'
 import Filter from 'app/features/app/search/_components/filter/page'
 import ProductsID from 'app/features/app/product/[id]/page'
 
 const Stack = createNativeStackNavigator<{
   home: undefined
-  sozlamalar: undefined
   katalog: undefined
   savat: undefined
   saralangan: undefined
@@ -28,6 +27,7 @@ const Stack = createNativeStackNavigator<{
   search: undefined
   careres: undefined
   punkt: undefined
+  auth: undefined
   'filter': {
     id: 'string'
   }
@@ -43,7 +43,6 @@ export function NativeNavigation() {
       <View style={styles.mainContent}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="home" component={HomeScreen} />
-          <Stack.Screen name="sozlamalar" component={SozlamalarScreen} />
           <Stack.Screen name="katalog" component={KatalogScreen} />
           <Stack.Screen name="savat" component={SavatScreen} />
           <Stack.Screen name="saralangan" component={SaralanganScreen} />
@@ -52,6 +51,7 @@ export function NativeNavigation() {
           <Stack.Screen name="search" component={Search} />
           <Stack.Screen name="careres" component={CareresScreen} />
           <Stack.Screen name="punkt" component={PunktScreen} />
+          <Stack.Screen name="auth" component={AuthScreen} />
           <Stack.Screen name="filter" component={Filter} options={{
             title: 'filter'
           }} />
