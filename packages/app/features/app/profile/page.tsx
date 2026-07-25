@@ -20,8 +20,8 @@ const translations = {
         language: 'Til',
         location: 'Joylashuv',
         orders: 'Buyurtmalar',
-        feedPreference: 'Lenta sozlamalari',
-        subscription: 'Obuna',
+        feedPreference: 'Ekran sozlamalari',
+        subscription: 'Kuzatish',
         clearCache: 'Keshni tozalash',
         deleteAkk: 'Hisobni O\'chirib tashlash',
         logout: 'Chiqib ketish',
@@ -53,8 +53,8 @@ const translations = {
         language: 'Language',
         location: 'Location',
         orders: 'Orders',
-        feedPreference: 'Feed Preferences',
-        subscription: 'Subscription',
+        feedPreference: 'Display settings',
+        subscription: 'Follow',
         clearCache: 'Clear Cache',
         deleteAkk: 'Delete Account',
         logout: 'Log Out',
@@ -85,8 +85,8 @@ const translations = {
         language: 'Язык',
         location: 'Местоположение',
         orders: 'Заказы',
-        feedPreference: 'Настройки ленты',
-        subscription: 'Подписка',
+        feedPreference: 'Параметры экрана',
+        subscription: 'Подписаться',
         clearCache: 'Очистить кэш',
         deleteAkk: 'Удалить аккаунт',
         logout: 'Выйти',
@@ -329,7 +329,7 @@ const Profile = () => {
 
                                     <Pressable android_ripple={{ color: 'rgba(0, 229, 255, 0.2)' }} onPress={() => router.push('/savat')} style={styles.menuRow}>
                                         <View style={styles.menuRowLeft}>
-                                            <Text style={styles.menuEmoji}>📥</Text>
+                                            <Text style={styles.menuEmoji}>🛒</Text>
                                             <Text style={styles.menuRowText}>{t.cart}</Text>
                                         </View>
                                         <Text style={styles.menuArrow}>›</Text>
@@ -360,7 +360,7 @@ const Profile = () => {
 
                                     <Pressable android_ripple={{ color: 'rgba(0, 229, 255, 0.2)' }} style={styles.menuRow}>
                                         <View style={styles.menuRowLeft}>
-                                            <Text style={styles.menuEmoji}>🖥️</Text>
+                                            <Text style={styles.menuEmoji}>📦</Text>
                                             <Text style={styles.menuRowText}>{t.orders}</Text>
                                         </View>
                                         <Text style={styles.menuArrow}>›</Text>
@@ -376,7 +376,7 @@ const Profile = () => {
 
                                     <Pressable android_ripple={{ color: 'rgba(0, 229, 255, 0.2)' }} style={styles.menuRow}>
                                         <View style={styles.menuRowLeft}>
-                                            <Text style={styles.menuEmoji}>💳</Text>
+                                            <Text style={styles.menuEmoji}>🏪</Text>
                                             <Text style={styles.menuRowText}>{t.subscription}</Text>
                                         </View>
                                         <Text style={styles.menuArrow}>›</Text>
@@ -395,7 +395,7 @@ const Profile = () => {
 
                                     <Pressable onPress={handleDeleteAccount} android_ripple={{ color: 'rgba(239, 68, 68, 0.2)' }} style={styles.menuRow}>
                                         <View style={styles.menuRowLeft}>
-                                            <Text style={styles.menuEmoji}>🕒</Text>
+                                            <Text style={styles.menuEmoji}>⚠️</Text>
                                             <Text style={[styles.menuRowText, styles.logoutTextLabel]}>{t.deleteAkk}</Text>
                                         </View>
                                         <Text style={[styles.menuArrow, styles.logoutTextLabel]}>›</Text>
@@ -462,6 +462,7 @@ const Profile = () => {
                                         <TextInput
                                             style={styles.textInput}
                                             value={firstName}
+                                            placeholder='First name...'
                                             onChangeText={setFirstName}
                                             onFocus={() => setFocus(1)}
                                             onBlur={() => setFocus(0)}
@@ -476,6 +477,7 @@ const Profile = () => {
                                             value={lastName}
                                             onFocus={() => setFocus(2)}
                                             onBlur={() => setFocus(0)}
+                                            placeholder='Last name...'
                                             onChangeText={setLastName}
                                             placeholderTextColor="#64748B"
                                         />
@@ -488,6 +490,7 @@ const Profile = () => {
                                         <TextInput
                                             style={styles.textInput}
                                             value={phone}
+                                            placeholder='Phone number...'
                                             onChangeText={setPhone}
                                             onFocus={() => setFocus(3)}
                                             onBlur={() => setFocus(0)}
@@ -500,6 +503,7 @@ const Profile = () => {
                                         <TextInput
                                             style={styles.textInput}
                                             value={email}
+                                            placeholder='Email...'
                                             onChangeText={setEmail}
                                             onFocus={() => setFocus(4)}
                                             onBlur={() => setFocus(0)}
