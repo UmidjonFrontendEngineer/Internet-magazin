@@ -104,7 +104,7 @@ const Header = () => {
     const pathname = usePathname()
     const locationOpen = useLocationOpenStore(state => state.locationOpen)
     const setLocationOpen = useLocationOpenStore(state => state.setLocationOpen)
-    const [userName, setUserName] = useState('')
+    const [firstName, setFirstName] = useState('')
     const [extra, setExtra] = useState(false)
     const modal = useModalStore(state => state.modal)
     const setModal = useModalStore(state => state.setModal)
@@ -195,7 +195,7 @@ const Header = () => {
 
     const renderToken = async (token) => {
         try {
-            const res = await fetch('https://internet-magazin-nest-server.onrender.com/profile', {
+            const res = await fetch('https://internet-magazin-nest-server.onrender.com/auth/profile', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -204,7 +204,7 @@ const Header = () => {
             const req = await res.json()
             console.log(req)
             setImage(req.image)
-            setUserName(req.userName)
+            setFirstName(req.firstName)
         } catch (err) {
             console.log(err)
         }
@@ -572,7 +572,7 @@ const Header = () => {
                                             height={18}
                                             resizeMode="contain"
                                         />
-                                        {tab === 3 ? <Text style={styles.mobileText}>{userName ? userName : 'profile'}</Text> : null}
+                                        {tab === 3 ? <Text style={styles.mobileText}>{firstName ? firstName : 'profile'}</Text> : null}
                                     </View>
                                 </Pressable>
                             </>
@@ -611,7 +611,7 @@ const Header = () => {
                                             height={18}
                                             resizeMode="contain"
                                         />
-                                        {tab === 3 ? <Text style={styles.mobileText}>{userName ? userName : 'profile'}</Text> : null}
+                                        {tab === 3 ? <Text style={styles.mobileText}>{firstName ? firstName : 'profile'}</Text> : null}
                                     </View>
                                 </TextLink>
                             </>
@@ -974,7 +974,7 @@ const Header = () => {
                                         height={18}
                                         resizeMode="contain"
                                     />
-                                    <Text style={styles.navText}>{userName ? userName : lan === 'uz' ? 'Kirish' : lan === 'en' ? 'Sign in' : lan === 'ru' ? 'Войти' : 'Kirish'}</Text>
+                                    <Text style={styles.navText}>{firstName ? firstName : lan === 'uz' ? 'Kirish' : lan === 'en' ? 'Sign in' : lan === 'ru' ? 'Войти' : 'Kirish'}</Text>
                                 </View>
                             </TextLink>
                             <TextLink href='/yoqtirilgan'>

@@ -12,60 +12,18 @@ import { useTokenStore } from 'app/store/useTokenStore'
 
 const translations = {
     uz: {
-        signUp: 'Ro\'yxatdan o\'tish',
-        login: 'Hisobga kirish',
-        userName: 'Foydalanuvchi nomi',
-        firstName: 'Ism',
-        lastName: 'Familiya',
         email: 'Elektron pochta',
-        password: 'Parol',
-        phone: 'Telefon raqam',
-        gender: 'Jinsi',
-        selectGender: 'Jinsini tanlang',
-        male: 'Erkak',
-        female: 'Ayol',
-        submitSignUp: 'Ro\'yxatdan o\'tish',
-        submitLogin: 'Kirish',
-        switchToLogin: 'Akkauntingiz bormi? Kirish',
-        switchToSignUp: 'Akkauntingiz yo\'qmi? Ro\'yxatdan o\'tish',
+        submit: 'Yuborish',
         appTitle: 'Online Market',
     },
     ru: {
-        signUp: 'Регистрация',
-        login: 'Войти',
-        userName: 'Имя пользователя',
-        firstName: 'Имя',
-        lastName: 'Фамилия',
         email: 'Эл. почта',
-        password: 'Пароль',
-        phone: 'Telefon raqam',
-        gender: 'Пол',
-        selectGender: 'Выберите пол',
-        male: 'Мужской',
-        female: 'Женский',
-        submitSignUp: 'Зарегистрироваться',
-        submitLogin: 'Войти',
-        switchToLogin: 'Есть аккаунт? Войти',
-        switchToSignUp: 'Нет аккаунта? Регистрация',
+        submit: 'Отправить',
         appTitle: 'Online Market',
     },
     en: {
-        signUp: 'Sign Up',
-        login: 'Log In',
-        userName: 'Username',
-        firstName: 'First Name',
-        lastName: 'Last Name',
         email: 'Email',
-        password: 'Password',
-        phone: 'Phone number',
-        gender: 'Gender',
-        selectGender: 'Select Gender',
-        male: 'Male',
-        female: 'Female',
-        submitSignUp: 'Sign Up',
-        submitLogin: 'Log In',
-        switchToLogin: 'Already have an account? Log In',
-        switchToSignUp: 'Don\'t have an account? Sign Up',
+        submit: 'Submit',
         appTitle: 'Online Market',
     }
 }
@@ -77,100 +35,35 @@ const AuthPage = () => {
     const lan = useLanStorage(state => state.lan) as 'uz' | 'ru' | 'en'
     const setLan = useLanStorage(state => state.setLan)
     const t = translations[lan || 'uz']
+    const [auth, setAuth] = useState('email')
 
     const { width } = useWindowDimensions()
     const isDesktop = width > 600
 
-    const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup')
-
-    const [userName, setUserName] = useState('')
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [phone, setPhone] = useState(998)
-    const [gender, setGender] = useState('Male')
+    const [code, setCode] = useState<string>('')
     const [inputFocus, setInputFocus] = useState(0)
-    const [genderOpen, setGenderOpen] = useState(false)
 
     const handleSubmit = async () => {
-        if (!userName || !password || !phone) {
-            return;
-        }
-        const isSignup = authMode === 'signup';
+        const bodyData = auth === 'email' ? { email } : { 'email': email, 'code': String(code) };
+        const postUrl = auth === 'email' ? 'https://internet-magazin-nest-server.onrender.com/auth/send-otp' : 'https://internet-magazin-nest-server.onrender.com/auth/verify-otp';
 
-        const endpoint = isSignup ? 'https://internet-magazin-nest-server.onrender.com/auth/register' : 'https://internet-magazin-nest-server.onrender.com/auth/login';
+        const res = await fetch(postUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyData),
+        });
+        const data = await res.json();
 
-        const userData = isSignup
-            ? {
-                userName,
-                firstName,
-                lastName,
-                email,
-                password,
-                phone: '+' + phone,
-                gender,
+        if (res.ok) {
+            if (auth === 'email') {
+                setAuth('code');
+            } else {
+                setToken(data.token)
+                router.push('/profile');
             }
-            : {
-                userName,
-                password,
-            };
-
-        try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(userData)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Xatolik yuz berdi!');
-            }
-
-            console.log('Muvaffaqiyatli:', data);
-
-            setToken(data.token)
-
-            router.push('/profile')
-        } catch (err) {
-            console.log('Xatolik:', err.message);
+        } else {
         }
-    }
-
-    const animValue = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        Animated.timing(animValue, {
-            toValue: authMode === 'signup' ? 0 : 1,
-            duration: 300,
-            useNativeDriver: false
-        }).start()
-    }, [authMode])
-
-    const marginLeft = animValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0%', '50%'],
-        extrapolate: 'clamp'
-    });
-
-    const fadeAnim = useRef(new Animated.Value(1)).current
-
-    const switchMode = (mode: 'signup' | 'login') => {
-        Animated.sequence([
-            Animated.timing(fadeAnim, { toValue: 0.4, duration: 120, useNativeDriver: false }),
-            Animated.timing(fadeAnim, { toValue: 1, duration: 200, useNativeDriver: false }),
-        ]).start()
-        setAuthMode(mode)
-    }
-
-    const cycleLanguage = () => {
-        if (lan === 'uz') setLan('ru')
-        else if (lan === 'ru') setLan('en')
-        else setLan('uz')
     }
 
     return (
@@ -201,186 +94,53 @@ const AuthPage = () => {
                         <Text style={{ textTransform: 'capitalize', fontSize: 20, color: '#1A73E8', fontWeight: 'bold' }}>online market</Text>
                     </View>
 
-                    <View style={[styles.switchTabsRow, { position: 'relative' }]}>
-                        <Animated.View style={[{
-                            flex: 1,
-                            paddingVertical: 10,
-                            alignItems: 'center',
-                            borderRadius: 12, width: '50%', height: '100%',
-                            transform: [{ scaleY: 0.86 }, { scaleX: 0.98 }]
-                        }, styles.switchTabBtnActive, { position: 'absolute', top: 0, left: marginLeft }]}>
+                    <Animated.View style={[styles.formWrapper]}>
 
-                        </Animated.View>
-                        <Pressable
-                            style={[styles.switchTabBtn]}
-                            onPress={() => switchMode('signup')}
-                        >
-                            <Text style={[styles.switchTabText, authMode === 'signup' && styles.switchTabTextActive]}>
-                                {t.signUp}
-                            </Text>
-                        </Pressable>
-
-                        <Pressable
-                            style={[styles.switchTabBtn]}
-                            onPress={() => switchMode('login')}
-                        >
-                            <Text style={[styles.switchTabText, authMode === 'login' && styles.switchTabTextActive]}>
-                                {t.login}
-                            </Text>
-                        </Pressable>
-                    </View>
-
-                    <Animated.View style={[styles.formWrapper, { opacity: fadeAnim }]}>
-
-                        {authMode === 'signup' ? (
-                            <>
-                                <View style={[styles.inputBox, inputFocus === 1 ? (styles.inputBoxActive) : null]}>
-                                    <Text style={styles.inputLabel}>{t.userName}</Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={userName}
-                                        onFocus={() => setInputFocus(1)}
-                                        onBlur={() => setInputFocus(0)}
-                                        onChangeText={setUserName}
-                                        placeholder="userName"
-                                        placeholderTextColor="#64748B"
-                                    />
-                                </View>
-
-                                <View style={[styles.inputBox, inputFocus === 2 ? (styles.inputBoxActive) : null]}>
-                                    <Text style={styles.inputLabel}>{t.firstName}</Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={firstName}
-                                        onFocus={() => setInputFocus(2)}
-                                        onBlur={() => setInputFocus(0)}
-                                        onChangeText={setFirstName}
-                                        placeholder="firstName"
-                                        placeholderTextColor="#64748B"
-                                    />
-                                </View>
-
-                                <View style={[styles.inputBox, inputFocus === 3 ? (styles.inputBoxActive) : null]}>
-                                    <Text style={styles.inputLabel}>{t.lastName}</Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={lastName}
-                                        onFocus={() => setInputFocus(3)}
-                                        onBlur={() => setInputFocus(0)}
-                                        onChangeText={setLastName}
-                                        placeholder="lastName"
-                                        placeholderTextColor="#64748B"
-                                    />
-                                </View>
-
-                                <View style={[styles.inputBox, inputFocus === 4 ? (styles.inputBoxActive) : null]}>
+                        <View style={[styles.inputBox, inputFocus === 1 ? (styles.inputBoxActive) : null]}>
+                            {auth === 'email' ? (
+                                <>
                                     <Text style={styles.inputLabel}>{t.email}</Text>
                                     <TextInput
                                         style={styles.textInput}
                                         value={email}
-                                        onChangeText={setEmail}
-                                        onFocus={() => setInputFocus(4)}
-                                        onBlur={() => setInputFocus(0)}
-                                        placeholder="example@gmail.com"
-                                        placeholderTextColor="#64748B"
-                                        keyboardType="email-address"
-                                    />
-                                </View>
-
-                                <View style={[styles.inputBox, inputFocus === 5 ? (styles.inputBoxActive) : null]}>
-                                    <Text style={styles.inputLabel}>{t.password}</Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={password}
-                                        onFocus={() => setInputFocus(5)}
-                                        onBlur={() => setInputFocus(0)}
-                                        onChangeText={setPassword}
-                                        placeholder="••••••••"
-                                        placeholderTextColor="#64748B"
-                                        secureTextEntry
-                                    />
-                                </View>
-
-                                <View style={[styles.inputBox, inputFocus === 6 ? (styles.inputBoxActive) : null]}>
-                                    <Text style={styles.inputLabel}>{t.phone}</Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={phone}
-                                        onFocus={() => setInputFocus(6)}
-                                        onBlur={() => setInputFocus(0)}
-                                        onChangeText={text => setPhone(text.replace(/[^0-9]/g, ''))}
-                                        placeholder="phone number"
-                                        placeholderTextColor="#64748B"
-                                        keyboardType="numeric"
-                                        inputMode="numeric"
-                                    />
-                                </View>
-
-                                <View style={[styles.inputBox, genderOpen ? (styles.inputBoxActive) : null]}>
-                                    <Text style={styles.inputLabel}>{t.gender}</Text>
-                                    <Pressable onPress={() => setGenderOpen(prev => !prev)} style={[styles.selectRow, { flexDirection: genderOpen ? 'column' : 'row', gap: 5 }]}>
-                                        <Text style={styles.selectText}>{gender === 'Male' ? t.male : t.female}</Text>
-                                        {genderOpen ? null : <Text style={styles.selectArrow}>▼</Text>}
-                                        {
-                                            genderOpen ? (
-                                                <Pressable onPress={() => { setGender(prev => prev === 'Male' ? 'Female' : 'Male'), setGenderOpen(false) }}>
-                                                    <Text style={styles.selectText}>{gender === 'Male' ? t.female : t.male}</Text>
-                                                </Pressable>
-                                            ) : null
-                                        }
-                                    </Pressable>
-                                </View>
-                            </>
-                        ) : (
-                            <>
-                                <View style={[styles.inputBox, inputFocus === 1 ? (styles.inputBoxActive) : null]}>
-                                    <Text style={styles.inputLabel}>{t.userName}</Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={userName}
                                         onFocus={() => setInputFocus(1)}
                                         onBlur={() => setInputFocus(0)}
-                                        onChangeText={setUserName}
-                                        placeholder="userName"
+                                        onChangeText={setEmail}
+                                        placeholder="email"
                                         placeholderTextColor="#64748B"
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
                                     />
-                                </View>
-
-                                <View style={[styles.inputBox, inputFocus === 2 ? (styles.inputBoxActive) : null]}>
-                                    <Text style={styles.inputLabel}>{t.password}</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text style={styles.inputLabel}>code</Text>
                                     <TextInput
                                         style={styles.textInput}
-                                        value={password}
-                                        onChangeText={setPassword}
-                                        onFocus={() => setInputFocus(2)}
+                                        value={code}
+                                        onFocus={() => setInputFocus(1)}
                                         onBlur={() => setInputFocus(0)}
-                                        placeholder="••••••••"
+                                        onChangeText={(text) => {
+                                            const numericText = text.replace(/[^0-9]/g, '');
+                                            setCode(numericText);
+                                        }}
+                                        placeholder="code"
                                         placeholderTextColor="#64748B"
-                                        secureTextEntry
+                                        keyboardType="number-pad"
+                                        maxLength={6}
                                     />
-                                </View>
-                            </>
-                        )}
-
+                                </>
+                            )}
+                        </View>
                         <Pressable
                             onPress={handleSubmit}
                             android_ripple={{ color: 'rgba(255, 255, 255, 0.3)' }}
                             style={[styles.saveButtonWrapper, { backgroundColor: 'skyblue' }]}
                         >
                             <LinearGradient colors={['#00E5FF', '#0284C7']} style={styles.saveButtonGradient}>
-                                <Text style={styles.saveButtonText}>{authMode === 'signup' ? t.submitSignUp : t.submitLogin}</Text>
+                                <Text style={styles.saveButtonText}>{t.submit}</Text>
                             </LinearGradient>
                         </Pressable>
-
-                        <Pressable
-                            onPress={() => switchMode(authMode === 'signup' ? 'login' : 'signup')}
-                            style={styles.switchModeFooter}
-                        >
-                            <Text style={styles.switchModeFooterText}>
-                                {authMode === 'signup' ? t.switchToLogin : t.switchToSignUp}
-                            </Text>
-                        </Pressable>
-
                     </Animated.View>
 
                 </View>
@@ -401,6 +161,8 @@ const styles = StyleSheet.create({
         padding: 16,
         alignItems: 'center',
         paddingBottom: 100,
+        justifyContent: 'center',
+        flex: 1
     },
     scrollContentDesktop: {
         justifyContent: 'center',

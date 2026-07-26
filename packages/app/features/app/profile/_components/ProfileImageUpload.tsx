@@ -30,15 +30,12 @@ export default function ProfileImageUpload({ currentImage, onImageUpdated, rende
                     render(token);
                 }
 
-                if (Platform.OS === 'web') {
-                } else {
-                }
-
                 if (onImageUpdated && data.user?.image) {
                     onImageUpdated(data.user.image);
                 }
             } else {
                 const errorMsg = data.message || 'Yuklab bo‘lmadi';
+                console.log(data)
             }
         } catch (error) {
             console.error(error);

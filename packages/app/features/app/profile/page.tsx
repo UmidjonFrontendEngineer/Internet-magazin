@@ -25,7 +25,7 @@ const translations = {
         clearCache: 'Keshni tozalash',
         deleteAkk: 'Hisobni O\'chirib tashlash',
         logout: 'Chiqib ketish',
-        appVersion: 'Ilova versiyasi 0.03',
+        appVersion: 'Ilova versiyasi',
         yourInformation: 'Sizning Ma\'lumotlaringiz',
         firstName: 'Ism',
         lastName: 'Familiya',
@@ -58,7 +58,7 @@ const translations = {
         clearCache: 'Clear Cache',
         deleteAkk: 'Delete Account',
         logout: 'Log Out',
-        appVersion: 'App Version 0.03',
+        appVersion: 'App Version',
         yourInformation: 'Your Information',
         firstName: 'First Name',
         lastName: 'Last Name',
@@ -90,7 +90,7 @@ const translations = {
         clearCache: 'Очистить кэш',
         deleteAkk: 'Удалить аккаунт',
         logout: 'Выйти',
-        appVersion: 'Версия приложения 0.03',
+        appVersion: 'Версия приложения',
         yourInformation: 'Ваша информация',
         firstName: 'Имя',
         lastName: 'Фамилия',
@@ -410,7 +410,7 @@ const Profile = () => {
                                     </Pressable>
                                 </View>
 
-                                <Text style={styles.versionFooterText}>{t.appVersion}</Text>
+                                <Text style={styles.versionFooterText}>{t.appVersion} 3.0.0</Text>
                             </View>
 
                         </View>
