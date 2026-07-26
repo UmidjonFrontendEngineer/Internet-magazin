@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Platform } from 'react-native';
 import ScreenWrapper from 'app/components/layout/ScreenWrapper';
 import ProductCard from 'app/components/UI/ProductCart';
 import { useLanStorage } from 'app/store/useLanStore';
@@ -10,6 +10,7 @@ import NotLoad from 'app/components/UI/NotLoad'
 import Empty from 'app/components/UI/Empty';
 import LoaderProductCart from 'app/components/UI/LoaderProductCart';
 import { useRouter } from 'solito/navigation';
+import { usePathname } from 'solito/navigation';
 
 interface ProductProps {
     id: number;
@@ -22,7 +23,8 @@ interface ProductProps {
 }
 
 const FilterSearch = () => {
-    const params = useSearchParams();
+    const pathnameWeb = usePathname()
+    const pathnameWebProduct = pathnameWeb?.split('/')[2]
     const lan = useLanStorage(state => state.lan);
     const inputValue = useInputStorage(state => state.input)
     const router = useRouter()
@@ -37,7 +39,7 @@ const FilterSearch = () => {
             const data = await response.json();
 
             const searchProducts = data.filter((product: ProductProps) =>
-                product.title.toLowerCase().includes(inputValue)
+                product.title.toLowerCase().includes(`${Platform.OS !== 'web' ? inputValue : pathnameWebProduct}`)
             );
             setProducts(searchProducts);
             setLoading('loaded')
@@ -49,7 +51,7 @@ const FilterSearch = () => {
 
     useEffect(() => {
         fetchSearchProducts();
-        router.push(`/search/${inputValue}`)
+        router.push(`/search/${Platform.OS !== 'web' ? inputValue : pathnameWebProduct}`)
     }, [inputValue]);
 
     if (loading === 'loading') {
