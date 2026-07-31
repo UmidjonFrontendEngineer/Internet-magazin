@@ -39,6 +39,7 @@ import BlueArrowPng from 'app/features/app/assets/blue-arrow.png'
 import { useScrollStore } from 'app/store/useScrollStore'
 import { useTokenStore } from 'app/store/useTokenStore'
 import { useLocationOpenStore } from 'app/store/useLocationOpenStore'
+import { useUrlStore } from 'app/store/useUrlStore'
 
 const SearchIcon = () => (
     <UniversalImage
@@ -91,6 +92,7 @@ const CatalogIcon = () => (
 )
 
 const Header = () => {
+    const url = useUrlStore(state => state.url)
     const [openLan, setOpenLan] = useState(false)
     const token = useTokenStore(state => state.token)
     const color = useColorStore((state) => state.color)
@@ -195,7 +197,7 @@ const Header = () => {
 
     const renderToken = async (token) => {
         try {
-            const res = await fetch('https://internet-magazin-nest-server.onrender.com/auth/profile', {
+            const res = await fetch(`${url}/auth/profile`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`

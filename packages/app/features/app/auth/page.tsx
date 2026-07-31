@@ -9,6 +9,7 @@ import { useLanStorage } from 'app/store/useLanStore'
 import GrapePng from 'app/features/app/assets/grape.png'
 import { useRouter } from 'solito/navigation'
 import { useTokenStore } from 'app/store/useTokenStore'
+import { useUrlStore } from 'app/store/useUrlStore'
 
 const translations = {
     uz: {
@@ -29,6 +30,7 @@ const translations = {
 }
 
 const AuthPage = () => {
+    const url = useUrlStore(state => state.url)
     const token = useTokenStore(state => state.token)
     const setToken = useTokenStore(state => state.setToken)
     const router = useRouter()
@@ -46,7 +48,7 @@ const AuthPage = () => {
 
     const handleSubmit = async () => {
         const bodyData = auth === 'email' ? { email } : { 'email': email, 'code': String(code) };
-        const postUrl = auth === 'email' ? 'https://internet-magazin-nest-server.onrender.com/auth/send-otp' : 'https://internet-magazin-nest-server.onrender.com/auth/verify-otp';
+        const postUrl = auth === 'email' ? `${url}/auth/send-otp` : `${url}/auth/verify-otp`;
 
         const res = await fetch(postUrl, {
             method: 'POST',
@@ -94,7 +96,7 @@ const AuthPage = () => {
                         <Text style={{ textTransform: 'capitalize', fontSize: 20, color: '#1A73E8', fontWeight: 'bold' }}>online market</Text>
                     </View>
 
-                    <Animated.View style={[styles.formWrapper]}>
+                    <View style={[styles.formWrapper]}>
 
                         <View style={[styles.inputBox, inputFocus === 1 ? (styles.inputBoxActive) : null]}>
                             {auth === 'email' ? (
@@ -116,10 +118,11 @@ const AuthPage = () => {
                                 <>
                                     <Text style={styles.inputLabel}>code</Text>
                                     <TextInput
-                                        style={styles.textInput}
+                                        style={[styles.textInput, { textAlign: 'center' }]}
                                         value={code}
                                         onFocus={() => setInputFocus(1)}
                                         onBlur={() => setInputFocus(0)}
+                                        maxLength={6}
                                         onChangeText={(text) => {
                                             const numericText = text.replace(/[^0-9]/g, '');
                                             setCode(numericText);
@@ -127,21 +130,50 @@ const AuthPage = () => {
                                         placeholder="code"
                                         placeholderTextColor="#64748B"
                                         keyboardType="number-pad"
-                                        maxLength={6}
                                     />
                                 </>
                             )}
                         </View>
                         <Pressable
-                            onPress={handleSubmit}
                             android_ripple={{ color: 'rgba(255, 255, 255, 0.3)' }}
-                            style={[styles.saveButtonWrapper, { backgroundColor: 'skyblue' }]}
+                            style={({ pressed, hovered }: { pressed?: boolean; hovered?: boolean }) => [
+                                [styles.editProfileButton, { transition: 'all 0.3s' }],
+                                {
+                                    background: (hovered || pressed)
+                                        ? 'linear-gradient(#0284C7, #00E5FF)'
+                                        : 'linear-gradient(#00E5FF, #0284C7)'
+                                },
+                                pressed && [styles.editProfileButtonPressed, {
+                                    elevation: 6,
+                                    shadowColor: '#0284C7',
+                                    shadowOffset: { width: 0, height: 0 },
+                                    shadowOpacity: 0.8,
+                                    shadowRadius: 8,
+                                    opacity: 0.6,
+                                    transform: [{ scale: 0.95 }]
+                                }],
+                                hovered && {
+                                    elevation: 6,
+                                    shadowColor: '#0284C7',
+                                    shadowOffset: { width: 0, height: 0 },
+                                    shadowOpacity: 0.8,
+                                    shadowRadius: 8,
+                                }
+                            ]}
+                            onPress={handleSubmit}
                         >
-                            <LinearGradient colors={['#00E5FF', '#0284C7']} style={styles.saveButtonGradient}>
-                                <Text style={styles.saveButtonText}>{t.submit}</Text>
-                            </LinearGradient>
+                            {({ pressed, hovered }: { pressed?: boolean; hovered?: boolean }) => (
+                                <LinearGradient
+                                    colors={(hovered || pressed) ? ['#0284C7', '#00E5FF'] : ['#00E5FF', '#0284C7']}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    style={styles.editProfileGradient}
+                                >
+                                    <Text style={styles.editProfileButtonText}>{t.submit}</Text>
+                                </LinearGradient>
+                            )}
                         </Pressable>
-                    </Animated.View>
+                    </View>
 
                 </View>
 
@@ -272,37 +304,9 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         color: '#0F172A',
     },
-    switchTabsRow: {
-        flexDirection: 'row',
-        backgroundColor: '#F1F5F9',
-        borderRadius: 16,
-        padding: 4,
-        marginBottom: 18,
-    },
-    switchTabBtn: {
-        flex: 1,
-        paddingVertical: 10,
-        alignItems: 'center',
-        borderRadius: 12,
-    },
-    switchTabBtnActive: {
-        backgroundColor: '#FFFFFF',
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
-    },
-    switchTabText: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#64748B',
-    },
-    switchTabTextActive: {
-        color: '#0F172A',
-        fontWeight: '700',
-    },
     formWrapper: {
         width: '100%',
+        gap: 10
     },
     inputBox: {
         backgroundColor: '#F8FAFC',
@@ -363,5 +367,22 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '600',
         color: '#0284C7',
-    }
+    },
+    editProfileButton: {
+        borderRadius: 24,
+        overflow: 'hidden',
+        width: '100%',
+        transition: 'all 0.3s ease',
+        padding: 3
+    },
+    editProfileGradient: {
+        paddingVertical: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    editProfileButtonText: {
+        color: '#FFFFFF',
+        fontWeight: '700',
+        fontSize: 14,
+    },
 })

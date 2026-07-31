@@ -10,6 +10,7 @@ import UserPng from 'app/features/app/assets/user.png'
 import ProfileImageUpload from './_components/ProfileImageUpload'
 import { useTokenStore } from 'app/store/useTokenStore'
 import { useLocationOpenStore } from 'app/store/useLocationOpenStore'
+import { useUrlStore } from 'app/store/useUrlStore'
 
 const translations = {
     uz: {
@@ -112,6 +113,7 @@ const translations = {
 }
 
 const Profile = () => {
+    const url = useUrlStore(state => state.url)
     const token = useTokenStore(state => state.token)
     const setToken = useTokenStore(state => state.setToken)
     const lan = useLanStorage(state => state.lan) as 'uz' | 'ru' | 'en'
@@ -147,8 +149,8 @@ const Profile = () => {
     }, [isEditing])
 
     const avatarScale = scrollY.interpolate({
-        inputRange: [-50, 0, 100],
-        outputRange: [1.1, 1, 0.85],
+        inputRange: [-50, 0, 100, 110],
+        outputRange: [2, 1, 0.55, 0.4],
         extrapolate: 'clamp',
     })
 
@@ -158,9 +160,9 @@ const Profile = () => {
         else setLan('uz')
     }
 
-    const renderToken = async (token) => {
+    const renderToken = async (token: string) => {
         try {
-            const res = await fetch('https://internet-magazin-nest-server.onrender.com/auth/profile', {
+            const res = await fetch(`${url}/auth/profile`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -182,7 +184,7 @@ const Profile = () => {
 
     const handleDeleteAccount = async () => {
         try {
-            const response = await fetch('https://internet-magazin-nest-server.onrender.com/auth/account', {
+            const response = await fetch(`${url}/auth/account`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -204,7 +206,7 @@ const Profile = () => {
 
     const handleUpdateProfile = async () => {
         try {
-            const response = await fetch('https://internet-magazin-nest-server.onrender.com/auth/update-profile', {
+            const response = await fetch(`${url}/auth/update-profile`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -283,8 +285,18 @@ const Profile = () => {
                                 </View>
 
                                 <View style={styles.profileCardClean}>
-                                    <View style={styles.avatarWrapper}>
-                                        <Animated.View style={[styles.avatarContainer, { transform: [{ scale: avatarScale }] }]}>
+                                    <Animated.View style={[styles.avatarWrapper, {
+                                        elevation: 120,
+                                        shadowColor: `${gender === 'Male' ? '#0284C7' : 'red'}`,
+                                        shadowOffset: { width: 0, height: 0 },
+                                        shadowOpacity: 1,
+                                        shadowRadius: 120,
+                                        borderRadius: 10000000,
+                                        transform: [{ scale: avatarScale }],
+                                    }]}>
+                                        <Animated.View style={[styles.avatarContainer, {
+                                            borderColor: gender === 'Male' ? '#00E5FF' : '#FF007F',
+                                        }]}>
                                             <UniversalImage
                                                 src={image}
                                                 alt="Profile"
@@ -294,9 +306,9 @@ const Profile = () => {
                                             />
                                         </Animated.View>
                                         <Pressable style={styles.cameraBadge}>
-                                            <ProfileImageUpload render={renderToken} />
+                                            <ProfileImageUpload render={renderToken} gender={gender} />
                                         </Pressable>
-                                    </View>
+                                    </Animated.View>
 
                                     <Text style={styles.profileName}>{firstName} {lastName}</Text>
                                     <Text style={styles.profileEmail}>{email}</Text>
@@ -304,17 +316,42 @@ const Profile = () => {
 
                                     <Pressable
                                         android_ripple={{ color: 'rgba(255, 255, 255, 0.3)' }}
-                                        style={[styles.editProfileButton, { backgroundColor: 'skyblue' }]}
+                                        style={({ pressed, hovered }: { pressed?: boolean; hovered?: boolean }) => [
+                                            [styles.editProfileButton, { transition: 'all 0.3s' }],
+                                            {
+                                                background: (hovered || pressed)
+                                                    ? 'linear-gradient(#0284C7, #00E5FF)'
+                                                    : 'linear-gradient(#00E5FF, #0284C7)'
+                                            },
+                                            pressed && [styles.editProfileButtonPressed, {
+                                                elevation: 6,
+                                                shadowColor: '#0284C7',
+                                                shadowOffset: { width: 0, height: 0 },
+                                                shadowOpacity: 0.8,
+                                                shadowRadius: 8,
+                                                opacity: 0.6,
+                                                transform: [{ scale: 0.95 }]
+                                            }],
+                                            hovered && {
+                                                elevation: 6,
+                                                shadowColor: '#0284C7',
+                                                shadowOffset: { width: 0, height: 0 },
+                                                shadowOpacity: 0.8,
+                                                shadowRadius: 8,
+                                            }
+                                        ]}
                                         onPress={() => setIsEditing(true)}
                                     >
-                                        <LinearGradient
-                                            colors={['#00E5FF', '#0284C7']}
-                                            start={{ x: 0, y: 0 }}
-                                            end={{ x: 0, y: 1 }}
-                                            style={styles.editProfileGradient}
-                                        >
-                                            <Text style={styles.editProfileButtonText}>{t.editProfile}</Text>
-                                        </LinearGradient>
+                                        {({ pressed, hovered }: { pressed?: boolean; hovered?: boolean }) => (
+                                            <LinearGradient
+                                                colors={(hovered || pressed) ? ['#0284C7', '#00E5FF'] : ['#00E5FF', '#0284C7']}
+                                                start={{ x: 0, y: 0 }}
+                                                end={{ x: 0, y: 1 }}
+                                                style={styles.editProfileGradient}
+                                            >
+                                                <Text style={styles.editProfileButtonText}>{t.editProfile}</Text>
+                                            </LinearGradient>
+                                        )}
                                     </Pressable>
                                 </View>
 
@@ -443,7 +480,7 @@ const Profile = () => {
                                     placeholder="Matn kiriting..."
                                     style={[styles.textInput, { width: '100%' }]}
                                     value={bio}
-                                    onChangeText={(text) => {
+                                    onChangeText={(text: string) => {
                                         const letters = text.match(/[a-zA-Zа-яА-ЯoʻgʻOʻGʻ\u0400-\u04FF]/g) || [];
                                         if (letters.length <= 140) setBio(text);
                                     }}
@@ -491,7 +528,21 @@ const Profile = () => {
                                             style={styles.textInput}
                                             value={phone}
                                             placeholder='Phone number...'
-                                            onChangeText={setPhone}
+                                            onChangeText={(text: string) => {
+                                                if (!text.startsWith('+998-')) {
+                                                    text = '+998-';
+                                                }
+
+                                                const rawNumber = text.replace(/[^\d]/g, '').slice(3);
+
+                                                let formatted = '+998-';
+                                                if (rawNumber.length > 0) formatted += rawNumber.substring(0, 2);
+                                                if (rawNumber.length > 2) formatted += '-' + rawNumber.substring(2, 5);
+                                                if (rawNumber.length > 5) formatted += '-' + rawNumber.substring(5, 7);
+                                                if (rawNumber.length > 7) formatted += '-' + rawNumber.substring(7, 9);
+
+                                                setPhone(formatted);
+                                            }}
                                             onFocus={() => setFocus(3)}
                                             onBlur={() => setFocus(0)}
                                             placeholderTextColor="#64748B"
@@ -529,12 +580,42 @@ const Profile = () => {
 
                                 <Pressable
                                     android_ripple={{ color: 'rgba(255, 255, 255, 0.3)' }}
-                                    style={[styles.saveButtonWrapper, { backgroundColor: 'skyblue' }]}
+                                    style={({ pressed, hovered }: { pressed?: boolean; hovered?: boolean }) => [
+                                        [styles.saveButtonWrapper, { borderWidth: 0.1, borderColor: '#00E5FF', transition: 'all 0.3s' }],
+                                        {
+                                            background: (hovered || pressed)
+                                                ? 'linear-gradient(#0284C7, #00E5FF)'
+                                                : 'linear-gradient(#00E5FF, #0284C7)'
+                                        },
+                                        pressed && [styles.editProfileButtonPressed, {
+                                            elevation: 6,
+                                            shadowColor: '#0284C7',
+                                            shadowOffset: { width: 0, height: 0 },
+                                            shadowOpacity: 0.8,
+                                            shadowRadius: 8,
+                                            opacity: 0.6,
+                                            transform: [{ scale: 0.95 }]
+                                        }],
+                                        hovered && {
+                                            elevation: 6,
+                                            shadowColor: '#0284C7',
+                                            shadowOffset: { width: 0, height: 0 },
+                                            shadowOpacity: 0.8,
+                                            shadowRadius: 8,
+                                        }
+                                    ]}
                                     onPress={() => { setIsEditing(false), handleUpdateProfile() }}
                                 >
-                                    <LinearGradient colors={['#00E5FF', '#0284C7']} style={styles.saveButtonGradient}>
-                                        <Text style={styles.saveButtonText}>{t.save}</Text>
-                                    </LinearGradient>
+                                    {({ pressed, hovered }: { pressed?: boolean; hovered?: boolean }) => (
+                                        <LinearGradient
+                                            colors={(hovered || pressed) ? ['#0284C7', '#00E5FF'] : ['#00E5FF', '#0284C7']}
+                                            start={{ x: 0, y: 0 }}
+                                            end={{ x: 0, y: 1 }}
+                                            style={styles.editProfileGradient}
+                                        >
+                                            <Text style={styles.editProfileButtonText}>{t.save}</Text>
+                                        </LinearGradient>
+                                    )}
                                 </Pressable>
                             </View>
                         </View>
@@ -767,7 +848,6 @@ const styles = StyleSheet.create({
         height: 90,
         borderRadius: 45,
         borderWidth: 3,
-        borderColor: '#00E5FF',
         overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
@@ -812,6 +892,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         width: '100%',
         maxWidth: 220,
+        transition: 'all 0.3s ease'
     },
     editProfileGradient: {
         paddingVertical: 12,

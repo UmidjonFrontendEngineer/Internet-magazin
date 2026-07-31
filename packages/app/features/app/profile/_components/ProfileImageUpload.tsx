@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator, Platform } from 'react-native';
 import { useTokenStore } from 'app/store/useTokenStore';
+import { useUrlStore } from 'app/store/useUrlStore';
 
 interface Props {
     currentImage?: string;
     onImageUpdated?: (newUrl: string) => void;
     render?: (token: string) => void;
+    gender: string;
 }
 
-export default function ProfileImageUpload({ currentImage, onImageUpdated, render }: Props) {
+export default function ProfileImageUpload({ currentImage, onImageUpdated, render, gender }: Props) {
+    const url = useUrlStore(state => state.url)
     const token = useTokenStore(state => state.token);
     const [loading, setLoading] = useState(false);
     const [imageUri, setImageUri] = useState<string | null>(currentImage || null);
@@ -16,7 +19,7 @@ export default function ProfileImageUpload({ currentImage, onImageUpdated, rende
     const uploadToBackend = async (formData: FormData) => {
         setLoading(true);
         try {
-            const response = await fetch('https://internet-magazin-nest-server.onrender.com/auth/image-update', {
+            const response = await fetch(`${url}/auth/image`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -93,7 +96,7 @@ export default function ProfileImageUpload({ currentImage, onImageUpdated, rende
 
     return (
         Platform.OS === 'web' ? (
-            <label style={styles.webButton}>
+            <label style={StyleSheet.flatten([styles.webButton, { backgroundColor: gender === 'Male' ? '#1A73E8' : '#EA4335' }])}>
                 <input
                     type="file"
                     accept="image/*"
@@ -103,7 +106,7 @@ export default function ProfileImageUpload({ currentImage, onImageUpdated, rende
                 />
             </label>
         ) : (
-            <TouchableOpacity style={styles.button} onPress={handleMobilePickImage} disabled={loading}>
+            <TouchableOpacity style={[styles.button, { backgroundColor: gender === 'Male' ? '#1A73E8' : '#EA4335' }]} onPress={handleMobilePickImage} disabled={loading}>
                 <Text style={styles.buttonText}>{loading ? '...' : '+'}</Text>
             </TouchableOpacity>
         )
@@ -115,7 +118,6 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         borderRadius: 15,
-        backgroundColor: '#1A73E8',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
@@ -134,7 +136,6 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         borderRadius: 15,
-        backgroundColor: '#1A73E8',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,

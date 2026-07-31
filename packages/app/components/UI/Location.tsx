@@ -646,7 +646,7 @@ const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => voi
         }
     }, [searchValue])
     return (
-        <View style={{ width: '80%', justifyContent: 'center', maxWidth: 500, flexDirection: 'row' }}>
+        <View style={{ width: '80%', justifyContent: 'center', maxWidth: 500, flexDirection: 'row', alignItems: 'center' }}>
             <View
                 {...({
                     onStartShouldSetResponder: () => true,
@@ -654,27 +654,27 @@ const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => voi
                     onResponderTerminationRequest: () => false,
                 })}
                 style={{
-                    gap: 4,
+                    gap: 6,
                     width: '100%',
                     backgroundColor: 'white',
-                    borderRadius: 16,
-                    padding: 4,
+                    borderRadius: 20,
+                    padding: 6,
                     zIndex: 99999999999999,
                     maxHeight: 600,
-
+                    height: '82%'
                 }}
             >
                 <TextInput
                     onChangeText={setSearchValue}
                     value={searchValue}
                     style={{
-                        fontSize: 14,
+                        fontSize: 18,
                         color: '#333',
                         outline: 'none',
                         borderWidth: 1,
                         borderColor: 'rgb(226, 245, 255)',
-                        borderRadius: 1000,
-                        padding: 6,
+                        borderRadius: 14,
+                        padding: 8,
                         ...Platform.select({ web: { outlineStyle: 'none' } }),
                     }}
                     placeholder={
@@ -693,9 +693,9 @@ const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => voi
                                 key={item}
                                 onPress={() => { setLocation(item); setLocationOpen(false); }}
                                 style={{
-                                    paddingVertical: 4,
+                                    paddingVertical: 12,
                                     paddingHorizontal: 6,
-                                    borderRadius: 10,
+                                    borderRadius: 14,
                                     backgroundColor: 'rgba(226, 245, 255, 0.6)',
                                     width: '100%',
                                     alignItems: 'center',
@@ -704,7 +704,7 @@ const Location = ({ setLocationOpen }: { setLocationOpen: (open: boolean) => voi
                                     marginBottom: 4
                                 }}
                             >
-                                <Text style={{ textTransform: 'uppercase', fontSize: 12, color: '#1A73E8' }}>{item}</Text>
+                                <Text style={{ textTransform: 'uppercase', fontSize: 16, color: '#1A73E8' }}>{item}</Text>
                             </TouchableOpacity>
                         ))
                     }

@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     title: "internet do'kon - O'zbekistondagi milliy marketplex",
     description: "Next.js texnologiyasida full-stack e-commerce App.",
     keywords: ["nextjs", "react", "uzbekistan", "e-commerce", "internet do'kon", "internet do'kon"],
+    icons: {
+        icon: "/icon.png"
+    },
     verification: {
         google: "vrW7yAymIBr4qV_SfSVrKjUcniOv6ICgCVgTwVE8GBQ",
     },
