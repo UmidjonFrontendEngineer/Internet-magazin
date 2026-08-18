@@ -18,12 +18,14 @@ interface Follow {
 }
 
 const FollowComponent = () => {
+    console.log("FollowComponent ishga tushdi!")
     const [follows, setFollows] = useState<Follow[]>([])
     const [markets, setMarkets] = useState<Market[]>([])
     const [loading, setLoading] = useState<boolean>(true)
 
     const fetchData = async () => {
         try {
+            console.log("1. Fetch boshlandi...")
             const [followRes, marketRes] = await Promise.all([
                 fetch('https://internet-magazin-nest-server.onrender.com/followings'),
                 fetch('https://internet-magazin-nest-server.onrender.com/markets')
@@ -40,6 +42,7 @@ const FollowComponent = () => {
                 console.log(marketData)
                 setMarkets(marketData)
             }
+            console.log('fetch tugadi')
         } catch (err) {
             console.error("Xatolik yuz berdi:", err)
         } finally {
