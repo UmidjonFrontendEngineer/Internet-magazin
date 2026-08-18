@@ -53,6 +53,7 @@ const FollowComponent = () => {
             const followingsData = await followingsRes.json()
 
             setMarkets(marketsData)
+            setFilteredMarkets(marketsData)
 
             if (currentUserId) {
                 const userFollowObj = followingsData.find((f: Follow) => f.userId === currentUserId)
@@ -78,10 +79,6 @@ const FollowComponent = () => {
     useEffect(() => {
         fetchAllData(token)
     }, [token])
-
-    useEffect(() => {
-        handleInputValidate()
-    }, [])
 
     useEffect(() => {
         handleInputValidate()
