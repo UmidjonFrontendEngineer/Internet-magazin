@@ -1,8 +1,10 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import ScreenWrapper from 'app/components/layout/ScreenWrapper'
 import { UniversalImage } from 'app/components/UI/UniversalImage'
+import { useTokenStore } from 'app/store/useTokenStore'
 
 interface Market {
     id: string
@@ -14,158 +16,215 @@ interface Follow {
     id: string
     userId: string
     following: string[]
-    createdAt: string
 }
 
 const FollowComponent = () => {
-    const [follows, setFollows] = useState<Follow[]>([])
     const [markets, setMarkets] = useState<Market[]>([])
+    const [userFollowingIds, setUserFollowingIds] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(true)
+    const token = useTokenStore(state => state.token)
 
-    const fetchData = async () => {
+    const fetchAllData = async (token: string) => {
         try {
-            const [followRes, marketRes] = await Promise.all([
-                fetch('https://internet-magazin-nest-server.onrender.com/followings'),
-                fetch('https://internet-magazin-nest-server.onrender.com/markets')
+            setLoading(true)
+            const profileRes = await fetch('https://internet-magazin-nest-server.onrender.com/auth/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            const profileData = await profileRes.json()
+            const userEmail = profileData?.email
+
+            const usersRes = await fetch('https://internet-magazin-nest-server.onrender.com/users')
+            const usersData = await usersRes.json()
+            const currentUser = usersData.find((u: any) => u.email === userEmail)
+            const currentUserId = currentUser?.id
+
+            const [marketsRes, followingsRes] = await Promise.all([
+                fetch('https://internet-magazin-nest-server.onrender.com/markets'),
+                fetch('https://internet-magazin-nest-server.onrender.com/followings')
             ])
 
-            const followData = await followRes.json()
-            const marketData = await marketRes.json()
+            const marketsData = await marketsRes.json()
+            const followingsData = await followingsRes.json()
 
-            if (followRes.ok) {
-                console.log(followData)
-                setFollows(followData)
-            }
-            if (marketRes.ok) {
-                console.log(marketData)
-                setMarkets(marketData)
+            setMarkets(marketsData)
+
+            if (currentUserId) {
+                const userFollowObj = followingsData.find((f: Follow) => f.userId === currentUserId)
+                if (userFollowObj) {
+                    setUserFollowingIds(userFollowObj.following || [])
+                }
             }
         } catch (err) {
-            console.error("Xatolik yuz berdi:", err)
+            console.error("Ma'lumotlarni yuklashda xatolik:", err)
         } finally {
             setLoading(false)
         }
     }
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        fetchAllData(token)
+    }, [token])
 
-    const getMarketById = (id: string) => markets.find(m => m.id === id)
+    const handleFollowToggle = (marketId: string) => {
+        Alert.alert("Market ID", marketId)
+    }
+
+    const handleChatPress = (marketId: string) => {
+        Alert.alert("Chat / Message", `Market ID: ${marketId}`)
+    }
 
     if (loading) {
         return (
-            <View style={styles.loaderContainer}>
-                <ActivityIndicator size="large" color="#007AFF" />
-            </View>
+            <ScreenWrapper>
+                <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" color="#007AFF" />
+                    <Text style={{ marginTop: 10, color: '#666' }}>Loading...</Text>
+                </View>
+            </ScreenWrapper>
         )
     }
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            <Text style={styles.headerTitle}>Obuna bo'lgan marketlar</Text>
+        <ScreenWrapper>
+            <View style={styles.container}>
+                <Text style={styles.headerTitle}>Barcha Marketlar</Text>
 
-            {follows.map((follow: Follow) => (
-                <View key={follow.id} style={styles.card}>
-                    <Text style={styles.userIdText}>User ID: {follow.userId}</Text>
-                    <Text style={styles.countText}>Obunalar soni: {follow.following.length}</Text>
+                {markets.map((market: Market) => {
+                    const isFollowing = userFollowingIds.includes(market.id)
 
-                    <View style={styles.marketList}>
-                        {follow.following.map((marketId, index) => {
-                            const market = getMarketById(marketId)
-                            return (
-                                <View key={index} style={styles.marketItem}>
-                                    {market ? (
-                                        <>
-                                            <UniversalImage src={market.logo} width={300} height={100} alt={market.title} resizeMode='contain' />
-                                            <Text style={styles.marketTitle}>{market.title}</Text>
-                                        </>
-                                    ) : (
-                                        <Text style={styles.notFoundText}>Market topilmadi ({marketId.slice(0, 6)}...)</Text>
-                                    )}
-                                </View>
-                            )
-                        })}
-                    </View>
-                </View>
-            ))}
-        </ScrollView>
+                    return (
+                        <View key={market.id} style={styles.card}>
+                            <View style={styles.leftContainer}>
+                                <UniversalImage
+                                    src={market.logo}
+                                    width={45}
+                                    height={45}
+                                    alt={market.title}
+                                    resizeMode='cover'
+                                    style={styles.logo}
+                                />
+                                <Text style={styles.title} numberOfLines={1}>{market.title}</Text>
+                            </View>
+
+                            <View style={styles.rightContainer}>
+                                <TouchableOpacity
+                                    style={[styles.button, isFollowing ? styles.followingBtn : styles.followBtn]}
+                                    onPress={() => handleFollowToggle(market.id)}
+                                >
+                                    <Text style={[styles.buttonText, isFollowing ? styles.followingText : styles.followText]}>
+                                        {isFollowing ? 'Following' : 'Follow'}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.chatButton}
+                                    onPress={() => handleChatPress(market.id)}
+                                >
+                                    <Text style={styles.chatButtonText}>Chat</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )
+                })}
+            </View>
+        </ScreenWrapper>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    contentContainer: {
         padding: 16,
+        backgroundColor: '#F8F9FA',
     },
     loaderContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F8F9FA',
     },
     headerTitle: {
         fontSize: 22,
         fontWeight: 'bold',
         color: '#1A1A1A',
         marginBottom: 16,
-        textAlign: 'center',
     },
     card: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
         borderColor: '#E2E8F0',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 14,
+        borderRadius: 14,
+        padding: 12,
+        marginBottom: 12,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
-        shadowRadius: 4,
+        shadowRadius: 2,
         elevation: 2,
     },
-    userIdText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#4A5568',
-        marginBottom: 4,
-    },
-    countText: {
-        fontSize: 13,
-        color: '#718096',
-        marginBottom: 12,
-    },
-    marketList: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-    },
-    marketItem: {
+    leftContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#EDF2F7',
-        borderWidth: 1,
-        borderColor: '#E2E8F0',
-        paddingVertical: 6,
-        paddingHorizontal: 10,
-        borderRadius: 20,
+        flex: 1,
+        marginRight: 10,
     },
     logo: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        marginRight: 6,
+        width: 45,
+        height: 45,
+        borderRadius: 22.5,
+        backgroundColor: '#EDF2F7',
     },
-    marketTitle: {
-        fontSize: 13,
-        fontWeight: '500',
+    title: {
+        fontSize: 15,
+        fontWeight: '600',
         color: '#2D3748',
+        marginLeft: 12,
+        flex: 1,
     },
-    notFoundText: {
-        fontSize: 12,
-        color: '#E53E3E',
+    rightContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    button: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        borderWidth: 1,
+    },
+    followBtn: {
+        backgroundColor: '#007AFF',
+        borderColor: '#007AFF',
+    },
+    followingBtn: {
+        backgroundColor: '#EDF2F7',
+        borderColor: '#CBD5E0',
+    },
+    buttonText: {
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    followText: {
+        color: '#FFFFFF',
+    },
+    followingText: {
+        color: '#4A5568',
+    },
+    chatButton: {
+        backgroundColor: '#E2E8F0',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+    },
+    chatButtonText: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#2D3748',
     },
 })
 
