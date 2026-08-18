@@ -32,8 +32,14 @@ const FollowComponent = () => {
             const followData = await followRes.json()
             const marketData = await marketRes.json()
 
-            if (followRes.ok) setFollows(followData)
-            if (marketRes.ok) setMarkets(marketData)
+            if (followRes.ok) {
+                console.log(followData)
+                setFollows(followData)
+            }
+            if (marketRes.ok) {
+                console.log(marketData)
+                setMarkets(marketData)
+            }
         } catch (err) {
             console.error("Xatolik yuz berdi:", err)
         } finally {
@@ -59,7 +65,7 @@ const FollowComponent = () => {
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <Text style={styles.headerTitle}>Obuna bo'lgan marketlar</Text>
 
-            {follows.map((follow) => (
+            {follows.map((follow: Follow) => (
                 <View key={follow.id} style={styles.card}>
                     <Text style={styles.userIdText}>User ID: {follow.userId}</Text>
                     <Text style={styles.countText}>Obunalar soni: {follow.following.length}</Text>
