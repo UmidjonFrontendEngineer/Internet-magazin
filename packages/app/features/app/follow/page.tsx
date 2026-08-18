@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, TextInput } from 'react-native'
 import ScreenWrapper from 'app/components/layout/ScreenWrapper'
 import { UniversalImage } from 'app/components/UI/UniversalImage'
 import { useTokenStore } from 'app/store/useTokenStore'
@@ -23,10 +23,11 @@ const FollowComponent = () => {
     const [userFollowingIds, setUserFollowingIds] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const token = useTokenStore(state => state.token)
+    const [inputValue, setInputValue] = useState('')
+    const [filteredMarkets, setFilteredMarkets] = useState<Market[]>(markets)
 
     const fetchAllData = async (token: string) => {
         try {
-            setLoading(true)
             const profileRes = await fetch('https://internet-magazin-nest-server.onrender.com/auth/profile', {
                 method: 'GET',
                 headers: {
@@ -68,6 +69,10 @@ const FollowComponent = () => {
         fetchAllData(token)
     }, [token])
 
+    useEffect(() => {
+        setFilteredMarkets(markets.filter((market: Market) => market.title === inputValue.trim()))
+    }, [inputValue])
+
     const handleFollowToggle = async (marketId: string) => {
         try {
             const res = await fetch(`https://internet-magazin-nest-server.onrender.com/followings/${marketId}`, {
@@ -107,9 +112,17 @@ const FollowComponent = () => {
     return (
         <ScreenWrapper>
             <View style={styles.container}>
+                <TextInput
+                    style={styles.searchInput}
+                    onChangeText={setInputValue}
+                    value={inputValue}
+                    placeholder="Search..."
+                    placeholderTextColor="#A0AEC0"
+                />
+
                 <Text style={styles.headerTitle}>Barcha Marketlar</Text>
 
-                {markets.map((market: Market) => {
+                {filteredMarkets.map((market: Market) => {
                     const isFollowing = userFollowingIds.includes(market.id)
 
                     return (
@@ -241,6 +254,22 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '600',
         color: '#2D3748',
+    },
+    searchInput: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        fontSize: 14,
+        color: '#2D3748',
+        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.03,
+        shadowRadius: 2,
+        elevation: 1,
     },
 })
 
