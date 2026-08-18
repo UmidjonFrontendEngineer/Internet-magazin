@@ -411,7 +411,7 @@ const Profile = () => {
                                         <Text style={styles.menuArrow}>›</Text>
                                     </Pressable>
 
-                                    <Pressable android_ripple={{ color: 'rgba(0, 229, 255, 0.2)' }} style={styles.menuRow}>
+                                    <Pressable onPress={() => router.push('/follow')} android_ripple={{ color: 'rgba(0, 229, 255, 0.2)' }} style={styles.menuRow}>
                                         <View style={styles.menuRowLeft}>
                                             <Text style={styles.menuEmoji}>🏪</Text>
                                             <Text style={styles.menuRowText}>{t.subscription}</Text>
@@ -529,17 +529,17 @@ const Profile = () => {
                                             value={phone}
                                             placeholder='Phone number...'
                                             onChangeText={(text: string) => {
-                                                if (!text.startsWith('+998-')) {
-                                                    text = '+998-';
+                                                if (!text.startsWith('+998 ')) {
+                                                    text = '+998 ';
                                                 }
 
                                                 const rawNumber = text.replace(/[^\d]/g, '').slice(3);
 
-                                                let formatted = '+998-';
+                                                let formatted = '+998 ';
                                                 if (rawNumber.length > 0) formatted += rawNumber.substring(0, 2);
-                                                if (rawNumber.length > 2) formatted += '-' + rawNumber.substring(2, 5);
-                                                if (rawNumber.length > 5) formatted += '-' + rawNumber.substring(5, 7);
-                                                if (rawNumber.length > 7) formatted += '-' + rawNumber.substring(7, 9);
+                                                if (rawNumber.length > 2) formatted += ' ' + rawNumber.substring(2, 5);
+                                                if (rawNumber.length > 5) formatted += ' ' + rawNumber.substring(5, 7);
+                                                if (rawNumber.length > 7) formatted += ' ' + rawNumber.substring(7, 9);
 
                                                 setPhone(formatted);
                                             }}

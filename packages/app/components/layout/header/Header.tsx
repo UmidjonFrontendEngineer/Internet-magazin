@@ -195,7 +195,7 @@ const Header = () => {
 
     const [image, setImage] = useState(UserPng)
 
-    const renderToken = async (token) => {
+    const renderToken = async (token: string) => {
         try {
             const res = await fetch(`${url}/auth/profile`, {
                 method: 'GET',
@@ -282,8 +282,8 @@ const Header = () => {
                             gap: 10,
                         }}>
                             <Pressable
-                                onPress={() => setLocationOpen(prev => !prev)}
-                                style={({ pressed }) => [
+                                onPress={() => setLocationOpen(!locationOpen)}
+                                style={({ pressed }: {pressed: boolean}) => [
                                     {
                                         width: 40,
                                         height: 40,
@@ -955,7 +955,7 @@ const Header = () => {
                             <TextInput
                                 returnKeyType="search"
                                 onSubmitEditing={() => router.push(`/search/${input.trim().toLowerCase().replace(/\s+/g, '-')}`)}
-                                onChangeText={text => setInput(text)}
+                                onChangeText={(text: string) => setInput(text)}
                                 placeholder={`${lan === 'uz' ? 'Mahsulotlar va turkumlar izlash' : lan === 'en' ? 'Search products and categories' : lan === 'ru' ? 'Искать товары и категории' : 'Mahsulotlar va turkumlar izlash'}`}
                                 style={styles.searchInput}
                                 placeholderTextColor="#1A73E8"

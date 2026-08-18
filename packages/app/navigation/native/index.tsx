@@ -14,6 +14,7 @@ import Search from 'app/features/app/search/page'
 import CareresScreen from 'app/features/app/about/careres/page'
 import PunktScreen from 'app/features/app/about/punkt/page'
 import AuthScreen from 'app/features/app/auth/page'
+import FollowScreen from 'app/features/app/follow/page'
 import Filter from 'app/features/app/search/_components/filter/page'
 import ProductsID from 'app/features/app/product/[id]/page'
 
@@ -28,6 +29,7 @@ const Stack = createNativeStackNavigator<{
   careres: undefined
   punkt: undefined
   auth: undefined
+  follow: undefined
   'filter': {
     id: 'string'
   }
@@ -52,6 +54,7 @@ export function NativeNavigation() {
           <Stack.Screen name="careres" component={CareresScreen} />
           <Stack.Screen name="punkt" component={PunktScreen} />
           <Stack.Screen name="auth" component={AuthScreen} />
+          <Stack.Screen name="follow" component={FollowScreen} />
           <Stack.Screen name="filter" component={Filter} options={{
             title: 'filter'
           }} />

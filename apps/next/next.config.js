@@ -84,6 +84,7 @@ module.exports = {
     'react-native-gesture-handler',
     'react-native-safe-area-context',
     'expo-blur',
+    'react-native-maps'
   ],
 
   compiler: {
@@ -104,6 +105,12 @@ module.exports = {
       {
         protocol: 'https',
         hostname: 'i.ibb.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
         port: '',
         pathname: '/**',
       }

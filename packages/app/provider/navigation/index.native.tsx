@@ -25,6 +25,7 @@ export function NavigationProvider({
               careres: 'about/careres',
               punkt: 'about/punkt',
               auth: 'auth',
+              follow: 'follow',
               'filter': 'search/:id',
               'products': 'product/:id'
             },
