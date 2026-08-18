@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Tex
 import ScreenWrapper from 'app/components/layout/ScreenWrapper'
 import { UniversalImage } from 'app/components/UI/UniversalImage'
 import { useTokenStore } from 'app/store/useTokenStore'
+import { useLanStorage } from 'app/store/useLanStore'
 
 interface Market {
     id: string
@@ -19,6 +20,7 @@ interface Follow {
 }
 
 const FollowComponent = () => {
+    const lan = useLanStorage(state => state.lan)
     const [markets, setMarkets] = useState<Market[]>([])
     const [userFollowingIds, setUserFollowingIds] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(true)
@@ -65,16 +67,24 @@ const FollowComponent = () => {
         }
     }
 
-    useEffect(() => {
-        fetchAllData(token)
-    }, [token])
-
-    useEffect(() => {
+    const handleInputValidate = () => {
         if (inputValue === '') {
             setFilteredMarkets(markets)
         } else {
             setFilteredMarkets(markets.filter((market: Market) => market.title.toLowerCase().includes(inputValue.toLowerCase().trim())))
         }
+    }
+
+    useEffect(() => {
+        fetchAllData(token)
+    }, [token])
+
+    useEffect(() => {
+        handleInputValidate()
+    }, [])
+
+    useEffect(() => {
+        handleInputValidate()
     }, [inputValue])
 
     const handleFollowToggle = async (marketId: string) => {
@@ -120,11 +130,11 @@ const FollowComponent = () => {
                     style={styles.searchInput}
                     onChangeText={setInputValue}
                     value={inputValue}
-                    placeholder="Search..."
+                    placeholder={lan === 'uz' ? `Qidirish...` : lan === 'en' ? `Search...` : lan === 'ru' ? 'Поиск' : 'Qidirish...'}
                     placeholderTextColor="#A0AEC0"
                 />
 
-                <Text style={styles.headerTitle}>Barcha Marketlar</Text>
+                <Text style={styles.headerTitle}>{lan === 'uz' ? 'Barcha Marketlar' : lan === 'en' ? 'All Markets' : lan === 'ru' ? 'Все Mаркеты' : 'Barcha Marketlar'}</Text>
 
                 {filteredMarkets.map((market: Market) => {
                     const isFollowing = userFollowingIds.includes(market.id)
