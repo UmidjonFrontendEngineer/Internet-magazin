@@ -70,7 +70,7 @@ const FollowComponent = () => {
     }, [token])
 
     useEffect(() => {
-        setFilteredMarkets(markets.filter((market: Market) => market.title.toLowerCase().includes(inputValue.toLowercase().trim())))
+        setFilteredMarkets(markets.filter((market: Market) => market.title.toLowerCase().includes(inputValue.toLowerCase().trim())))
     }, [inputValue])
 
     const handleFollowToggle = async (marketId: string) => {
