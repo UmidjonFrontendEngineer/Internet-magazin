@@ -68,8 +68,26 @@ const FollowComponent = () => {
         fetchAllData(token)
     }, [token])
 
-    const handleFollowToggle = (marketId: string) => {
-        Alert.alert("Market ID", marketId)
+    const handleFollowToggle = async (marketId: string) => {
+        try {
+            const res = await fetch(`https://internet-magazin-nest-server.onrender.com/followings/${marketId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: marketId })
+            })
+
+            if (res.ok) {
+                fetchAllData(token)
+            } else {
+                const err = await res.json()
+                console.log(err.message)
+            }
+        } catch (err) {
+            console.log(`So'rov yuborilmadi ${err}`)
+        }
     }
 
     const handleChatPress = (marketId: string) => {
@@ -81,7 +99,6 @@ const FollowComponent = () => {
             <ScreenWrapper>
                 <View style={styles.loaderContainer}>
                     <ActivityIndicator size="large" color="#007AFF" />
-                    <Text style={{ marginTop: 10, color: '#666' }}>Loading...</Text>
                 </View>
             </ScreenWrapper>
         )
@@ -138,7 +155,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#F8F9FA',
     },
     loaderContainer: {
         flex: 1,
