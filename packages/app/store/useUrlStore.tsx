@@ -7,7 +7,7 @@ interface urlState {
 
 export const useUrlStore = create<urlState>()(
     (set) => ({
-        url: 'https://internet-magazin-nest-server.onrender.com',
+        url: 'https://internet-magazin-nest-server.vercel.app',
         setUrl: (url) => set({ url: url }),
     })
 )

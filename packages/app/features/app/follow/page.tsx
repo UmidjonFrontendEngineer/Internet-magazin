@@ -6,6 +6,7 @@ import ScreenWrapper from 'app/components/layout/ScreenWrapper'
 import { UniversalImage } from 'app/components/UI/UniversalImage'
 import { useTokenStore } from 'app/store/useTokenStore'
 import { useLanStorage } from 'app/store/useLanStore'
+import { useUrlStore } from 'app/store/useUrlStore'
 
 interface Market {
     id: string
@@ -21,6 +22,7 @@ interface Follow {
 
 const FollowComponent = () => {
     const lan = useLanStorage(state => state.lan)
+    const url = useUrlStore(state => state.url)
     const [markets, setMarkets] = useState<Market[]>([])
     const [userFollowingIds, setUserFollowingIds] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(true)
@@ -30,7 +32,7 @@ const FollowComponent = () => {
 
     const fetchAllData = async (token: string) => {
         try {
-            const profileRes = await fetch('https://internet-magazin-nest-server.onrender.com/auth/profile', {
+            const profileRes = await fetch(`${url}/auth/profile`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -39,14 +41,14 @@ const FollowComponent = () => {
             const profileData = await profileRes.json()
             const userEmail = profileData?.email
 
-            const usersRes = await fetch('https://internet-magazin-nest-server.onrender.com/users')
+            const usersRes = await fetch(`${url}/users`)
             const usersData = await usersRes.json()
             const currentUser = usersData.find((u: any) => u.email === userEmail)
             const currentUserId = currentUser?.id
 
             const [marketsRes, followingsRes] = await Promise.all([
-                fetch('https://internet-magazin-nest-server.onrender.com/markets'),
-                fetch('https://internet-magazin-nest-server.onrender.com/followings')
+                fetch(`${url}/markets`),
+                fetch(`${url}/followings`)
             ])
 
             const marketsData = await marketsRes.json()
@@ -86,7 +88,7 @@ const FollowComponent = () => {
 
     const handleFollowToggle = async (marketId: string) => {
         try {
-            const res = await fetch(`https://internet-magazin-nest-server.onrender.com/followings/${marketId}`, {
+            const res = await fetch(`${url}/followings/${marketId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
