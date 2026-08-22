@@ -83,12 +83,12 @@ const ProductID = () => {
     const setModal = useModalStore(state => state.setModal)
     const modal = useModalStore(state => state.modal)
 
-    const handleOptionSelect = (productId: string, groupName: string, value: number) => {
+    const handleOptionSelect = (productId: string, groupName: string, priceValue: number) => {
         setSelectedOptions(prev => ({
             ...prev,
             [productId]: {
                 ...(prev[productId] || {}),
-                [groupName]: value
+                [groupName]: priceValue
             }
         }));
     };
@@ -397,7 +397,7 @@ const ProductID = () => {
                                                                     return (
                                                                         <TouchableOpacity
                                                                             key={valIdx}
-                                                                            onPress={() => handleOptionSelect(product.id, optGroup.id, opt.id)}
+                                                                            onPress={() => handleOptionSelect(product.id, optGroup.id, opt.value)}
                                                                             activeOpacity={0.7}
                                                                             style={[
                                                                                 styles.optionButton,
@@ -632,7 +632,7 @@ const ProductID = () => {
                                                         return (
                                                             <TouchableOpacity
                                                                 key={valIdx}
-                                                                onPress={() => handleOptionSelect(product.id, optGroup.id, opt.id)}
+                                                                onPress={() => handleOptionSelect(product.id, optGroup.id, opt.value)}
                                                                 activeOpacity={0.7}
                                                                 style={[
                                                                     styles.optionButton,
@@ -775,6 +775,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 12,
         borderWidth: 1,
+        transition: 'all 0.3s ease'
     },
     buttonSelected: {
         backgroundColor: 'rgba(14, 165, 233, 0.1)',
