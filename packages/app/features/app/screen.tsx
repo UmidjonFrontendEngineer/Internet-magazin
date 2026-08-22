@@ -149,12 +149,12 @@ const HomeScreen = () => {
 
     const getFollower = async (id: string) => {
         try {
-            const res = await fetch(`${url}/followers`);
+            const res = await fetch(`${url}/followings`);
 
             if (res.ok) {
                 const req = await res.json()
 
-                const userMarkets = req.find((follower: Follower) => follower.userId === id).followers
+                const userMarkets = req.find((follower: Follower) => follower.userId === id).following
 
                 if (userMarkets.length === 0) {
                     fetchProducts()
@@ -189,12 +189,12 @@ const HomeScreen = () => {
         }
     }
 
-    const renderToken = async () => {
+    const renderToken = async (storageToken: string = token) => {
         try {
             const res = await fetch(`${url}/auth/profile`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${storageToken}`
                 }
             });
 
