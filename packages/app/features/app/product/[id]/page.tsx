@@ -192,6 +192,28 @@ const ProductID = () => {
         }
     };
 
+    const calculateTotalPrice = (product: Product) => {
+        const productSelections = selectedOptions[product.id] || {};
+        let optionsSum = product.price || 0;
+
+        Object.values(productSelections).forEach(value => {
+            optionsSum += value;
+        });
+
+        return optionsSum;
+    };
+
+    const totalPrice = calculateTotalPrice(product);
+
+    const getDiscountInfo = (id: string) => discounts.find(d => d.id === id);
+
+    const discountInfo = getDiscountInfo(product.discountId);
+
+    const discountedPrice = discountInfo
+        ? Math.round(totalPrice * (1 - discountInfo.percentage / 100))
+        : totalPrice;
+
+
     useEffect(() => {
         if (products.length === 0) return;
 
@@ -456,7 +478,7 @@ const ProductID = () => {
                         <View style={{ width: '100%', paddingTop: 50, gap: 5, borderRadius: 28, backgroundColor: 'rgba(115, 185, 255, 0.85)' }}>
                             <View style={{ width: '100%', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20, gap: 22 }}>
                                 {(isTabletView || isMobileView) ? <Text style={{ fontWeight: '700', fontSize: 20 }}>{product.title}</Text> : null}
-                                <Text style={{ fontWeight: '700', fontSize: 30, color: '#111' }}>{product.price} so'm</Text>
+                                <Text style={{ fontWeight: '700', fontSize: 30, color: '#111' }}>{totalPrice} so'm</Text>
                                 <Text style={{ fontWeight: '400', fontSize: 14, textDecorationLine: 'line-through', color: 'gray' }}>{((product.price / 100) * 120).toFixed(0)}</Text>
 
                                 <View style={{ width: '100%' }}>
