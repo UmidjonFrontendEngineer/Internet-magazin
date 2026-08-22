@@ -285,7 +285,7 @@ const ProductID = () => {
                             </View>
                         </View>
                         {!(isTabletView || isMobileView) ? (
-                            <View style={{ flex: 2, height: elementHeight, padding: 10, gap: 8, flexDirection: 'column' }}>
+                            <ScrollView style={{ flex: 2, height: elementHeight, padding: 10, gap: 8, flexDirection: 'column' }}>
 
                                 <View style={{ height: '100%', padding: 0, gap: 8 }}>
                                     <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
@@ -323,7 +323,7 @@ const ProductID = () => {
 
                                 <View style={{width: '100%', gap: 4, flexDirection: 'column'}}>
                                     {product.options && product.options.length > 0 && (
-                                        <ScrollView style={styles.container}>
+                                        <View style={styles.container}>
                                             <Text style={[styles.mainTitle, theme === 'dark' ? styles.textDark : styles.textLight]}>
                                                 Konfiguratsiyani o&apos;zgartirish:
                                             </Text>
@@ -387,11 +387,11 @@ const ProductID = () => {
                                                     );
                                                 })}
                                             </View>
-                                        </ScrollView>
+                                        </View>
                                     )}
                                 </View>
 
-                            </View>
+                            </ScrollView>
                         ) : null}
                     </View>
 
