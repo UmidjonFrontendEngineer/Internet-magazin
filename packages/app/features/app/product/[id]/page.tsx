@@ -31,7 +31,7 @@ interface Product {
     description: { uz: string, ru: string, en: string };
     categoryId: string;
     discountId: string;
-    image: string[];
+    images: string[];
     quantity: number;
     options: any[];
 }
@@ -247,7 +247,7 @@ const ProductID = () => {
                                 </View>
                             )}
                             <View style={{ flex: 85, height: isTabletView ? 400 : isMobileView ? 350 : elementHeight, gap: 5 }}>
-                                <Slider sliders={product.image} link={false} count={count} setCount={setCount} />
+                                <Slider sliders={product.images} link={false} count={count} setCount={setCount} />
                             </View>
                         </View>
                         {!(isTabletView || isMobileView) ? (

@@ -21,7 +21,7 @@ interface Product {
     description: { uz: string, ru: string, en: string };
     categoryId: string;
     discountId: string;
-    image: string[];
+    images: string[];
     quantity: number;
     options: any[];
 }

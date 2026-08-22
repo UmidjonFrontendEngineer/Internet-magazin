@@ -25,7 +25,7 @@ interface Product {
     description: { uz: string, ru: string, en: string };
     categoryId: string;
     discountId: string;
-    image: string[];
+    images: string[];
     quantity: number;
     options: any[];
 }
@@ -84,6 +84,7 @@ const HomeScreen = () => {
             const filteredSliders = data.filter((slider: Slider) => slider.marketId === 'umidjon')
 
             setSliders(filteredSliders);
+            console.log(data, filteredSliders)
         } catch (error) {
             console.error("Ma'lumot yuklashda xatolik:", error);
         }
@@ -104,7 +105,10 @@ const HomeScreen = () => {
                     bigSliders = [...bigSliders, ...filteredSliders]
                 })
 
+                console.log(data, bigSliders)
+
                 if (bigSliders.length === 0) {
+                    console.log(`bigSliders.length = 0`)
                     fetchSliders()
                 } else {
                     setSliders(bigSliders)
@@ -131,6 +135,8 @@ const HomeScreen = () => {
                     bigData = [...bigData, ...filteredProducts]
                 })
 
+                console.log(req, bigData)
+
                 if (bigData.length === 0) {
                     fetchProducts()
                 } else {
@@ -156,6 +162,8 @@ const HomeScreen = () => {
 
                 const userMarkets = req.find((follower: Follower) => follower.userId === id).following
 
+                console.log(req, userMarkets)
+
                 if (userMarkets.length === 0) {
                     fetchProducts()
                 } else {
@@ -179,6 +187,8 @@ const HomeScreen = () => {
                 const req = await res.json()
 
                 const userId = req.find((user: User) => user.email === email).id
+
+                console.log(req, userId)
                 getFollower(userId)
             } else {
                 fetchProducts()

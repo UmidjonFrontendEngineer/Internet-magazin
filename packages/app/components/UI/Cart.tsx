@@ -14,7 +14,7 @@ interface Product {
     description: { uz: string, ru: string, en: string };
     categoryId: string;
     discountId: string;
-    image: string[];
+    images: string[];
     quantity: number;
     options: any[];
 }
@@ -101,8 +101,8 @@ const CardProduct = ({ product, index }: { product: Product; index?: number }) =
                 <View style={[styles.leftSection, isSmall && styles.leftSectionSmall]}>
                     <View style={[styles.imageWrapper, isSmall && styles.imageWrapperSmall]}>
                         <UniversalImage
-                            src={Array.isArray(product.image) && product.image.length > 0 && product.image[0]
-                                ? product.image[0]
+                            src={Array.isArray(product.images) && product.images.length > 0 && product.images[0]
+                                ? product.images[0]
                                 : 'https://dummyimage.com/600x600/18181b/a1a1aa'}
                             alt={product.title}
                             width={isSmall ? 70 : 100}
