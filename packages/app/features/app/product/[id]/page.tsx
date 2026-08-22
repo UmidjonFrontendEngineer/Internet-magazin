@@ -351,7 +351,7 @@ const ProductID = () => {
                                                                             onPress={() => handleOptionSelect(product.id, optGroup.id, opt.id)}
                                                                             activeOpacity={0.7}
                                                                             style={[
-                                                                                styles.button,
+                                                                                styles.optionButton,
                                                                                 isSelected
                                                                                     ? styles.buttonSelected
                                                                                     : theme === 'dark'
@@ -563,7 +563,7 @@ const ProductID = () => {
                                                                 onPress={() => handleOptionSelect(product.id, optGroup.id, opt.id)}
                                                                 activeOpacity={0.7}
                                                                 style={[
-                                                                    styles.button,
+                                                                    styles.optionButton,
                                                                     isSelected
                                                                         ? styles.buttonSelected
                                                                         : theme === 'dark'
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
     optionsList: {
         gap: 8,
     },
-    button: {
+    optionButton: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -716,7 +716,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderColor: '#e4e4e7',
     },
-    buttonText: {
+    optionButtonText: {
         fontSize: 12,
         fontWeight: '500',
         textTransform: 'capitalize',
