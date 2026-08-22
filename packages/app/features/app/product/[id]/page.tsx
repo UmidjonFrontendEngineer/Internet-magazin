@@ -284,10 +284,11 @@ const ProductID = () => {
                                     }))} link={false} count={count} setCount={setCount} />
                             </View>
                         </View>
+
                         {!(isTabletView || isMobileView) ? (
                             <ScrollView style={{ flex: 2, height: elementHeight, padding: 10, gap: 8, flexDirection: 'column' }}>
 
-                                <View style={{ height: '100%', padding: 0, gap: 8 }}>
+                                <View style={{ padding: 0, gap: 8 }}>
                                     <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
                                     <View style={{ flexDirection: 'row', gap: 4 }}>
                                         {
