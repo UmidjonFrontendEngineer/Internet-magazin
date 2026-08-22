@@ -90,66 +90,51 @@ const HomeScreen = () => {
         }
     };
 
-    const getSliders = async (followers: Follower[]) => {
+    const getSliders = async (followers: string[]) => {
         try {
             const response = await fetch(`${url}/sliders`);
-
             const data = await response.json();
 
             if (response.ok) {
-                let bigSliders: Slider[] = []
+                const bigSliders = data.filter((slider: Slider) => followers.includes(slider.marketId));
 
-                followers.map((follower) => {
-                    const filteredSliders = data.filter((slider: Slider) => slider.marketId === follower.id)
-
-                    bigSliders = [...bigSliders, ...filteredSliders]
-                })
-
-                console.log(data, bigSliders)
+                console.log(data, bigSliders);
 
                 if (bigSliders.length === 0) {
-                    console.log(`bigSliders.length = 0`)
-                    fetchSliders()
+                    console.log(`bigSliders.length = 0`);
+                    fetchSliders();
                 } else {
-                    setSliders(bigSliders)
+                    setSliders(bigSliders);
                 }
-
-            } else {
             }
         } catch (error) {
             console.error("Ma'lumot yuklashda xatolik:", error);
         }
     };
 
-    const getProducts = async (followers: Follower[]) => {
+    const getProducts = async (followers: string[]) => {
         try {
             const res = await fetch(`${url}/products`);
-
+    
             if (res.ok) {
-                const req = await res.json()
-                let bigData: Product[] = []
-
-                followers.map((follower) => {
-                    const filteredProducts = req.filter((product: Product) => product.marketId === follower.id)
-
-                    bigData = [...bigData, ...filteredProducts]
-                })
-
-                console.log(req, bigData)
-
+                const req = await res.json();
+    
+                const bigData = req.filter((product: Product) => followers.includes(product.marketId));
+    
+                console.log(req, bigData);
+    
                 if (bigData.length === 0) {
-                    fetchProducts()
+                    fetchProducts();
                 } else {
-                    setLoading('loaded')
-                    setProducts(bigData)
+                    setLoading('loaded');
+                    setProducts(bigData);
                 }
-
             } else {
-                fetchProducts()
+                fetchProducts();
             }
         } catch (err) {
-            console.log(err)
-            fetchProducts()
+            console.log(err);
+            fetchProducts();
         }
     }
 
@@ -160,7 +145,14 @@ const HomeScreen = () => {
             if (res.ok) {
                 const req = await res.json()
 
-                const userMarkets = req.find((follower: Follower) => follower.userId === id).following
+                const userFollowings = req.filter((follower: Follower) => follower.userId === id);
+
+                let userMarkets: string[] = [];
+                userFollowings.forEach((item: any) => {
+                    if (Array.isArray(item.following)) {
+                        userMarkets = [...userMarkets, ...item.following];
+                    }
+                });
 
                 console.log(req, userMarkets)
 
