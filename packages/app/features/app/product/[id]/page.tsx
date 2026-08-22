@@ -10,6 +10,7 @@ import { useInputStorage } from 'app/store/useInputStore';
 import { usePathname } from 'solito/navigation';
 import { UniversalImage } from 'app/components/UI/UniversalImage';
 import HeartPng from 'app/features/app/assets/heart.png'
+import { LinearGradient } from 'expo-linear-gradient'
 import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import CartPng from 'app/features/app/assets/cart.png'
@@ -286,7 +287,56 @@ const ProductID = () => {
                         </View>
 
                         {!(isTabletView || isMobileView) ? (
-                            <ScrollView style={{ flex: 2, height: elementHeight, padding: 10, gap: 8, flexDirection: 'column' }}>
+                            <ScrollView style={{ flex: 2, height: elementHeight, padding: 10, gap: 8, flexDirection: 'column', position: 'relative' }}>
+
+                                <LinearGradient
+                                    colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    style={{
+                                        paddingHorizontal: 5000,
+                                        flexDirection: 'row',
+                                        height: 10,
+                                        left: 0,
+                                        bottom: 0,
+                                        pointerEvents: 'none',
+                                        ...Platform.select({
+                                            web: {
+                                                position: 'absolute',
+                                                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(255, 255, 255))',
+                                            },
+                                            default: {
+                                                position: 'absolute',
+                                            }
+                                        }),
+                                    }}>
+
+                                </LinearGradient>
+
+
+                                <LinearGradient
+                                    colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    style={{
+                                        paddingHorizontal: 5000,
+                                        flexDirection: 'row',
+                                        height: 10,
+                                        left: 0,
+                                        bottom: 0,
+                                        pointerEvents: 'none',
+                                        ...Platform.select({
+                                            web: {
+                                                position: 'absolute',
+                                                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(255, 255, 255))',
+                                            },
+                                            default: {
+                                                position: 'absolute',
+                                            }
+                                        }),
+                                    }}>
+
+                                </LinearGradient>
 
                                 <View style={{ padding: 0, gap: 8 }}>
                                     <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
@@ -322,7 +372,7 @@ const ProductID = () => {
                                     </View>
                                 </View>
 
-                                <View style={{width: '100%', gap: 4, flexDirection: 'column'}}>
+                                <View style={{ width: '100%', gap: 4, flexDirection: 'column' }}>
                                     {product.options && product.options.length > 0 && (
                                         <View style={styles.container}>
                                             <Text style={[styles.mainTitle, theme === 'dark' ? styles.textDark : styles.textLight]}>
