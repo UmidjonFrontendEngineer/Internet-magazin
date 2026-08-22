@@ -164,11 +164,12 @@ const ProductID = () => {
     };
 
     useEffect(() => {
+        if (!productsIDs || productsIDs.length === 0) return;
         const saralanganMaxsulotlar = products.filter(maxsulot => {
-            return productsIDs.includes(maxsulot.id);
+            return productsIDs.map(String).includes(String(maxsulot.id));
         });
         setNextProducts(saralanganMaxsulotlar);
-    }, [products]);
+    }, [products, productsIDs]);
 
     useEffect(() => {
         if (loading || products.length === 0) return;
@@ -190,7 +191,7 @@ const ProductID = () => {
             try {
                 const response = await fetch(`${url}/products`);
                 const data = await response.json();
-                
+
                 setProducts(data);
             } catch (error) {
                 console.error("Ma'lumot yuklashda xatolik:", error);
@@ -200,17 +201,16 @@ const ProductID = () => {
         };
 
         fetchSearchProducts();
-    }, []);
+    }, [url]);
 
     useEffect(() => {
         if (products.length === 0) return;
 
-        const currentPathIds = pathname?.split('/')[2]?.split(',')?.map(Number) || [];
-        const currentTargetId = id ? parseInt(id as string, 10) : currentPathIds[0];
-        const remainingIds = currentPathIds.slice(1);
+        const currentPathIds = pathname?.split('/')[2]?.split(',').map(item => item.trim()).filter(Boolean) || [];
+        const remainingIds = id ? currentPathIds : currentPathIds.slice(1);
 
         const saralanganMaxsulotlar = products.filter(maxsulot => {
-            return remainingIds.includes(maxsulot.id);
+            return remainingIds.map(String).includes(String(maxsulot.id));
         });
         setNextProducts(saralanganMaxsulotlar);
     }, [products, pathname, id]);
