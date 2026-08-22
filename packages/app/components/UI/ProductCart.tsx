@@ -191,7 +191,9 @@ const ProductCard = ({ product, products, index, account }: ProductCardProps) =>
 
                 <View style={styles.imageWrapper}>
                     <UniversalImage
-                        src={product.image[0]}
+                        src={Array.isArray(product.image) && product.image.length > 0 && product.image[0]
+                            ? product.image[0]
+                            : 'https://dummyimage.com/600x600/18181b/a1a1aa'}
                         alt={product.title}
                         width={130}
                         height={130}

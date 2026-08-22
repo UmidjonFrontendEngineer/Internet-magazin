@@ -98,7 +98,7 @@ module.exports = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'fakestoreapi.com',
+        hostname: 'dummyimage.com',
         port: '',
         pathname: '/**',
       },

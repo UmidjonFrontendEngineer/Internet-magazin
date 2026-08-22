@@ -101,7 +101,9 @@ const CardProduct = ({ product, index }: { product: Product; index?: number }) =
                 <View style={[styles.leftSection, isSmall && styles.leftSectionSmall]}>
                     <View style={[styles.imageWrapper, isSmall && styles.imageWrapperSmall]}>
                         <UniversalImage
-                            src={product.image[0]}
+                            src={Array.isArray(product.image) && product.image.length > 0 && product.image[0]
+                                ? product.image[0]
+                                : 'https://dummyimage.com/600x600/18181b/a1a1aa'}
                             alt={product.title}
                             width={isSmall ? 70 : 100}
                             height={isSmall ? 70 : 100}
