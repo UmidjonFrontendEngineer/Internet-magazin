@@ -7,18 +7,23 @@ import { useInputStorage } from 'app/store/useInputStore'
 import NotLoad from 'app/components/UI/NotLoad'
 import Empty from 'app/components/UI/Empty';
 import LoaderProductCart from 'app/components/UI/LoaderProductCart'
+import { useUrlStore } from 'app/store/useUrlStore'
 
 interface Product {
-    id: number;
+    id: string;
     title: string;
     price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+    marketId: string;
+    description: { uz: string, ru: string, en: string };
+    categoryId: string;
+    discountId: string;
+    image: string[];
+    quantity: number;
+    options: any[];
 }
 
 const Search = () => {
+    const url = useUrlStore(state => state.url)
     const searchInput = useInputStorage((state) => state.input);
     const { height: screenHeight, width: screenWidth } = useWindowDimensions()
 
@@ -28,7 +33,7 @@ const Search = () => {
     const fetchProducts = async () => {
         try {
             setLoading('loading');
-            const response = await fetch("https://fakestoreapi.com/products");
+            const response = await fetch(`${url}/products`);
             const data: Product[] = await response.json();
 
             const filtered = data.filter(item =>
@@ -64,7 +69,7 @@ const Search = () => {
 
     else if (loading === 'notLoad') {
         return (
-            <NotLoad fetchProducts={fetchProducts} />
+            <NotLoad renderToken={fetchProducts} />
         )
     }
 
@@ -74,7 +79,7 @@ const Search = () => {
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.grid}>
-                    {products.map((product) => (
+                    {products.map((product: Product) => (
                         <ProductCard key={product.id} product={product} products={products} />
                     ))}
                 </View>

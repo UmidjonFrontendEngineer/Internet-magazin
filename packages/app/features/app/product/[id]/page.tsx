@@ -21,18 +21,23 @@ import ProductSlider from 'app/components/UI/ProductSlider';
 import accesStarPng from 'app/features/app/assets/acces-star.png'
 import starPng from 'app/features/app/assets/star.png'
 import { useModalStore } from 'app/store/useModalStore';
+import { useUrlStore } from 'app/store/useUrlStore';
 
-interface ProductProps {
-    id: number;
+interface Product {
+    id: string;
     title: string;
     price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+    marketId: string;
+    description: { uz: string, ru: string, en: string };
+    categoryId: string;
+    discountId: string;
+    image: string[];
+    quantity: number;
+    options: any[];
 }
 
 const ProductID = () => {
+    const url = useUrlStore(state => state.url)
     const lan = useLanStorage(state => state.lan);
     const inputValue = useInputStorage(state => state.input);
     const pathname = usePathname();
@@ -45,14 +50,14 @@ const ProductID = () => {
     const productIdToFind = id ? parseInt(id as string, 10) : Number(pathname?.split('/')[2]?.split(',')[0]);
     const productsIDs = pathname?.split('/')[2]?.split(',')?.slice(1).map(Number) || [];
 
-    const [nextProducts, setNextProducts] = useState<ProductProps[]>([]);
-    const [products, setProducts] = useState<ProductProps[]>([]);
+    const [nextProducts, setNextProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [moon, setMoon] = useState(3);
     const [count, setCount] = useState(0)
 
     const { cart, toggleCart } = useCartStore();
-    const product = products.find(p => p.id === productIdToFind);
+    const product: Product = products.find(p => p.id === productIdToFind);
     const isInCart = cart.some(item => item.id === product?.id);
     const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan);
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
@@ -183,8 +188,9 @@ const ProductID = () => {
     useEffect(() => {
         const fetchSearchProducts = async () => {
             try {
-                const response = await fetch("https://fakestoreapi.com/products");
+                const response = await fetch(`${url}/products`);
                 const data = await response.json();
+                
                 setProducts(data);
             } catch (error) {
                 console.error("Ma'lumot yuklashda xatolik:", error);
@@ -241,7 +247,7 @@ const ProductID = () => {
                                 </View>
                             )}
                             <View style={{ flex: 85, height: isTabletView ? 400 : isMobileView ? 350 : elementHeight, gap: 5 }}>
-                                <Slider products={products} link={false} count={count} setCount={setCount} />
+                                <Slider sliders={product.image} link={false} count={count} setCount={setCount} />
                             </View>
                         </View>
                         {!(isTabletView || isMobileView) ? (
@@ -249,7 +255,7 @@ const ProductID = () => {
                                 <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
                                 <View style={{ flexDirection: 'row', gap: 4 }}>
                                     {
-                                        Array.from({ length: Math.round(product.rating.rate) }, (_, index) => index + 1).map((_, index) =>
+                                        Array.from({ length: Math.round(4) }, (_, index) => index + 1).map((_, index) =>
                                             <UniversalImage
                                                 key={index}
                                                 src={accesStarPng}
@@ -261,7 +267,7 @@ const ProductID = () => {
                                         )
                                     }
                                     {
-                                        Array.from({ length: Math.round(5 - product.rating.rate) }, (_, index) => index + 1).map((_, index) =>
+                                        Array.from({ length: Math.round(5 - 4) }, (_, index) => index + 1).map((_, index) =>
                                             <UniversalImage
                                                 key={index}
                                                 src={starPng}
@@ -272,7 +278,7 @@ const ProductID = () => {
                                             />
                                         )
                                     }
-                                    <Text>{product.rating.rate} | {product.rating.count} sharh | {product.id}+ buyrutma</Text>
+                                    <Text>{4} | {13000} sharh | {product.id}+ buyrutma</Text>
                                 </View>
                             </View>
                         ) : null}
@@ -377,7 +383,7 @@ const ProductID = () => {
                                         height={30}
                                         resizeMode='contain'
                                     />
-                                    <Text>{product.id * 2} dona xarid qilish mumkin</Text>
+                                    <Text>{product.quantity} dona xarid qilish mumkin</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
                                     <View>
@@ -414,8 +420,8 @@ const ProductID = () => {
                     </Text>
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12, backgroundColor: '#fff' }}>
-                    {nextProducts.map((item, index) => (
-                        <ProductCart key={item.id} product={item} products={nextProducts} index={index} />
+                    {nextProducts.map((product: Product, index) => (
+                        <ProductCart key={product.id} product={product} products={nextProducts} index={index} />
                     ))}
                 </View>
             </View>

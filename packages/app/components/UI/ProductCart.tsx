@@ -8,25 +8,29 @@ import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import { UniversalImage } from "./UniversalImage";
 import { useRouter } from "solito/navigation";
 
-interface ProductProps {
-    id: number;
+interface Product {
+    id: string;
     title: string;
+    marketId: string;
     price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+    description: { uz: string, ru: string, en: string };
+    categoryId: string;
+    discountId: string;
+    image: string[];
+    quantity: number;
+    options: any[];
 }
 
 interface ProductCardProps {
-    product: ProductProps;
-    products: ProductProps[];
+    product: Product;
+    products: Product[];
     index: number;
+    account: boolean
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const ProductCard = ({ product, products, index }: ProductCardProps) => {
+const ProductCard = ({ product, products, index, account }: ProductCardProps) => {
     const [isMounted, setIsMounted] = useState(false);
     const { cart, toggleCart } = useCartStore();
     const router = useRouter();
@@ -187,7 +191,7 @@ const ProductCard = ({ product, products, index }: ProductCardProps) => {
 
                 <View style={styles.imageWrapper}>
                     <UniversalImage
-                        src={product.image}
+                        src={product.image[0]}
                         alt={product.title}
                         width={130}
                         height={130}

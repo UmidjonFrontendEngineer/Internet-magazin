@@ -8,7 +8,7 @@ import noInternet from 'app/features/app/assets/no-wifi.png'
 import { useLanStorage } from 'app/store/useLanStore'
 import { useNativeAnimDriver } from 'app/utils/animation'
 
-const NotLoad = ({ fetchProducts }: { fetchProducts: () => void }) => {
+const NotLoad = ({ renderToken }: { renderToken: () => void }) => {
     const lan = useLanStorage(state => state.lan)
     const [isMounted, setIsMounted] = useState(false)
 
@@ -83,7 +83,7 @@ const NotLoad = ({ fetchProducts }: { fetchProducts: () => void }) => {
                             opacity: 0.85,
                         }
                     ]}
-                    onPress={fetchProducts}
+                    onPress={renderToken}
                 >
                     <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600' }}>
                         {lan === 'uz' ? 'Qayta urinish' : lan === 'en' ? 'retry' : lan === 'ru' ? 'повторить попытку' : 'Qayta urinish'}

@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface CartItem {
-    id: number;
+    id: string;
     quantity: number;
 }
 

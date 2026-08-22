@@ -7,19 +7,24 @@ import { useYoqtirilganStore } from 'app/store/useYoqtirilganStore';
 import LoaderProductCard from 'app/components/UI/LoaderProductCart';
 import NotLoad from 'app/components/UI/NotLoad';
 import Empty from 'app/components/UI/Empty';
+import { useUrlStore } from 'app/store/useUrlStore';
 
-interface ProductProps {
-    id: number;
+interface Product {
+    id: string;
     title: string;
     price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+    marketId: string;
+    description: { uz: string, ru: string, en: string };
+    categoryId: string;
+    discountId: string;
+    image: string[];
+    quantity: number;
+    options: any[];
 }
 
 const Yoqtirilgan = () => {
-    const [products, setProducts] = useState<ProductProps[]>([]);
+    const url = useUrlStore(state => state.url)
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState('loading');
 
     const yoqtirilganIds = useYoqtirilganStore((state) => state.yoqtirilganIds);
@@ -27,7 +32,7 @@ const Yoqtirilgan = () => {
     const fetchYoqtirilganProducts = async () => {
         try {
             setLoading('loading')
-            const response = await fetch("https://fakestoreapi.com/products");
+            const response = await fetch(`${url}/products`);
             const data = await response.json();
             setProducts(data);
             setLoading('loaded')
@@ -43,7 +48,7 @@ const Yoqtirilgan = () => {
         }
     }, [yoqtirilganIds]);
 
-    const yoqtirilganProducts = products.filter(product => yoqtirilganIds.includes(product.id));
+    const yoqtirilganProducts = products.filter((product: Product) => yoqtirilganIds.includes(product.id));
 
     if (yoqtirilganIds.length === 0) return <Empty />
     
@@ -61,7 +66,7 @@ const Yoqtirilgan = () => {
     }
 
     else if (loading === 'notLoad') {
-        return <NotLoad fetchProducts={fetchYoqtirilganProducts} />
+        return <NotLoad renderToken={fetchYoqtirilganProducts} />
     }
 
     return (

@@ -11,34 +11,39 @@ import Empty from 'app/components/UI/Empty';
 import LoaderProductCart from 'app/components/UI/LoaderProductCart';
 import { useRouter } from 'solito/navigation';
 import { usePathname } from 'solito/navigation';
+import { useUrlStore } from 'app/store/useUrlStore';
 
-interface ProductProps {
-    id: number;
+interface Product {
+    id: string;
     title: string;
     price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+    marketId: string;
+    description: { uz: string, ru: string, en: string };
+    categoryId: string;
+    discountId: string;
+    image: string[];
+    quantity: number;
+    options: any[];
 }
 
 const FilterSearch = () => {
+    const url = useUrlStore(state => state.url)
     const pathnameWeb = usePathname()
     const pathnameWebProduct = pathnameWeb?.split('/')[2]
     const lan = useLanStorage(state => state.lan);
     const inputValue = useInputStorage(state => state.input)
     const router = useRouter()
 
-    const [products, setProducts] = useState<ProductProps[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState('loading');
 
     const fetchSearchProducts = async () => {
         try {
             setLoading('loading')
-            const response = await fetch("https://fakestoreapi.com/products");
+            const response = await fetch(`${url}/products`);
             const data = await response.json();
 
-            const searchProducts = data.filter((product: ProductProps) =>
+            const searchProducts = data.filter((product: Product) =>
                 product.title.toLowerCase().includes(`${Platform.OS !== 'web' ? inputValue : pathnameWebProduct}`)
             );
             setProducts(searchProducts);
@@ -71,7 +76,7 @@ const FilterSearch = () => {
 
     else if (loading === 'notLoad') {
         return (
-            <NotLoad fetchProducts={fetchSearchProducts} />
+            <NotLoad renderToken={fetchSearchProducts} />
         )
     }
 
@@ -81,8 +86,8 @@ const FilterSearch = () => {
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.grid}>
-                    {products.map((item, index) => (
-                        <ProductCard key={item.id} product={item} products={products} index={index} />
+                    {products.map((product: Product, index) => (
+                        <ProductCard key={product.id} product={product} products={products} index={index} />
                     ))}
                 </View>
             </ScrollView>

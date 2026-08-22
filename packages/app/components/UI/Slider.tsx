@@ -5,23 +5,20 @@ import { UniversalImage } from './UniversalImage'
 import NextPng from 'app/features/app/assets/next.png'
 import { TextLink } from 'solito/link'
 
-interface ProductProps {
-    id: number;
-    title: string;
-    price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+interface Slider {
+    id: string
+    image: string
+    link: string
+    marketId: string
 }
 
-const Slider = ({ products, link, count, setCount }: { products: ProductProps[], link: boolean, count: number, setCount: (prev: number) => void }) => {
+const Slider = ({ sliders, link, count, setCount }: { sliders: Slider[], link: boolean, count: number, setCount: (prev: number) => void }) => {
     const { width: screenWidth } = useWindowDimensions();
     const [width, setWidth] = useState(0)
 
     const animX = useRef(new Animated.Value(0)).current
     const currentTranslateX = useRef(0)
-    const totalSlides = products.length
+    const totalSlides = sliders.length
 
     const slideTo = (index: number) => {
         let targetIndex = index
@@ -116,12 +113,12 @@ const Slider = ({ products, link, count, setCount }: { products: ProductProps[],
                     }}
                 >
                     {
-                        products.map(item => (
-                            <View key={item.id} style={{ width: width || '100%', marginHorizontal: screenWidth > 900 ? 0 : 5, height: '100%', borderRadius: screenWidth > 900 ? 0 : 15, alignItems: 'center', padding: 0, justifyContent: 'center', backgroundColor: '#EEF2F6' }}>
-                                {link === true ? <TextLink href={`/${item.id}`}>
+                        sliders.map(slider => (
+                            <View key={slider.id} style={{ width: width || '100%', marginHorizontal: screenWidth > 900 ? 0 : 5, height: '100%', borderRadius: screenWidth > 900 ? 0 : 15, alignItems: 'center', padding: 0, justifyContent: 'center', backgroundColor: '#EEF2F6' }}>
+                                {link === true ? <TextLink href={`/${slider.link}`}>
                                     <UniversalImage
-                                        src={item.image}
-                                        alt={`${item.id}`}
+                                        src={slider.image}
+                                        alt={`${slider.id}`}
                                         width={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
                                         height={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
                                         resizeMode="contain"
@@ -130,8 +127,8 @@ const Slider = ({ products, link, count, setCount }: { products: ProductProps[],
                                     :
                                     <View>
                                         <UniversalImage
-                                            src={item.image}
-                                            alt={`${item.id}`}
+                                            src={slider.image}
+                                            alt={`${slider.id}`}
                                             width={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
                                             height={screenWidth < 600 ? 150 : screenWidth < 900 ? 250 : 370}
                                             resizeMode="contain"

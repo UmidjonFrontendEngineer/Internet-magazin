@@ -9,32 +9,64 @@ import SliderLoader from 'app/components/UI/SliderLoader';
 import NotLoad from 'app/components/UI/NotLoad';
 import Empty from 'app/components/UI/Empty';
 import { useRouter } from 'solito/navigation';
+import { useUrlStore } from 'app/store/useUrlStore'
+import { useTokenStore } from 'app/store/useTokenStore';
 
-interface ProductProps {
-    id: number;
+interface User {
+    id: string
+    email: string
+}
+
+interface Product {
+    id: string;
     title: string;
     price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+    marketId: string;
+    description: { uz: string, ru: string, en: string };
+    categoryId: string;
+    discountId: string;
+    image: string[];
+    quantity: number;
+    options: any[];
+}
+
+interface Follower {
+    id: string;
+    userId: string;
+    following: string[];
+}
+
+
+interface Slider {
+    id: string
+    image: string
+    link: string
+    marketId: string
 }
 
 const isWeb = typeof window !== 'undefined' && window.innerWidth > 768;
 
 const HomeScreen = () => {
+    const url = useUrlStore(state => state.url)
+    const token = useTokenStore(state => state.token)
     const router = useRouter()
-    const [products, setProducts] = useState<ProductProps[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [sliders, setSliders] = useState<Slider[]>([])
     const [loading, setLoading] = useState('loading');
     const { width: screenWidth } = useWindowDimensions();
     const [count, setCount] = useState(0)
+    const [account, setAccount] = useState(false)
 
     const fetchProducts = async () => {
         try {
             setLoading('loading')
-            const response = await fetch("https://fakestoreapi.com/products");
+            const response = await fetch(`${url}/products`);
+
             const data = await response.json();
-            setProducts(data);
+
+            const filteredProducts = data.filter((product: Product) => product.marketId === 'umidjon')
+
+            setProducts(filteredProducts);
             setLoading('loaded')
         } catch (error) {
             console.error("Ma'lumot yuklashda xatolik:", error);
@@ -42,9 +74,148 @@ const HomeScreen = () => {
         }
     };
 
+
+    const fetchSliders = async () => {
+        try {
+            const response = await fetch(`${url}/sliders`);
+
+            const data = await response.json();
+
+            const filteredSliders = data.filter((slider: Slider) => slider.marketId === 'umidjon')
+
+            setSliders(filteredSliders);
+        } catch (error) {
+            console.error("Ma'lumot yuklashda xatolik:", error);
+        }
+    };
+
+    const getSliders = async (followers: Follower[]) => {
+        try {
+            const response = await fetch(`${url}/sliders`);
+
+            const data = await response.json();
+
+            if (response.ok) {
+                let bigSliders: Slider[] = []
+
+                followers.map((follower) => {
+                    const filteredSliders = data.filter((slider: Slider) => slider.marketId === follower.id)
+
+                    bigSliders = [...bigSliders, ...filteredSliders]
+                })
+
+                if (bigSliders.length === 0) {
+                    fetchSliders()
+                } else {
+                    setSliders(bigSliders)
+                }
+
+            } else {
+            }
+        } catch (error) {
+            console.error("Ma'lumot yuklashda xatolik:", error);
+        }
+    };
+
+    const getProducts = async (followers: Follower[]) => {
+        try {
+            const res = await fetch(`${url}/products`);
+
+            if (res.ok) {
+                const req = await res.json()
+                let bigData: Product[] = []
+
+                followers.map((follower) => {
+                    const filteredProducts = req.filter((product: Product) => product.marketId === follower.id)
+
+                    bigData = [...bigData, ...filteredProducts]
+                })
+
+                if (bigData.length === 0) {
+                    fetchProducts()
+                } else {
+                    setLoading('loaded')
+                    setProducts(bigData)
+                }
+
+            } else {
+                fetchProducts()
+            }
+        } catch (err) {
+            console.log(err)
+            fetchProducts()
+        }
+    }
+
+    const getFollower = async (id: string) => {
+        try {
+            const res = await fetch(`${url}/followers`);
+
+            if (res.ok) {
+                const req = await res.json()
+
+                const userMarkets = req.find((follower: Follower) => follower.userId === id).followers
+
+                if (userMarkets.length === 0) {
+                    fetchProducts()
+                } else {
+                    getProducts(userMarkets)
+                    getSliders(userMarkets)
+                }
+            } else {
+                fetchProducts()
+            }
+        } catch (err) {
+            console.log(err)
+            fetchProducts()
+        }
+    }
+
+    const getUser = async (email: string) => {
+        try {
+            const res = await fetch(`${url}/users`);
+
+            if (res.ok) {
+                const req = await res.json()
+
+                const userId = req.find((user: User) => user.email === email).id
+                getFollower(userId)
+            } else {
+                fetchProducts()
+            }
+        } catch (err) {
+            console.log(err)
+            fetchProducts()
+        }
+    }
+
+    const renderToken = async () => {
+        try {
+            const res = await fetch(`${url}/auth/profile`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (res.ok) {
+                const req = await res.json()
+                console.log(req)
+                setAccount(true)
+
+                getUser(req.email)
+            } else {
+                fetchProducts()
+            }
+        } catch (err) {
+            console.log(err)
+            fetchProducts()
+        }
+    }
+
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        renderToken()
+    }, [token]);
 
     if (loading === 'loading') {
         return (
@@ -69,7 +240,7 @@ const HomeScreen = () => {
 
     else if (loading === 'notLoad') {
         return (
-            <NotLoad fetchProducts={fetchProducts} />
+            <NotLoad renderToken={renderToken} />
         )
     }
 
@@ -79,12 +250,12 @@ const HomeScreen = () => {
         <ScreenWrapper>
             <View contentContainerStyle={styles.container}>
                 <View style={{ padding: screenWidth > 900 ? 12 : 0 }}>
-                    <Slider products={products} link={true} count={count} setCount={setCount} />
+                    <Slider sliders={sliders} link={true} count={count} setCount={setCount} />
                 </View>
 
                 <View style={styles.grid}>
-                    {products.map((item, index) => (
-                        <ProductCard key={item.id} product={item} products={products} index={index} />
+                    {products.map((product: Product, index: number) => (
+                        <ProductCard key={product.id} product={product} products={products} index={index} account={account} />
                     ))}
                 </View>
             </View>

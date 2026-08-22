@@ -6,17 +6,20 @@ import { useCartStore } from "app/store/useCartStore";
 import { useYoqtirilganStore } from "app/store/useYoqtirilganStore";
 import { UniversalImage } from "./UniversalImage";
 
-interface ProductProps {
-    id: number;
+interface Product {
+    id: string;
     title: string;
     price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+    marketId: string;
+    description: { uz: string, ru: string, en: string };
+    categoryId: string;
+    discountId: string;
+    image: string[];
+    quantity: number;
+    options: any[];
 }
 
-const CardProduct = ({ product, index }: { product: ProductProps; index?: number }) => {
+const CardProduct = ({ product, index }: { product: Product; index?: number }) => {
     const { width: windowWidth } = useWindowDimensions();
     const [isMounted, setIsMounted] = useState(false);
 
@@ -98,7 +101,7 @@ const CardProduct = ({ product, index }: { product: ProductProps; index?: number
                 <View style={[styles.leftSection, isSmall && styles.leftSectionSmall]}>
                     <View style={[styles.imageWrapper, isSmall && styles.imageWrapperSmall]}>
                         <UniversalImage
-                            src={product.image}
+                            src={product.image[0]}
                             alt={product.title}
                             width={isSmall ? 70 : 100}
                             height={isSmall ? 70 : 100}
@@ -135,7 +138,7 @@ const CardProduct = ({ product, index }: { product: ProductProps; index?: number
 
                     <View style={styles.metaInfo}>
                         <Text style={styles.metaText}>Sotuvchi: <Text style={styles.metaValue}>Premium Store</Text></Text>
-                        <Text style={styles.metaText}>Kategoriya: <Text style={styles.metaValue}>{product.category}</Text></Text>
+                        <Text style={styles.metaText}>Kategoriya: <Text style={styles.metaValue}>{product.categoryId}</Text></Text>
                     </View>
 
                     <View style={[styles.footerRow, isSmall && styles.footerRowSmall]}>
@@ -151,10 +154,10 @@ const CardProduct = ({ product, index }: { product: ProductProps; index?: number
 
                         <View style={[styles.priceContainer, isSmall && styles.priceContainerSmall]}>
                             <Text style={[styles.currentPrice, isSmall && styles.currentPriceSmall]}>
-                                {(product.price * 12500 * quantity).toLocaleString()} so'm
+                                {product.price} so'm
                             </Text>
                             <Text style={[styles.oldPrice, isSmall && styles.oldPriceSmall]}>
-                                {(oldPrice * 12500 * quantity).toLocaleString()} so'm
+                                {oldPrice} so'm
                             </Text>
                         </View>
                     </View>

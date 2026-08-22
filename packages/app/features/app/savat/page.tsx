@@ -8,19 +8,24 @@ import { useLanStorage } from 'app/store/useLanStore';
 import LoaderCart from 'app/components/UI/LoaderCart';
 import NotLoad from 'app/components/UI/NotLoad';
 import Empty from 'app/components/UI/Empty';
+import { useUrlStore } from 'app/store/useUrlStore';
 
-interface ProductProps {
-    id: number;
+interface Product {
+    id: string;
     title: string;
     price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+    marketId: string;
+    description: { uz: string, ru: string, en: string };
+    categoryId: string;
+    discountId: string;
+    image: string[];
+    quantity: number;
+    options: any[];
 }
 
 const Savat = () => {
-    const [products, setProducts] = useState<ProductProps[]>([]);
+    const url = useUrlStore(state => state.url)
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState('loading');
 
     const cart = useCartStore(state => state.cart);
@@ -30,8 +35,9 @@ const Savat = () => {
     const fetchCartProducts = async () => {
         try {
             setLoading('loading')
-            const response = await fetch("https://fakestoreapi.com/products");
+            const response = await fetch(`${url}/products`);
             const data = await response.json();
+
             setProducts(data);
             setLoading('loaded')
         } catch (error) {
@@ -46,7 +52,7 @@ const Savat = () => {
         }
     }, [cartIds.join(',')]);
 
-    const cartProducts = products.filter(product => cartIds.includes(product.id));
+    const cartProducts = products.filter((product: Product) => cartIds.includes(product.id));
     if (cartIds.length === 0) return <Empty />
 
     if (loading === 'loading') {
@@ -63,15 +69,15 @@ const Savat = () => {
     }
 
     else if (loading === 'notLoad') {
-        return <NotLoad fetchProducts={fetchCartProducts} />
+        return <NotLoad renderToken={fetchCartProducts} />
     }
 
     return (
         <ScreenWrapper>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.grid}>
-                    {cartProducts.map((item, index) => (
-                        <Card key={item.id} product={item} index={index} />
+                    {cartProducts.map((product: Product, index) => (
+                        <Card key={product.id} product={product} index={index} />
                     ))}
                 </View>
             </ScrollView>
