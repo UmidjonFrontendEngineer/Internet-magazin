@@ -4,22 +4,18 @@ import { View, Pressable, Animated, LayoutChangeEvent, useWindowDimensions } fro
 import NextPng from 'app/features/app/assets/next.png'
 import { UniversalImage } from './UniversalImage'
 
-interface ProductProps {
-    id: number;
-    title: string;
-    price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: { rate: number; count: number };
+interface SliderItem {
+    id: string
+    image: string
+    marketId?: string
 }
 
-const ProductSlider = ({ products, count, setCount }: { products: ProductProps[], count: number, setCount: (prev: number) => void }) => {
+const ProductSlider = ({ sliders, count, setCount }: { sliders: SliderItem[], count: number, setCount: (prev: number) => void }) => {
     const { width: screenWidth } = useWindowDimensions();
     const [containerHeight, setContainerHeight] = useState(0)
 
     const animY = useRef(new Animated.Value(0)).current
-    const totalSlides = products.length
+    const totalSlides = sliders.length
 
     const VISIBLE_ITEMS = 5
     const CENTER_OFFSET = 2
@@ -101,7 +97,7 @@ const ProductSlider = ({ products, count, setCount }: { products: ProductProps[]
                     }}
                 >
                     {
-                        products.map((item, index) => {
+                        sliders.map((item, index) => {
                             const isActive = index === count;
 
                             return (

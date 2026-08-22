@@ -240,11 +240,24 @@ const ProductID = () => {
                         <View style={{ flex: 3, flexDirection: 'row', gap: 20 }}>
                             {(isTabletView || isMobileView) ? null : (
                                 <View style={{ flex: 15, height: isTabletView ? 400 : isMobileView ? 300 : elementHeight, gap: 8 }}>
-                                    <ProductSlider products={products} count={count} setCount={setCount} />
+                                    <ProductSlider
+                                        sliders={product.images.map((img: string, idx: number) => ({
+                                            id: String(idx),
+                                            image: img
+                                        }))}
+                                        count={count}
+                                        setCount={setCount}
+                                    />
                                 </View>
                             )}
                             <View style={{ flex: 85, height: isTabletView ? 400 : isMobileView ? 350 : elementHeight, gap: 5 }}>
-                                <Slider sliders={product.images} link={false} count={count} setCount={setCount} />
+                                <Slider sliders={
+                                    product.images.map((img: string, idx: number) => ({
+                                        id: String(idx),
+                                        image: img,
+                                        link: '',
+                                        marketId: product.marketId || ''
+                                    }))} link={false} count={count} setCount={setCount} />
                             </View>
                         </View>
                         {!(isTabletView || isMobileView) ? (
