@@ -285,36 +285,43 @@ const ProductID = () => {
                             </View>
                         </View>
                         {!(isTabletView || isMobileView) ? (
-                            <View style={{ flex: 2, height: elementHeight, padding: 10, gap: 8 }}>
-                                <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
-                                <View style={{ flexDirection: 'row', gap: 4 }}>
-                                    {
-                                        Array.from({ length: Math.round(4) }, (_, index) => index + 1).map((_, index) =>
-                                            <UniversalImage
-                                                key={index}
-                                                src={accesStarPng}
-                                                alt={product.title}
-                                                width={20}
-                                                height={20}
-                                                resizeMode='contain'
-                                            />
-                                        )
-                                    }
-                                    {
-                                        Array.from({ length: Math.round(5 - 4) }, (_, index) => index + 1).map((_, index) =>
-                                            <UniversalImage
-                                                key={index}
-                                                src={starPng}
-                                                alt={product.title}
-                                                width={20}
-                                                height={20}
-                                                resizeMode='contain'
-                                            />
-                                        )
-                                    }
-                                    <Text>{4} | {13000} sharh | {product.id}+ buyrutma</Text>
+                            <View style={{ flex: 2, height: elementHeight, padding: 10, gap: 8, flexDirection: 'column' }}>
+
+                                <View style={{ height: '100%', padding: 0, gap: 8 }}>
+                                    <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
+                                    <View style={{ flexDirection: 'row', gap: 4 }}>
+                                        {
+                                            Array.from({ length: Math.round(4) }, (_, index) => index + 1).map((_, index) =>
+                                                <UniversalImage
+                                                    key={index}
+                                                    src={accesStarPng}
+                                                    alt={product.title}
+                                                    width={20}
+                                                    height={20}
+                                                    resizeMode='contain'
+                                                />
+                                            )
+                                        }
+                                        {
+                                            Array.from({ length: Math.round(5 - 4) }, (_, index) => index + 1).map((_, index) =>
+                                                <UniversalImage
+                                                    key={index}
+                                                    src={starPng}
+                                                    alt={product.title}
+                                                    width={20}
+                                                    height={20}
+                                                    resizeMode='contain'
+                                                />
+                                            )
+                                        }
+                                        <Text>{4} | {13000} sharh | {product.id}+ buyrutma</Text>
 
 
+
+                                    </View>
+                                </View>
+
+                                <View style={{width: '100%', gap: 4, flexDirection: 'column'}}>
                                     {product.options && product.options.length > 0 && (
                                         <View style={styles.container}>
                                             <Text style={[styles.mainTitle, theme === 'dark' ? styles.textDark : styles.textLight]}>
@@ -382,9 +389,8 @@ const ProductID = () => {
                                             </View>
                                         </View>
                                     )}
-
-
                                 </View>
+
                             </View>
                         ) : null}
                     </View>
@@ -526,7 +532,7 @@ const ProductID = () => {
                             : product.description?.[lan as keyof typeof product.description] || product.description?.uz}
                     </Text>
 
-                    {(isTabletView || isMobileView) ? null : (
+                    {(isTabletView || isMobileView) ? (
 
                         product.options && product.options.length > 0 && (
                             <View style={styles.container}>
@@ -596,7 +602,7 @@ const ProductID = () => {
                             </View>
                         )
 
-                    )}
+                    ) : null}
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12, backgroundColor: '#fff' }}>
                     {nextProducts.map((p: Product, index: number) => (
@@ -662,7 +668,7 @@ const styles = StyleSheet.create({
     },
     card: {
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 16,
         borderWidth: 1,
     },
     cardDark: {
@@ -695,7 +701,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 12,
-        borderRadius: 8,
+        borderRadius: 12,
         borderWidth: 1,
     },
     buttonSelected: {
