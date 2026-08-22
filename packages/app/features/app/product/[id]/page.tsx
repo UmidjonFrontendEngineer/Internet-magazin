@@ -290,53 +290,29 @@ const ProductID = () => {
                             <ScrollView style={{ flex: 2, height: elementHeight, padding: 10, gap: 8, flexDirection: 'column', position: 'relative' }}>
 
                                 <LinearGradient
-                                    colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
+                                    colors={['rgb(255, 255, 255)', 'rgba(255, 255, 255, 0)']}
                                     start={{ x: 0, y: 0 }}
                                     end={{ x: 0, y: 1 }}
-                                    style={{
-                                        paddingHorizontal: 5000,
-                                        flexDirection: 'row',
-                                        height: 10,
-                                        left: 0,
-                                        bottom: 0,
-                                        pointerEvents: 'none',
-                                        ...Platform.select({
+                                    style={[
+                                        {
+                                            height: 20,
+                                            width: '100%',
+                                            pointerEvents: 'none',
+                                            zIndex: 10,
+                                        },
+                                        Platform.select({
                                             web: {
-                                                position: 'absolute',
-                                                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(255, 255, 255))',
+                                                position: 'sticky',
+                                                top: 0,
+                                                backgroundImage: 'linear-gradient(to bottom, rgb(255, 255, 255), rgba(255, 255, 255, 0))',
                                             },
                                             default: {
                                                 position: 'absolute',
+                                                top: 0,
                                             }
-                                        }),
-                                    }}>
-
-                                </LinearGradient>
-
-
-                                <LinearGradient
-                                    colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 0, y: 1 }}
-                                    style={{
-                                        paddingHorizontal: 5000,
-                                        flexDirection: 'row',
-                                        height: 10,
-                                        left: 0,
-                                        bottom: 0,
-                                        pointerEvents: 'none',
-                                        ...Platform.select({
-                                            web: {
-                                                position: 'absolute',
-                                                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(255, 255, 255))',
-                                            },
-                                            default: {
-                                                position: 'absolute',
-                                            }
-                                        }),
-                                    }}>
-
-                                </LinearGradient>
+                                        })
+                                    ]}
+                                />
 
                                 <View style={{ padding: 0, gap: 8 }}>
                                     <Text style={{ fontSize: 18, fontWeight: '600', textTransform: 'capitalize' }}>{product.title}</Text>
@@ -441,6 +417,29 @@ const ProductID = () => {
                                         </View>
                                     )}
                                 </View>
+
+                                <LinearGradient
+                                    colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    style={[
+                                        {
+                                            height: 20,
+                                            width: '100%',
+                                            pointerEvents: 'none',
+                                            marginTop: 10,
+                                            zIndex: 10,
+                                        },
+                                        Platform.select({
+                                            web: {
+                                                position: 'sticky',
+                                                bottom: 0,
+                                                backgroundImage: 'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(255, 255, 255))',
+                                            },
+                                            default: {}
+                                        })
+                                    ]}
+                                />
 
                             </ScrollView>
                         ) : null}
