@@ -323,7 +323,7 @@ const ProductID = () => {
 
                                 <View style={{width: '100%', gap: 4, flexDirection: 'column'}}>
                                     {product.options && product.options.length > 0 && (
-                                        <View style={styles.container}>
+                                        <ScrollView style={styles.container}>
                                             <Text style={[styles.mainTitle, theme === 'dark' ? styles.textDark : styles.textLight]}>
                                                 Konfiguratsiyani o&apos;zgartirish:
                                             </Text>
@@ -387,7 +387,7 @@ const ProductID = () => {
                                                     );
                                                 })}
                                             </View>
-                                        </View>
+                                        </ScrollView>
                                     )}
                                 </View>
 
