@@ -24,7 +24,7 @@ import { useModalStore } from 'app/store/useModalStore';
 import { useUrlStore } from 'app/store/useUrlStore';
 
 interface Product {
-    id: string;
+    id: string | number;
     title: string;
     price: number;
     marketId: string;
@@ -46,9 +46,12 @@ const ProductID = () => {
     const isTabletView = windowWidth < 1000 && windowWidth > 500;
     const isMobileView = windowWidth < 500;
 
-    const { id } = useSearchParams();
-    const productIdToFind = id ? parseInt(id as string, 10) : Number(pathname?.split('/')[2]?.split(',')[0]);
-    const productsIDs = pathname?.split('/')[2]?.split(',')?.slice(1).map(Number) || [];
+    const searchParams = useSearchParams();
+    const searchId = searchParams?.get('id');
+
+    const pathSegments = pathname?.split('/')[2]?.split(',') || [];
+    const productIdToFind = searchId || pathSegments[0];
+    const productsIDs = pathSegments.slice(1);
 
     const [nextProducts, setNextProducts] = useState<Product[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
@@ -57,8 +60,9 @@ const ProductID = () => {
     const [count, setCount] = useState(0)
 
     const { cart, toggleCart } = useCartStore();
-    const product: Product = products.find(p => p.id === productIdToFind);
-    const isInCart = cart.some(item => item.id === product?.id);
+
+    const product: Product | undefined = products.find(p => String(p.id) === String(productIdToFind));
+    const isInCart = cart.some(item => String(item.id) === String(product?.id));
     const toggleYoqtirilgan = useYoqtirilganStore(state => state.toggleYoqtirilgan);
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
     const setModal = useModalStore(state => state.setModal)
@@ -164,12 +168,16 @@ const ProductID = () => {
     };
 
     useEffect(() => {
-        if (!productsIDs || productsIDs.length === 0) return;
+        if (products.length === 0) return;
+
+        const currentPathIds = pathname?.split('/')[2]?.split(',').map(item => item.trim()).filter(Boolean) || [];
+        const remainingIds = searchId ? currentPathIds : currentPathIds.slice(1);
+
         const saralanganMaxsulotlar = products.filter(maxsulot => {
-            return productsIDs.map(String).includes(String(maxsulot.id));
+            return remainingIds.map(String).includes(String(maxsulot.id));
         });
         setNextProducts(saralanganMaxsulotlar);
-    }, [products, productsIDs]);
+    }, [products, pathname, searchId]);
 
     useEffect(() => {
         if (loading || products.length === 0) return;
@@ -191,7 +199,6 @@ const ProductID = () => {
             try {
                 const response = await fetch(`${url}/products`);
                 const data = await response.json();
-
                 setProducts(data);
             } catch (error) {
                 console.error("Ma'lumot yuklashda xatolik:", error);
@@ -200,20 +207,10 @@ const ProductID = () => {
             }
         };
 
-        fetchSearchProducts();
+        if (url) {
+            fetchSearchProducts();
+        }
     }, [url]);
-
-    useEffect(() => {
-        if (products.length === 0) return;
-
-        const currentPathIds = pathname?.split('/')[2]?.split(',').map(item => item.trim()).filter(Boolean) || [];
-        const remainingIds = id ? currentPathIds : currentPathIds.slice(1);
-
-        const saralanganMaxsulotlar = products.filter(maxsulot => {
-            return remainingIds.map(String).includes(String(maxsulot.id));
-        });
-        setNextProducts(saralanganMaxsulotlar);
-    }, [products, pathname, id]);
 
     if (loading) {
         return (
@@ -233,7 +230,7 @@ const ProductID = () => {
 
     return (
         <ScreenWrapper>
-            <View contentContainerStyle={isMobileView ? styles.mobileContainer : undefined}>
+            <View style={isMobileView ? styles.mobileContainer : undefined}>
                 <View style={{ width: '100%', flexDirection: (isTabletView || isMobileView) ? 'column' : 'row', gap: 16 }}>
 
                     <View style={[
@@ -299,7 +296,7 @@ const ProductID = () => {
                                 <Text style={{ fontWeight: '400', fontSize: 14, textDecorationLine: 'line-through', color: 'gray' }}>{((product.price / 100) * 120).toFixed(0)}</Text>
 
                                 <View style={{ width: '100%' }}>
-                                    <View style={{ width: '100%', padding: 4, backgroundColor: 'background-color: rgba(220, 238, 255, 0.9)', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+                                    <View style={{ width: '100%', padding: 4, backgroundColor: 'rgba(220, 238, 255, 0.9)', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
                                         <View style={{ width: '100%', gap: 4, flexDirection: 'row', position: 'relative' }}>
                                             <Animated.View style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: 12, position: 'absolute', top: 0, left: moonLeft, width: '25%', height: '100%' }}>
                                             </Animated.View>
@@ -317,7 +314,7 @@ const ProductID = () => {
                                             </Pressable>
                                         </View>
                                     </View>
-                                    <Pressable style={{ width: '100%', padding: 8, backgroundColor: 'rgba(37, 146, 255, 0.48), 0.8)', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Pressable style={{ width: '100%', padding: 8, backgroundColor: 'rgba(37, 146, 255, 0.48)', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Text><Text style={{ padding: 3, backgroundColor: 'rgba(80, 160, 240, 0.95)', borderRadius: 12, fontWeight: 'bold', fontSize: 16, color: 'rgba(255, 255, 255, 1)' }}>{(product.price / moon).toFixed(0)} so'm</Text> × {moon} oy</Text>
                                         <Text style={{ fontSize: 16 }}>{'>'}</Text>
                                     </Pressable>
@@ -415,13 +412,15 @@ const ProductID = () => {
 
                 </View>
                 <View style={{ padding: 12 }}>
-                    <Text >
-                        {product.description}
+                    <Text>
+                        {typeof product.description === 'string'
+                            ? product.description
+                            : product.description?.[lan as keyof typeof product.description] || product.description?.uz}
                     </Text>
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12, backgroundColor: '#fff' }}>
-                    {nextProducts.map((product: Product, index) => (
-                        <ProductCart key={product.id} product={product} products={nextProducts} index={index} />
+                    {nextProducts.map((p: Product, index: number) => (
+                        <ProductCart key={p.id} product={p} products={nextProducts} index={index} />
                     ))}
                 </View>
             </View>
@@ -434,6 +433,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    mobileContainer: {
+        paddingBottom: 20,
     },
     mobileImageStickySection: {
         position: 'sticky' as any,
