@@ -291,11 +291,11 @@ const ProductID = () => {
 
                                 <LinearGradient
                                     colors={['rgb(255, 255, 255)', 'rgba(255, 255, 255, 0)']}
-                                    start={{ x: 0, y: 1 }}
-                                    end={{ x: 0, y: 0 }}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
                                     style={[
                                         {
-                                            height: 40,
+                                            height: 50,
                                             width: '100%',
                                             pointerEvents: 'none',
                                             zIndex: 10,
@@ -304,7 +304,7 @@ const ProductID = () => {
                                             web: {
                                                 position: 'sticky',
                                                 top: 0,
-                                                backgroundImage: 'linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0))',
+                                                backgroundImage: 'linear-gradient(to bottom, rgb(255, 255, 255), rgba(255, 255, 255, 0))',
                                             },
                                             default: {
                                                 position: 'absolute',
@@ -420,11 +420,11 @@ const ProductID = () => {
 
                                 <LinearGradient
                                     colors={['rgba(255, 255, 255, 0)', 'rgb(255, 255, 255)']}
-                                    start={{ x: 0, y: 1 }}
-                                    end={{ x: 0, y: 0 }}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
                                     style={[
                                         {
-                                            height: 40,
+                                            height: 50,
                                             width: '100%',
                                             pointerEvents: 'none',
                                             marginTop: 10,
@@ -434,7 +434,7 @@ const ProductID = () => {
                                             web: {
                                                 position: 'sticky',
                                                 bottom: 0,
-                                                backgroundImage: 'linear-gradient(to top, rgba(255, 255, 255, 0), rgb(255, 255, 255))',
+                                                backgroundImage: 'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(255, 255, 255))',
                                             },
                                             default: {}
                                         })
