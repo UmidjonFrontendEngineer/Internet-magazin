@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable, useWindowDimensions, Animated, Platform, GestureResponderEvent } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable, useWindowDimensions, Animated, Platform, GestureResponderEvent, TouchableOpacity } from 'react-native';
 import { useNativeAnimDriver } from 'app/utils/animation';
 import ScreenWrapper from 'app/components/layout/ScreenWrapper';
 import ProductCart from 'app/components/UI/ProductCart';
@@ -23,6 +23,18 @@ import starPng from 'app/features/app/assets/star.png'
 import { useModalStore } from 'app/store/useModalStore';
 import { useUrlStore } from 'app/store/useUrlStore';
 
+interface optionItem {
+    id: string;
+    key: string;
+    value: number;
+}
+
+interface optionGroup {
+    id: string;
+    title: string;
+    options: optionItem;
+}
+
 interface Product {
     id: string | number;
     title: string;
@@ -33,14 +45,16 @@ interface Product {
     discountId: string;
     images: string[];
     quantity: number;
-    options: any[];
+    options: optionGroup[];
 }
 
 const ProductID = () => {
+    const theme = 'light'
     const url = useUrlStore(state => state.url)
     const lan = useLanStorage(state => state.lan);
     const inputValue = useInputStorage(state => state.input);
     const pathname = usePathname();
+    const [selectedOptions, setSelectedOptions] = useState<Record<string, Record<string, number>>>({});
     const { width: windowWidth } = useWindowDimensions();
     const router = useRouter();
     const isTabletView = windowWidth < 1000 && windowWidth > 500;
@@ -67,6 +81,16 @@ const ProductID = () => {
     const yoqtirilganIds = useYoqtirilganStore(state => state.yoqtirilganIds);
     const setModal = useModalStore(state => state.setModal)
     const modal = useModalStore(state => state.modal)
+
+    const handleOptionSelect = (productId: string, groupName: string, value: number) => {
+        setSelectedOptions(prev => ({
+            ...prev,
+            [productId]: {
+                ...(prev[productId] || {}),
+                [groupName]: value
+            }
+        }));
+    };
 
     useEffect(() => {
         setModal('product')
@@ -289,6 +313,77 @@ const ProductID = () => {
                                         )
                                     }
                                     <Text>{4} | {13000} sharh | {product.id}+ buyrutma</Text>
+
+
+                                    {product.options && product.options.length > 0 && (
+                                        <View style={styles.container}>
+                                            <Text style={[styles.mainTitle, theme === 'dark' ? styles.textDark : styles.textLight]}>
+                                                Konfiguratsiyani o&apos;zgartirish:
+                                            </Text>
+                                            <View style={styles.groupContainer}>
+                                                {product.options.map((optGroup, optIdx) => {
+                                                    const activeVal = selectedOptions[product.id]?.[optGroup.id];
+                                                    return (
+                                                        <View
+                                                            key={optIdx}
+                                                            style={[
+                                                                styles.card,
+                                                                theme === 'dark' ? styles.cardDark : styles.cardLight
+                                                            ]}
+                                                        >
+                                                            <Text style={[styles.groupTitle, theme === 'dark' ? styles.groupTitleDark : styles.groupTitleLight]}>
+                                                                {optGroup.title}
+                                                            </Text>
+                                                            <View style={styles.optionsList}>
+                                                                {optGroup.options.map((opt, valIdx) => {
+                                                                    const isSelected = activeVal === opt.id;
+
+                                                                    return (
+                                                                        <TouchableOpacity
+                                                                            key={valIdx}
+                                                                            onPress={() => handleOptionSelect(product.id, optGroup.id, opt.id)}
+                                                                            activeOpacity={0.7}
+                                                                            style={[
+                                                                                styles.button,
+                                                                                isSelected
+                                                                                    ? styles.buttonSelected
+                                                                                    : theme === 'dark'
+                                                                                        ? styles.buttonDark
+                                                                                        : styles.buttonLight
+                                                                            ]}
+                                                                        >
+                                                                            <Text style={[
+                                                                                styles.buttonText,
+                                                                                isSelected
+                                                                                    ? styles.textSelected
+                                                                                    : theme === 'dark'
+                                                                                        ? styles.textDark
+                                                                                        : styles.textLight
+                                                                            ]}>
+                                                                                {opt.key}
+                                                                            </Text>
+                                                                            <Text style={[
+                                                                                styles.priceText,
+                                                                                isSelected
+                                                                                    ? styles.textSelected
+                                                                                    : theme === 'dark'
+                                                                                        ? styles.priceDark
+                                                                                        : styles.priceLight
+                                                                            ]}>
+                                                                                +{opt.value.toLocaleString()} UZS
+                                                                            </Text>
+                                                                        </TouchableOpacity>
+                                                                    );
+                                                                })}
+                                                            </View>
+                                                        </View>
+                                                    );
+                                                })}
+                                            </View>
+                                        </View>
+                                    )}
+
+
                                 </View>
                             </View>
                         ) : null}
@@ -430,6 +525,78 @@ const ProductID = () => {
                             ? product.description
                             : product.description?.[lan as keyof typeof product.description] || product.description?.uz}
                     </Text>
+
+                    {(isTabletView || isMobileView) ? null : (
+
+                        product.options && product.options.length > 0 && (
+                            <View style={styles.container}>
+                                <Text style={[styles.mainTitle, theme === 'dark' ? styles.textDark : styles.textLight]}>
+                                    Konfiguratsiyani o&apos;zgartirish:
+                                </Text>
+                                <View style={styles.groupContainer}>
+                                    {product.options.map((optGroup, optIdx) => {
+                                        const activeVal = selectedOptions[product.id]?.[optGroup.id];
+                                        return (
+                                            <View
+                                                key={optIdx}
+                                                style={[
+                                                    styles.card,
+                                                    theme === 'dark' ? styles.cardDark : styles.cardLight
+                                                ]}
+                                            >
+                                                <Text style={[styles.groupTitle, theme === 'dark' ? styles.groupTitleDark : styles.groupTitleLight]}>
+                                                    {optGroup.title}
+                                                </Text>
+                                                <View style={styles.optionsList}>
+                                                    {optGroup.options.map((opt, valIdx) => {
+                                                        const isSelected = activeVal === opt.id;
+
+                                                        return (
+                                                            <TouchableOpacity
+                                                                key={valIdx}
+                                                                onPress={() => handleOptionSelect(product.id, optGroup.id, opt.id)}
+                                                                activeOpacity={0.7}
+                                                                style={[
+                                                                    styles.button,
+                                                                    isSelected
+                                                                        ? styles.buttonSelected
+                                                                        : theme === 'dark'
+                                                                            ? styles.buttonDark
+                                                                            : styles.buttonLight
+                                                                ]}
+                                                            >
+                                                                <Text style={[
+                                                                    styles.buttonText,
+                                                                    isSelected
+                                                                        ? styles.textSelected
+                                                                        : theme === 'dark'
+                                                                            ? styles.textDark
+                                                                            : styles.textLight
+                                                                ]}>
+                                                                    {opt.key}
+                                                                </Text>
+                                                                <Text style={[
+                                                                    styles.priceText,
+                                                                    isSelected
+                                                                        ? styles.textSelected
+                                                                        : theme === 'dark'
+                                                                            ? styles.priceDark
+                                                                            : styles.priceLight
+                                                                ]}>
+                                                                    +{opt.value.toLocaleString()} UZS
+                                                                </Text>
+                                                            </TouchableOpacity>
+                                                        );
+                                                    })}
+                                                </View>
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            </View>
+                        )
+
+                    )}
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 12, backgroundColor: '#fff' }}>
                     {nextProducts.map((p: Product, index: number) => (
@@ -481,6 +648,92 @@ const styles = StyleSheet.create({
     buttonTextInCart: {
         color: 'rgba(115, 185, 255, 0.85)',
     },
+    container: {
+        gap: 16,
+    },
+    mainTitle: {
+        fontSize: 12,
+        fontWeight: '600',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+    },
+    groupContainer: {
+        gap: 12,
+    },
+    card: {
+        padding: 16,
+        borderRadius: 12,
+        borderWidth: 1,
+    },
+    cardDark: {
+        backgroundColor: 'rgba(24, 24, 27, 0.4)',
+        borderColor: '#27272a',
+    },
+    cardLight: {
+        backgroundColor: '#f9fafb',
+        borderColor: '#e4e4e7',
+    },
+    groupTitle: {
+        fontSize: 12,
+        fontWeight: '600',
+        textTransform: 'capitalize',
+        marginBottom: 12,
+        letterSpacing: 1,
+    },
+    groupTitleDark: {
+        color: '#a1a1aa',
+    },
+    groupTitleLight: {
+        color: '#52525b',
+    },
+    optionsList: {
+        gap: 8,
+    },
+    button: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderRadius: 8,
+        borderWidth: 1,
+    },
+    buttonSelected: {
+        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+        borderColor: 'rgba(14, 165, 233, 0.5)',
+    },
+    buttonDark: {
+        backgroundColor: 'rgba(39, 39, 42, 0.2)',
+        borderColor: '#27272a',
+    },
+    buttonLight: {
+        backgroundColor: '#ffffff',
+        borderColor: '#e4e4e7',
+    },
+    buttonText: {
+        fontSize: 12,
+        fontWeight: '500',
+        textTransform: 'capitalize',
+    },
+    priceText: {
+        fontSize: 12,
+        fontWeight: '600',
+    },
+    textDark: {
+        color: '#d4d4d8',
+    },
+    textLight: {
+        color: '#3f3f46',
+    },
+    textSelected: {
+        color: '#0ea5e9',
+    },
+    priceDark: {
+        color: '#71717a',
+    },
+    priceLight: {
+        color: '#a1a1aa',
+    }
 });
 
 export default ProductID;
